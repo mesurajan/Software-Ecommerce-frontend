@@ -5,7 +5,7 @@ import { removeFromCart, clearCart } from "../../Apps/Reducers/cartSlice";
 import EmptyCartImg from "../../assets/images/empty-cart.png";
 import { Link } from "react-router-dom";
 import AppBreadcrumbs from '../../components/Breadcrumbs';
-import paymentprocessing from "@/components/paymentprocessing";
+
 
 function Cart() {
   const { items } = useSelector(state => state.cart); // removed totalPrice from selector

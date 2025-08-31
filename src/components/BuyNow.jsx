@@ -1,5 +1,6 @@
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 function BuyNow() {
   const location = useLocation();
@@ -67,9 +68,12 @@ function BuyNow() {
       </div>
 
       {/* Checkout Button */}
-      <button className="w-full py-3 bg-orange-500 text-white rounded hover:bg-orange-600">
-        Proceed to Pay
-      </button>
+      
+        <Link to ={"/paymentprocessing"}>
+              <button className="w-full py-2 bg-green-500 text-white rounded hover:bg-green-600">
+                Proceed To Checkout
+              </button>
+              </Link>
     </div>
   );
 }

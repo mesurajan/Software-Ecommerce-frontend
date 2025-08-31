@@ -216,9 +216,12 @@ const handleAddToCart = (product) => {
                         View Details
                       </button>
                     </Link>
-                    <button className="flex-1 px-3 py-1 bg-green-600 text-white rounded hover:bg-green-500 transition">
-                      Buy Now
-                    </button>
+                        <button 
+                        onClick={() => navigate("/Buynow", { state: { product } })}
+                        className="flex-1 px-3 py-1 bg-green-600 text-white rounded hover:bg-green-500 transition"
+                      >
+                        Buy Now
+                      </button>
                   </div>
                 </div>
               ))}
