@@ -1,20 +1,25 @@
 // src/pages/Cart.jsx
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { removeFromCart, clearCart } from "../../Apps/Reducers/cartSlice";
+import {
+  removeFromCart,
+  clearCart,
+  increaseQuantity,
+  decreaseQuantity,
+} from "../../Apps/Reducers/cartSlice";
 import EmptyCartImg from "../../assets/images/empty-cart.png";
-import { Link } from "react-router-dom";
-import AppBreadcrumbs from '../../components/Breadcrumbs';
-
+import { Link, useNavigate } from "react-router-dom";
+import AppBreadcrumbs from "../../components/Breadcrumbs";
 
 function Cart() {
-  const { items } = useSelector(state => state.cart); // removed totalPrice from selector
+  const { items } = useSelector((state) => state.cart);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [shippingInfo, setShippingInfo] = useState({
     country: "",
     city: "",
-    postal: ""
+    postal: "",
   });
 
   const handleShippingChange = (e) => {
@@ -22,16 +27,27 @@ function Cart() {
   };
 
   const handleCalculateShipping = () => {
-    alert(`Shipping calculated for ${shippingInfo.country}, ${shippingInfo.city}, ${shippingInfo.postal}`);
+    alert(
+      `Shipping calculated for ${shippingInfo.country}, ${shippingInfo.city}, ${shippingInfo.postal}`
+    );
   };
 
-  // Calculate total price safely
-  const totalPrice = items.reduce((acc, item) => acc + (parseFloat(item.price.replace('$','')) * item.quantity), 0);
+  // ✅ Calculate total price
+  const totalPrice = items.reduce(
+    (acc, item) => acc + Number(item.price) * item.quantity,
+    0
+  );
+
+  const handleCheckout = () => {
+    navigate("/paymentprocessing", {
+      state: { cartItems: items, shippingInfo },
+    });
+  };
 
   return (
     <div className="bg-white container mx-auto text-[#0A174E] mb-10 px-4 md:px-0">
-      <div className='bg-backgroundlite py-4 px-4 md:px-0'>
-        <h1 className='text-3xl font-bold px-4'>Your Cart</h1>
+      <div className="bg-backgroundlite py-4">
+        <h1 className="text-3xl font-bold px-4">Your Cart</h1>
         <AppBreadcrumbs />
       </div>
 
@@ -42,7 +58,9 @@ function Cart() {
             alt="Empty Cart"
             className="w-60 h-60 object-contain mb-6"
           />
-          <h2 className="text-2xl font-semibold text-[#0A174E] mb-2">Your cart is empty</h2>
+          <h2 className="text-2xl font-semibold text-[#0A174E] mb-2">
+            Your cart is empty
+          </h2>
           <p className="text-gray-500 mb-4 text-center">
             Looks like you haven’t added anything to your cart yet.
           </p>
@@ -57,10 +75,17 @@ function Cart() {
         <div className="flex flex-col md:flex-row gap-6 mt-6">
           {/* Left: Cart Items */}
           <div className="flex-1 flex flex-col gap-4">
-            {items.map(item => (
-              <div key={item.id} className="flex flex-col md:flex-row justify-between items-center p-4 border rounded">
+            {items.map((item) => (
+              <div
+                key={item.id}
+                className="flex flex-col md:flex-row justify-between items-center p-4 border rounded"
+              >
                 <div className="flex items-center gap-4 w-full md:w-auto">
-                  <img src={item.chairimage} alt={item.title} className="w-25 h-25 object-cover bg-backgroundlite" />
+                  <img
+                    src={item.chairimage}
+                    alt={item.title}
+                    className="w-24 h-24 object-cover bg-backgroundlite rounded"
+                  />
                   <div>
                     <h2 className="font-semibold">{item.title}</h2>
                     <p className="text-gray-500 text-sm">Color: Brown</p>
@@ -69,12 +94,33 @@ function Cart() {
                 </div>
 
                 {/* Price & Quantity */}
-                <div className="flex items-center gap-4 mt-2 md:mt-0">
-                  <p className="font-semibold">{item.price}</p>
-                  <div className="flex items-center gap-2 border rounded px-2">
-                    <span>{item.quantity}</span>
+                <div className="flex items-center gap-4 mt-4 md:mt-0 flex-wrap justify-center">
+                  <p className="font-semibold">
+                    Rs. {Number(item.price).toLocaleString()}
+                  </p>
+
+                  {/* ✅ Quantity controls */}
+                  <div className="flex items-center gap-2 border rounded px-2 py-1">
+                    <button
+                      className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
+                      onClick={() => dispatch(decreaseQuantity({ id: item.id }))}
+                    >
+                      −
+                    </button>
+                    <span className="min-w-[30px] text-center">
+                      {item.quantity}
+                    </span>
+                    <button
+                      className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
+                      onClick={() => dispatch(increaseQuantity({ id: item.id }))}
+                    >
+                      +
+                    </button>
                   </div>
-                  <p className="font-semibold">{(parseFloat(item.price.replace('$','')) * item.quantity).toFixed(2)}</p>
+
+                  <p className="font-semibold">
+                    Rs. {(Number(item.price) * item.quantity).toLocaleString()}
+                  </p>
                   <button
                     className="px-2 py-1 text-white bg-red-500 rounded hover:bg-red-600"
                     onClick={() => dispatch(removeFromCart({ id: item.id }))}
@@ -102,19 +148,21 @@ function Cart() {
               <h3 className="font-semibold mb-4 text-lg">Cart Totals</h3>
               <div className="flex justify-between mb-2">
                 <span>Subtotals:</span>
-                <span>${totalPrice.toFixed(2)}</span>
+                <span>Rs. {totalPrice.toLocaleString()}</span>
               </div>
               <div className="flex justify-between mb-2">
                 <span>Totals:</span>
-                <span>${(totalPrice*1.49).toFixed(2)}</span>
+                <span>Rs. {(totalPrice + 140).toLocaleString()}</span>
               </div>
-              <p className="text-green-500 text-sm mb-4">Shipping & taxes calculated at checkout</p>
-              <Link to ={"/paymentprocessing"}>
-              <button className="w-full py-2 bg-green-500 text-white rounded hover:bg-green-600">
+              <p className="text-green-500 text-sm mb-4">
+                Shipping & taxes calculated at checkout
+              </p>
+              <button
+                onClick={handleCheckout}
+                className="w-full py-2 bg-green-500 text-white rounded hover:bg-green-600"
+              >
                 Proceed To Checkout
               </button>
-              </Link>
-              
             </div>
 
             <div className="p-4 border rounded">
@@ -129,7 +177,7 @@ function Cart() {
               />
               <input
                 type="text"
-                placeholder="City / Postal"
+                placeholder="City"
                 name="city"
                 value={shippingInfo.city}
                 onChange={handleShippingChange}
@@ -144,7 +192,7 @@ function Cart() {
                 className="w-full border px-2 py-1 mb-2 rounded"
               />
               <button
-               className="w-full py-2 bg-primary text-white rounded transform transition-transform duration-300 hover:scale-102"
+                className="w-full py-2 bg-primary text-white rounded transform transition-transform duration-300 hover:scale-105"
                 onClick={handleCalculateShipping}
               >
                 Calculate Shipping

@@ -75,13 +75,12 @@ function ProductDetails() {
   };
 
   return (
-    <div className="bg-white">
+    <div className="bg-white container ">
       {/* Header with Breadcrumbs */}
-      <div className="container bg-backgroundlite">
-        <h1 className="font-bold text-[40px] py-6 px-4">Product Details</h1>
+      <div className="bg-backgroundlite py-4">
+        <h1 className="text-3xl font-bold px-4 text-mainbackground">Products Details</h1>
         <AppBreadcrumbs />
       </div>
-
       {/* Main Product Section */}
       <div className="container grid gap-2 px-4 py-12 mt-10 md:grid-cols-2 md:px-15">
         {/* Left Side - Images */}
@@ -122,9 +121,9 @@ function ProductDetails() {
           {/* Price */}
           <div className="mt-4">
             <span className="text-2xl font-bold text-blue-900">
-              ${product.price}
+              Rs.{product.price}
             </span>
-            <span className="ml-3 text-gray-400 line-through">$500</span>
+            {/* <span className="ml-3 text-gray-400 line-through">$500</span> */}
           </div>
 
           {/* Short description */}

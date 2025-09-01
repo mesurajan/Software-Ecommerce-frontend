@@ -8,25 +8,25 @@ import { Link } from "react-router-dom";
 
 function TrendingProducts() {
   return (
-    // starting of this code
-<div className='container'>
-<div className="bg-gray-50  px-4  container">
-      {/* Trending Products */}
-      <h1 className="text-primary text-[42px] font-[700] text-center mt-10">Trending Product</h1>
-        <section className="flex justify-center mt-10">
-        <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 max-w-6xl w-full">
+    <div className='container'>
+      <div>
+        <header className='text-mainbackground text-[35px] font-semibold flex justify-center mt-10 mb-10'>
+          <h1>Trending Products</h1>
+        </header>
+      </div>
+
+      {/* section 01 chairs */}
+      <div className="grid md:grid-cols-4 grid-cols-1 gap-8 md:gap-6 px-4 md:px-20 mb-10">
             {TrendingProduct.map((el, i) => (
             <ProductCard key={i} product={el} />
             ))}
         </div>
-        </section>
 
 
+  {/*  Promo and Executive Products  */}
+      <div className="flex md:flex-row flex-col justify-center gap-6 md:gap-4 px-4 ">
 
-      {/*  Promo and Executive Products  */}
-      <div className="flex flex-col lg:flex-row justify-between gap-4 py-10">
-
-        <div className="bg-[#FFEFF4] p-6 rounded-lg w-full lg:w-1/3 flex flex-col justify-between items-start">
+        <div className="bg-[#EBECFD] p-6 rounded-lg w-full lg:w-1/3 flex flex-col justify-between items-start">
           <h2 className="text-[24px] font-bold text-[#03045E]">23% off in all products</h2>
           <Link to ="/product" className="text-pink-600 mt-2 font-semibold">Shop Now
           </Link>
@@ -41,7 +41,7 @@ function TrendingProducts() {
           <img src={showcase02} alt="furniture" className="mt-6" />
         </div>
 
-                {/*  Product List  */}
+     {/*  Product List  */}
         <div className="w-full md:w-[350px]  flex flex-col gap-4">
         {showcaseProducts.map((product) => (
             <div
@@ -55,16 +55,15 @@ function TrendingProducts() {
             />
             <div>
                 <p className="text-[#03045E] font-semibold">{product.title}</p>
-                <p className="text-black">{product.price}</p>
+                <p className="text-black">Rs.{product.price}</p>
             </div>
             </div>
         ))}
         </div>
-
-         
       </div>
     </div>
-     </div>
+
+
   );
 };
 

@@ -21,14 +21,14 @@ function AboutUs() {
     <div className='container'>
       {/* Starting OF page  */}
 
-      <div className='bg-backgroundlite py-2 md:py-4 mb-6 '>
-        <p className=' px-4 py-2 font-bold text-2xl'>About Us </p>
+        <div className="bg-backgroundlite py-4">
+        <h1 className="text-3xl font-bold px-4 text-mainbackground">About Us</h1>
         <AppBreadcrumbs />
       </div>
 
       {/* body section */}
 
-      <div className='flex flex-col md:flex-row gap-8 justify-center mb-10 px-4'>
+      <div className='flex flex-col md:flex-row gap-8 justify-center mt-10 mb-10 px-4'>
         <div className='flex md:w-[800px] md:h-[500px] rounded shadow-sm transform transition-transform duration-300 hover:scale-105 hover:shadow-md'>
           <img src={AboutImage} alt="About Us" 
           className=" w-full h-auto md:w-[800px] md:h-[450px] 

@@ -5,7 +5,8 @@ import TopCategories from "./Sliders/TopCategories";
 import LatestProduct from "./Sliders/LatestProduct";
 import DiscountItem from "./Sliders/DisItem";
 import LatestBlog from "./Sliders/LatestBlog";
-import { BannerData, BannerData2,latestProducts,TopCategory } from "../../assets/mockdata"; 
+import { BannerData, BannerData2,TopCategory,latestProducts  } from "../../assets/mockdata"; 
+
 import WhatshopOffers from "./utils/WhatshopOffers";
 import UniqueFeatures from "./utils/UniqueFeatures";
 import  TrendingProducts from "./utils/TrendingProducts";

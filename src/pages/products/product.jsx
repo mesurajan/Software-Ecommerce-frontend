@@ -34,11 +34,16 @@ function Product() {
       </div>
 
       {/* Search + Category Selector */}
-      <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-6 px-2 md:px-0 w-full">
+      <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-6 px-2 md:px-0 w-full mt-10">
         {/* Curated Text */}
-        <p className="text-xl md:text-3xl font-semibold px-2 md:px-4 md:text-left py-2 md:py-8">
+        <div className="flex flex-col">
+        <p className="text-xl md:text-3xl font-semibold px-2 md:px-4 md:text-left py-2 md:py-2">
           Our Collection of Stylish Furniture
         </p>
+        <p className="text-gray-600 text-sm  px-2 md:px-4 md:text-left">
+          Stylish furniture crafted for comfort, elegance, and everyday living.
+        </p>
+        </div>
 
         {/* Search + Category Wrapper */}
         <div className="flex flex-row w-full gap-2 md:flex-1 md:justify-end">
@@ -87,9 +92,7 @@ function Product() {
               if (items.length === 0) return null;
               return (
                 <div key={cat}>
-                  <h2 className="text-2xl font-bold mb-6 capitalize">
-                    {cat} In Our Collection
-                  </h2>
+                
                   <div className="grid grid-cols-1 sm:grid-cols-4 gap-6">
                     {items.map((product) => (
                       <ProductCard key={product.id} product={product} />

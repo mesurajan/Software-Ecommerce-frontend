@@ -94,7 +94,7 @@ const ProductCard = ({ product }) => {
       {/* Product Info */}
       <div className="mt-2 text-center">
         <h3 className="text-sm font-semibold text-gray-800">{product.title}</h3>
-        <p className="text-xs text-gray-600">${product.price}</p>
+        <p className="text-xs text-gray-600">Rs.{product.price}</p>
       </div>
 
       {/* Actions */}

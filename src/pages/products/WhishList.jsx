@@ -52,8 +52,8 @@ export default function WhishList() {
   return (
     <div className="bg-white container text-[#0A174E] mb-15">
       {/* Header */}
-      <div className="bg-backgroundlite py-4 px-4">
-        <h1 className="text-3xl font-bold">Your Wishlist</h1>
+       <div className="bg-backgroundlite py-4">
+        <h1 className="text-3xl font-bold px-4">Your WhishList</h1>
         <AppBreadcrumbs />
       </div>
 
