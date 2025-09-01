@@ -52,7 +52,7 @@ function ProductDetails() {
   };
 
   // ✅ Buy now handler
-  const handlePaymentProcessing = () => {
+  const handlebuynow = () => {
     const token = localStorage.getItem("token");
     if (!token) {
       alert("Please login to proceed with purchase!");
@@ -71,7 +71,7 @@ function ProductDetails() {
     );
 
     // Then redirect to cart/checkout page
-    navigate("/paymentprocessing");
+   navigate("/Buynow", { state: { product } });
   };
 
   return (
@@ -152,7 +152,7 @@ function ProductDetails() {
               Add to Cart
             </button>
             <button
-              onClick={handlePaymentProcessing}
+              onClick={handlebuynow}
               className="px-6 py-3 text-white bg-green-600 rounded shadow-md hover:bg-green-700"
             >
               Buy Now

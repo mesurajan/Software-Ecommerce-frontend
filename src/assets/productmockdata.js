@@ -192,3 +192,75 @@ export const Products = [
     description: "Designed with simplicity in mind, this minimalist wardrobe offers compact storage with elegance." 
   },
 ];
+
+
+// Trending Products (for big cards)
+export const TrendingProduct = [
+  {
+    id: 1,
+    title: "ErgoComfort Office Chair",
+    price: "$129.99",
+    chairimage: chair04,
+    category: "chairs",
+    description:
+      "This ergonomically designed office chair provides exceptional lumbar support, reducing fatigue during long hours of work.",
+  },
+  {
+    id: 2,
+    title: "Scandi Wooden Armchair",
+    price: "$179.00",
+    chairimage: chair05,
+    category: "chairs",
+    description:
+      "A Scandinavian-inspired wooden armchair with clean lines and natural aesthetics, perfect for modern interiors.",
+  },
+  {
+    id: 3,
+    title: "Velvet Luxe Accent Chair",
+    price: "$210.50",
+    chairimage: chair06,
+    category: "chairs",
+    description:
+      "Add a touch of luxury to your space with this velvet accent chair, designed for both comfort and elegance.",
+  },
+  {
+    id: 4,
+    title: "Outdoor Patio Lounge Chair",
+    price: "$95.00",
+    chairimage: chair01,
+    category: "chairs",
+    description:
+      "Weather-resistant lounge chair perfect for patios and outdoor relaxation, combining durability with comfort.",
+  },
+];
+
+// Showcase Products (compact list on the right)
+export const showcaseProducts = [
+  {
+    id: 5,
+    title: "Executive Seat Chair",
+    price: "$32.00",
+    chairimage: chair01,
+    category: "chairs",
+    description:
+      "A compact executive chair designed for comfort and everyday use in office spaces.",
+  },
+  {
+    id: 6,
+    title: "Ergonomic Executive Chair",
+    price: "$32.00",
+    chairimage: chair04,
+    category: "chairs",
+    description:
+      "An ergonomic executive chair with lumbar support, built for long working hours.",
+  },
+  {
+    id: 7,
+    title: "Classic Office Chair",
+    price: "$32.00",
+    chairimage: chair08,
+    category: "chairs",
+    description:
+      "A classic office chair with a professional look, combining functionality and comfort.",
+  },
+];
