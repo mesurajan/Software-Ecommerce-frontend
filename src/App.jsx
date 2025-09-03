@@ -17,6 +17,11 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import ProductManagement from "./pages/admin/ProductManagement";
 import PaymentProcessing from "./components/paymentprocessing";
 import BuyNow from "./components/BuyNow";
+import AdminUsers from "./pages/admin/AdminUsers";
+import AdminLayout from "./layout/AdminLayout";
+import AdminCustomers from "./pages/admin/AdminCustomers";
+import AdminSellers from "./pages/admin/AdminSellers";
+
 function App() {
   return (
     <Routes>
@@ -33,24 +38,28 @@ function App() {
         <Route path="cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
         <Route path="wishlist" element={<ProtectedRoute><WhishList /></ProtectedRoute>} />
         <Route path="paymentprocessing" element={<ProtectedRoute><PaymentProcessing /></ProtectedRoute>} />
-        <Route path="/Buynow"  element={  <ProtectedRoute>  <BuyNow /></ProtectedRoute>
-  } 
-/>
+        <Route path="/Buynow"  element={  <ProtectedRoute>  <BuyNow /></ProtectedRoute>} />
       </Route>
 
       {/* routes for login and signup */}
       <Route path="login" element={<LoginForm />} />
       <Route path="signup" element={<SignupForm />} />
 
-      {/* Admin routes (protected) */}
+
+       {/* Admin routes (protected with layout) */}
       <Route 
-        path="/admin"  
-        element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} 
-      />
-      <Route 
-        path="/admin/products"  
-        element={<ProtectedRoute><ProductManagement /></ProtectedRoute>} 
-      />
+        path="/admin"  element={ <ProtectedRoute> <AdminLayout /></ProtectedRoute>}>
+        <Route index element={<AdminDashboard />} />
+        <Route path="dashboard" element={<AdminDashboard />} />
+        <Route path="/admin/users" element={<ProtectedRoute><AdminUsers /></ProtectedRoute>} />
+        <Route path="/admin/customers" element={<ProtectedRoute><AdminCustomers /></ProtectedRoute>} />
+        <Route path="/admin/sellers" element={<ProtectedRoute><AdminSellers /></ProtectedRoute>} />
+
+       
+      </Route>
+
+
+     
     </Routes>
   );
 }

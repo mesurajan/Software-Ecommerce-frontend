@@ -41,7 +41,7 @@ function LoginForm() {
         if (data.user.role === "admin") {
           navigate("/admin");
         } else if (data.user.role === "seller") {
-          navigate("/seller");
+          navigate("/admin");
         } else {
           navigate("/");
         }
