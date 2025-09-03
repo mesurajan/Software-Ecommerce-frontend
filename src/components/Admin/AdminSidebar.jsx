@@ -24,9 +24,28 @@ const menuItems = [
   {
   title: "Products",
   items: [
-    { title: "Manage Products", url: "/admin/products", icon: ClipboardList }
+    { title: "Manage Products", url: "/admin/products", icon: ClipboardList },
+    { title: "Categories & Collections", url: "/admin/products", icon: ClipboardList },
+   { title: "Product Approval", url: "/admin/products", icon: ClipboardList },
   ]
 },
+  {
+  title: "Orders & Sales",
+  items: [
+    { title: "All Orders", url: "/admin/products", icon: ClipboardList },
+    { title: "Returns / Refund Requests", url: "/admin/products", icon: ClipboardList },
+   { title: "Delivery Management", url: "/admin/products", icon: ClipboardList },
+  ]
+},
+  {
+    title: "User Management",
+    items: [
+      { title: "Customers List", url: "/admin/users", icon: Users },
+      { title: "Sellers List (", url: "/admin/users/verification", icon: Users },
+      { title: "User Analytics", url: "/admin/users/analytics", icon: BarChart3 }
+    ]
+  },
+
   {
     title: "Complaints & Support",
     items: [
@@ -36,14 +55,7 @@ const menuItems = [
       { title: "Complaint Analytics", url: "/admin/complaints/analytics", icon: BarChart3 }
     ]
   },
-  {
-    title: "User Management",
-    items: [
-      { title: "All Users", url: "/admin/users", icon: Users },
-      { title: "User Verification", url: "/admin/users/verification", icon: Users },
-      { title: "User Analytics", url: "/admin/users/analytics", icon: BarChart3 }
-    ]
-  },
+
   {
     title: "Billing & Payments",
     items: [
