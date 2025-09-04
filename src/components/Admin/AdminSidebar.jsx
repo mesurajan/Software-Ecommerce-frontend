@@ -128,7 +128,7 @@ export function AdminSidebar() {
       >
         {/* Header */}
         <SidebarHeader className="border-b border-white/20 p-4">
-          <h2 className="text-lg font-bold text-white">Hekto Furniture</h2>
+          <h2 className="text-2xl font-bold text-white">Hekto Furniture</h2>
           <p className="text-xs text-gray-400">
             {role === "admin" ? "Admin Portal" : "Seller Portal"}
           </p>
