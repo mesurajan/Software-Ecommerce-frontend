@@ -7,7 +7,7 @@ import EmptyCartImg from "../../assets/images/empty-cart.png";
 import { Link, useNavigate } from "react-router-dom";
 import AppBreadcrumbs from "../../components/Breadcrumbs";
 import { Trash2, Eye, ShoppingCart } from "lucide-react";
-
+import DreamChair from "../../assets/images/dreams.png"
 export default function WhishList() {
   const { items } = useSelector((state) => state.wishlist);
   const dispatch = useDispatch();
@@ -59,8 +59,15 @@ export default function WhishList() {
 
       <div className="flex flex-col gap-6 px-4 py-6">
         {/* Clear Wishlist Button */}
-        <div className="flex md:items-center md:justify-between">
+        <div className="flex flex-col md:flex-row  md:items-center md:justify-between ">
+          <div>
           <h1 className="text-2xl md:text-3xl font-bold">A little list of big dreams. 🌙</h1>
+          <p className="text-gray-500 mt-1">
+            Don’t wait too long… the best pieces won’t stay forever! ⏳
+          </p>
+
+          </div>
+        
           <button
           onClick={() => {
                   const confirmDelete = window.confirm(
@@ -71,15 +78,16 @@ export default function WhishList() {
                   }
                 }}
        
-            className="px-6 py-2 text-white bg-blue-900 rounded hover:bg-blue-800"
+            className="viewdetails-btn hidden md:block"
             
           >
             Clear Wishlist
           </button>
         </div>
 
+      
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 px-4 py-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 px-4 py-6">
           {items.map((item) => (
             <div
               key={item.id}
@@ -87,13 +95,13 @@ export default function WhishList() {
                transition-all duration-300 ease-in-out transform hover:shadow-xl hover:-translate-y-2"
             >
               {/* Top-right icons */}
-              <div className="absolute top-2 right-2 flex gap-2 z-10">
+              <div className="absolute top-2 right-2 flex gap-2 z-12">
                 <button
                   onClick={() => handleAddToCart(item)}
-                  className="p-2 bg-white rounded-full shadow hover:bg-blue-100 transition"
+                  className="p-3 bg-white rounded-full shadow hover:bg-blue-100 transition"
                   title="Add to Cart"
                 >
-                  <ShoppingCart size={18} />
+                  <ShoppingCart size={16} />
                 </button>
               
                <button
@@ -107,7 +115,7 @@ export default function WhishList() {
                 }}
                 className="flex items-center justify-center w-10 h-10 rounded-full bg-red-100 text-red-600 hover:bg-red-200"
               >
-                <Trash2 size={18} />
+                <Trash2 size={16} />
               </button>
 
               </div>
@@ -117,7 +125,7 @@ export default function WhishList() {
                 <img
                   src={item.chairimage}
                   alt={item.title}
-                  className="max-w-full max-h-60 object-contain transition-transform duration-300 ease-in-out hover:scale-110"
+                  className="max-w-full max-h-50 object-contain transition-transform duration-300 ease-in-out hover:scale-110"
                 />
               </div>
 
@@ -133,7 +141,7 @@ export default function WhishList() {
               {/* Bottom Buttons */}
               <div className="flex gap-2 justify-center p-4">
                 <Link to={`/productDetails/${item.id}`}>
-                  <button className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition">
+                  <button className="viewdetails-btn">
                     View Details
                   </button>
                 </Link>
@@ -147,20 +155,44 @@ export default function WhishList() {
                     }
                     navigate("/Buynow", { state: { product: item } });
                   }}
-                  className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 transition"
+                  className="buynow-btn"
                 >
                   Buy Now
                 </button>
               </div>
             </div>
           ))}
+        </div>    
+
+
+     <div className="mt-12  flex flex-col md:flex-row items-center justify-center text-center px-6 py-10 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg shadow-inner gap-6 md:gap-16">
+        <div className="flex items-center justify-center">
+        <img
+          src={DreamChair}
+          alt="Dream Chair"
+          className="w-45 h-45  md:w-[380px] md:h-[380px]"
+        />
         </div>
 
+        <div>
+          <h2 className="text-xl md:text-3xl font-bold text-[#0A174E]">
+            Turning dreams into reality ✨
+          </h2>
+          <p className="text-gray-600 mt-2 max-w-lg mb-4 md:mb-8 text-justify">
+          Your wishlist is more than just a list — it’s a collection of your style, 
+        your comfort, and your dreams for the perfect space. Every piece you’ve saved 
+        tells a story of how you want your home to feel. Don’t let your favorites 
+        slip away — bring them home today and start turning your dream space into a reality. ✨
+          </p>
+
+        <button  className="viewdetails-btn py-2">
+          <Link to="/product">Continue Shopping</Link>
+        </button>
+         </div>
+      </div>
 
      
        
-
-         
       </div>
     </div>
   );

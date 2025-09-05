@@ -29,9 +29,9 @@ function AboutUs() {
       {/* body section */}
 
       <div className='flex flex-col md:flex-row gap-8 justify-center mt-10 mb-10 px-4'>
-        <div className='flex md:w-[800px] md:h-[500px] rounded shadow-sm transform transition-transform duration-300 hover:scale-105 hover:shadow-md'>
+        <div className='flex md:w-[900px] md:h-[550px] rounded shadow-sm transform transition-transform duration-300 hover:scale-102 hover:shadow-md'>
           <img src={AboutImage} alt="About Us" 
-          className=" w-full h-auto md:w-[800px] md:h-[450px] 
+          className=" w-full h-auto md:w-[900px] md:h-[550px] 
           rounded-2xl object-cover shadow-lg " />
         </div>
 
@@ -63,7 +63,7 @@ function AboutUs() {
       <div className='flex flex-col md:flex-row gap-8 justify-center mb-10 px-4'>
               
               {/* Left side (Blog content) */}
-              <div className='w-full md:w-[800px] text-[#0A174E] rounded shadow-sm transform transition-transform duration-300 hover:scale-105 hover:shadow-md'>
+              <div className='w-full md:w-[900px] text-[#0A174E] rounded shadow-sm transform transition-transform duration-300 hover:scale-102 hover:shadow-md'>
                 <img 
                   src={workspace02} 
                   alt='workspace02' 

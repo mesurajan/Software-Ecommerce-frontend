@@ -2,11 +2,11 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaRegHeart } from "react-icons/fa";
-import { BsCart } from "react-icons/bs";
+
 import { useDispatch } from "react-redux";
 import { addToCart } from "../Apps/Reducers/cartSlice";
 import { addToWishlist } from "../Apps/Reducers/wishlistSlice";
-
+import {  ShoppingCart } from "lucide-react";
 const ProductCard = ({ product }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -75,10 +75,10 @@ const ProductCard = ({ product }) => {
         </button>
         <button
           onClick={handleAddToCart}
-          className="p-2 bg-white rounded-full shadow hover:bg-blue-100 transition"
+          className="p-3 bg-white rounded-full shadow hover:bg-blue-100 transition"
           title="Add to Cart"
         >
-          <BsCart className="text-blue-600" />
+         <ShoppingCart size={16} />
         </button>
       </div>
 
@@ -100,13 +100,13 @@ const ProductCard = ({ product }) => {
       {/* Actions */}
       <div className="mt-6 flex gap-2">
         <Link to={`/productDetails/${product.id}`}>
-          <button className="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition">
+          <button className="viewdetails-btn">
             View Details
           </button>
         </Link>
         <button
           onClick={handleBuyNow}
-          className="px-4 py-2 rounded-lg bg-green-600 text-white text-sm font-medium hover:bg-green-700 transition"
+          className="buynow-btn"
         >
           Buy Now
         </button>

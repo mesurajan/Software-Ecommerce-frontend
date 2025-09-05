@@ -96,6 +96,9 @@ function Home() {
       <section>
           <LatestBlog/>
       </section>
+      
+
+
 
    </div>
   );

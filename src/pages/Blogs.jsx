@@ -22,7 +22,8 @@ function Blogs() {
         <AppBreadcrumbs />
       </div>
 
-     <div className='px-2 py-2'>
+     <div className='flex flex-col md:flex-row md:gap-[300px] lg:gap-[300px] px-2 md:px-3 py-4 '>
+      <div className='w-full md:w-3/4 text-[#0A174E]'>
       <header>
         <h1 className='px-2 mt-2 text-xl md:text-3xl font-bold text-[#0A174E]'>
           Where Design Meets Comfort 🛋️
@@ -34,17 +35,33 @@ function Blogs() {
           Let your space tell a story that’s uniquely yours, combining beauty, function, and comfort.
         </p>
       </header>
+       </div>
+
+       {/* Search */}
+          <div className=' w-full md:w-1/4 mt-4 md:mt-0'>
+          
+              <div className="items-center justify-end flex-1 hidden max-w-2xs gap-0 md:flex">
+                  <input
+                      type="text"
+                      className="w-full h-8 px-2 border-2 focus:outline-none"
+                      placeholder=" "
+                        />
+                  <div className="flex items-center justify-center h-8 px-3 cursor-pointer bg-primary">
+                     <CiSearch color="white" size={20} />
+                  </div>
+              </div>
+          </div>
     </div>
 
 
       {/* Body starts */}
       <div className='flex flex-col md:flex-row gap-8 px-4 py-8 mt-6 md:mt-10'>
         {/* Left side (Blog content) */}
-        <div className='w-full md:w-3/4 text-[#0A174E]'>
+        <div className='w-full md:w-3/4 text-[#0A174E] '>
           <img 
             src={workspace01} 
             alt='workspace01' 
-            className='w-full h-90 md:h-[550px] object-cover rounded-lg mb-4'
+            className='w-full h-90 md:h-[550px] object-cover rounded-lg mb-4 transform transition-transform duration-300 hover:scale-102 hover:shadow-md'
           />
 
           <div className='flex flex-row justify-start gap-8'>
@@ -74,24 +91,11 @@ function Blogs() {
         </div>
 
         {/* Right side (Sidebar) */}
-        <div className='w-full md:w-1/4 flex flex-col md:gap-8 hidden md:flex md:py-4'>
-          {/* Search */}
-          <div className='border p-4 rounded-lg shadow-sm'>
-            <h3 className='font-semibold mb-3 text-2xl'>Search</h3>
-              <div className="items-center justify-end flex-1 hidden max-w-xs gap-0 md:flex">
-                  <input
-                      type="text"
-                      className="w-full h-8 px-2 border-2 focus:outline-none"
-                      placeholder=" "
-                        />
-                  <div className="flex items-center justify-center h-8 px-3 cursor-pointer bg-primary">
-                     <CiSearch color="white" size={20} />
-                  </div>
-              </div>
-          </div>
+        <div className='w-full md:w-1/4 flex flex-col md:gap-8 hidden md:flex md:py-4 '>
+         
 
           {/* Categories */}
-          <div className='border p-4 rounded-lg shadow-sm'>
+          <div className='border p-4 rounded-lg shadow-sm transform transition-transform duration-300 hover:scale-102 hover:shadow-md'>
             <h3 className='font-semibold mb-3'>Categories</h3>
             <ul className='space-y-2 text-gray-700 cursor-pointer'>
               <li>Living Room Inspirations(14)</li>
@@ -104,7 +108,7 @@ function Blogs() {
           </div>
 
           {/* Recent posts */}
-          <div className='border p-4 rounded-lg shadow-sm'>
+          <div className='border p-4 rounded-lg shadow-sm transform transition-transform duration-300 hover:scale-102 hover:shadow-md'>
             <h3 className='font-semibold mb-3'>Recent Posts</h3>
             <ul className='space-y-3 text-sm text-gray-600'>
               <li className="flex items-start space-x-3">
@@ -178,7 +182,7 @@ function Blogs() {
           <img 
             src={workspace02} 
             alt='workspace02' 
-            className='w-full h-90 md:h-[550px] object-cover rounded-lg mb-4'
+            className='w-full h-90 md:h-[550px] object-cover rounded-lg mb-4 transform transition-transform duration-300 hover:scale-102  hover:shadow-md'
           />
 
           <div className='flex flex-row justify-start gap-8'>
@@ -209,7 +213,7 @@ function Blogs() {
         {/* Right side (Sidebar) */}
         <div className='w-full md:w-1/4 flex flex-col md:gap-8 md:py-4 gap-4'>
           {/* Sale Products */}
-          <div className='border p-4 rounded-lg shadow-sm'>
+          <div className='border p-4 rounded-lg shadow-sm transform transition-transform duration-300 hover:scale-105 hover:shadow-md'>
             <h3 className='font-semibold mb-3 text-2xl'>Sale Products</h3>
               <ul className='space-y-3 text-sm text-gray-600'>
               <li className="flex items-start space-x-3">
@@ -276,7 +280,7 @@ function Blogs() {
 
 
             {/* Other Products */}
-            <div className="border p-4 rounded-lg shadow-sm">
+            <div className="border p-4 rounded-lg shadow-sm transform transition-transform duration-300 hover:scale-105 hover:shadow-md">
               <h3 className="font-semibold mb-3 text-2xl">Other Products</h3>
               
               <div className="grid grid-cols-2 gap-2">
@@ -334,7 +338,7 @@ function Blogs() {
           <img 
             src={workspace03} 
             alt='workspace03' 
-            className='w-full h-90 md:h-[550px] object-cover rounded-lg mb-4'
+            className='w-full h-90 md:h-[550px] object-cover rounded-lg mb-4 transform transition-transform duration-300 hover:scale-102 hover:shadow-md'
           />
 
           <div className='flex flex-row justify-start gap-8'>
@@ -366,7 +370,7 @@ function Blogs() {
         {/* Right side (Sidebar) */}
         <div className='w-full md:w-1/4 flex flex-col md:gap-8 md:py-4 gap-4'>
           {/* Discounted Products */}
-            <div className='border p-4 rounded-lg shadow-sm'>
+            <div className='border p-4 rounded-lg shadow-sm transform transition-transform duration-300 hover:scale-105 hover:shadow-md'>
               <h3 className='font-semibold mb-3 text-2xl'>Discounted Products</h3>
                 <ul className='space-y-3 text-sm text-gray-600'>
                 <li className="flex items-start space-x-3">
@@ -433,7 +437,7 @@ function Blogs() {
 
 
         {/* Tags */}
-        <div className='border p-4 rounded-lg shadow-sm'>
+        <div className='border p-4 rounded-lg shadow-sm transform transition-transform duration-300 hover:scale-105 hover:shadow-md'>
           <h3 className='font-semibold mb-3 text-2xl'>Tags We Adore ✨</h3>
           <ul className='space-y-2 text-gray-700'>
             <li>Cozy Corners (14)</li>

@@ -39,6 +39,20 @@
   {
       @apply container mx-auto max-w-[1920px];
   }
+  .viewdetails-btn{
+    @apply bg-[#002366] text-white py-[6px] px-[20px] md:py-[10px] md:px-[20px] rounded-[6px] transition-all duration-300 ease-in-out cursor-pointer;
+
+  }
+   .viewdetails-btn:hover{
+    @apply bg-[003332] shadow-lg scale-105 brightness-110;
+  }
+
+  .buynow-btn{
+    @apply bg-[#034C36] text-white py-[6px] px-[20px] md:py-[10px] md:px-[20px] rounded-[6px] transition-all duration-300 ease-in-out cursor-pointer;
+  }
+  .buynow-btn:hover{
+    @apply bg-[003332] shadow-lg scale-105 brightness-110;
+  }
 
 }
 

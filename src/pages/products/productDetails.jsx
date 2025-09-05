@@ -152,7 +152,7 @@ function ProductDetails() {
             </button>
             <button
               onClick={handlebuynow}
-              className="px-6 py-3 text-white bg-green-600 rounded shadow-md hover:bg-green-700"
+              className="buynow-btn"
             >
               Buy Now
             </button>
