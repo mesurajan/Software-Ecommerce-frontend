@@ -48,6 +48,12 @@ export function AdminSidebar() {
               { title: "Sellers List", url: "/admin/sellers", icon: Users },
               { title: "User Analytics", url: "/admin/users/analytics", icon: BarChart3 }
             ]
+          },
+          {
+            title: "Banners Management" ,
+            items:[
+              {title: "Banner One" , url: "/admin/banners", icon: LayoutDashboard}
+            ]
           }
         ]
       : []),
