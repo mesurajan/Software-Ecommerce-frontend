@@ -90,7 +90,7 @@ function SimpleSlider() {
                 <p className="text-[12px] sm:text-sm py-[15px] leading-relaxed">
                   {el.description}
                 </p>
-                <Link to={`/product/${el.productLink}`} className="primary-btn">
+                <Link to={`/productDetails/${el.productLink}`} className="primary-btn">
                   Shop Now
                 </Link>
               </div>
