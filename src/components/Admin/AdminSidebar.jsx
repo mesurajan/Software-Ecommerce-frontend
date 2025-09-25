@@ -3,7 +3,7 @@ import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import {
   Menu, X, LayoutDashboard, Users, MessageSquare, BarChart3,
   PhoneCall, ClipboardList, FileText, CreditCard, Database,
-  Shield, Bell, LogOut,Images
+  Shield, Bell, LogOut,Images, PackageSearch ,UserCog ,UserCheck
 } from "lucide-react";
 import {
   SidebarContent, SidebarGroup, SidebarGroupContent,
@@ -44,9 +44,9 @@ export function AdminSidebar() {
             title: "User Management",
             items: [
               { title: "All User List", url: "/admin/users", icon: Users },
-              { title: "Customers List", url: "/admin/customers", icon: Users },
-              { title: "Sellers List", url: "/admin/sellers", icon: Users },
-              { title: "User Analytics", url: "/admin/users/analytics", icon: BarChart3 }
+              { title: "Customers List", url: "/admin/customers", icon: UserCheck },
+              { title: "Sellers List", url: "/admin/sellers", icon: UserCog  },
+            
             ]
           },
           {
@@ -54,7 +54,7 @@ export function AdminSidebar() {
             items:[
               {title: "Banner One" , url: "/admin/banners", icon: LayoutDashboard},
               { title: "Sliders", url: "/admin/slider", icon: Images },
-              { title: "Latest Products", url: "/admin/latestproduct", icon: Images },
+              { title: "Latest Products", url: "/admin/latestproduct", icon:  PackageSearch  },
 
             ]
           }

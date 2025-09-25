@@ -13,6 +13,7 @@ const AdminSlider2 = () => {
     { title: "", price: "", image: null, productLink: "" },
     { title: "", price: "", image: null, productLink: "" },
   ]);
+  const [editingId, setEditingId] = useState(null); // ✅ track which slider is being edited
   const token = localStorage.getItem("token");
 
   // Fetch sliders
@@ -34,6 +35,17 @@ const AdminSlider2 = () => {
     setChairs(updated);
   };
 
+  const resetForm = () => {
+    setTitle("");
+    setChairs([
+      { title: "", price: "", image: null, productLink: "" },
+      { title: "", price: "", image: null, productLink: "" },
+      { title: "", price: "", image: null, productLink: "" },
+      { title: "", price: "", image: null, productLink: "" },
+    ]);
+    setEditingId(null);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!token) return alert("You must be logged in!");
@@ -45,7 +57,7 @@ const AdminSlider2 = () => {
       const chairsData = chairs.map((c) => ({
         title: c.title,
         price: c.price,
-        chairimage: c.image ? c.image.name : "",
+        chairimage: c.image ? c.image.name : c.chairimage || "",
         productLink: c.productLink,
       }));
       formData.append("chairs", JSON.stringify(chairsData));
@@ -54,25 +66,31 @@ const AdminSlider2 = () => {
         if (c.image) formData.append("images", c.image);
       });
 
-      await axios.post(`${BACKEND_URL}/api/slider`, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      if (editingId) {
+        // ✅ Update existing slider
+        await axios.put(`${BACKEND_URL}/api/slider/${editingId}`, formData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        alert("✅ Slider updated successfully!");
+      } else {
+        // ✅ Create new slider
+        await axios.post(`${BACKEND_URL}/api/slider`, formData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        alert("✅ Slider created successfully!");
+      }
 
-      alert("✅ Slider created successfully!");
-      setTitle("");
-      setChairs([
-        { title: "", price: "", image: null, productLink: "" },
-        { title: "", price: "", image: null, productLink: "" },
-        { title: "", price: "", image: null, productLink: "" },
-        { title: "", price: "", image: null, productLink: "" },
-      ]);
+      resetForm();
       fetchSliders();
     } catch (err) {
-      console.error("Error creating slider:", err);
-      alert("❌ Failed to create slider.");
+      console.error("Error saving slider:", err);
+      alert("❌ Failed to save slider.");
     }
   };
 
@@ -91,6 +109,22 @@ const AdminSlider2 = () => {
     }
   };
 
+  const handleEdit = (slider) => {
+    setEditingId(slider._id);
+    setTitle(slider.title);
+    // preload chairs without wiping old images
+    setChairs(
+      slider.chairs.map((c) => ({
+        title: c.title,
+        price: c.price,
+        chairimage: c.chairimage, // keep old path
+        image: null, // new file can overwrite
+        productLink: c.productLink,
+      }))
+    );
+    window.scrollTo({ top: 0, behavior: "smooth" }); // scroll up to form
+  };
+
   const getImageUrl = (path) => {
     if (!path) return `${BACKEND_URL}/uploads/Default/lightimage.png`;
     return `${BACKEND_URL}/${path.replace(/\\/g, "/")}`;
@@ -100,9 +134,11 @@ const AdminSlider2 = () => {
     <div className="p-6">
       <h1 className="text-xl font-bold mb-4">Manage Sliders</h1>
 
-      {/* Create Form */}
+      {/* Create / Edit Form */}
       <form onSubmit={handleSubmit} className="bg-white shadow rounded p-4 mb-6">
-        <h2 className="text-lg font-semibold mb-2">Create New Slider</h2>
+        <h2 className="text-lg font-semibold mb-2">
+          {editingId ? "Edit Slider" : "Create New Slider"}
+        </h2>
         <div className="mb-4">
           <label className="block font-medium mb-1">Slider Title</label>
           <input
@@ -140,7 +176,6 @@ const AdminSlider2 = () => {
               }
               required
             />
-           
             <input
               type="text"
               placeholder="Product ID or Name"
@@ -151,30 +186,68 @@ const AdminSlider2 = () => {
               }
             />
 
-             <input
+            {/* Show existing image preview if editing */}
+            {chair.chairimage && !chair.image && (
+              <img
+                src={getImageUrl(chair.chairimage)}
+                alt="chair"
+                className="w-16 h-16 object-cover"
+              />
+            )}
+
+            <input
               type="file"
               accept="image/*"
               onChange={(e) =>
                 handleChairChange(index, "image", e.target.files[0])
               }
-              required
+              // required only when creating
+              required={!editingId}
             />
           </div>
         ))}
 
-        <button
-          type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
-          Create Slider
-        </button>
+        <div className="flex gap-3">
+          <button
+            type="submit"
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          >
+            {editingId ? "Save Changes" : "Create Slider"}
+          </button>
+          {editingId && (
+            <button
+              type="button"
+              onClick={resetForm}
+              className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+            >
+              Cancel
+            </button>
+          )}
+        </div>
       </form>
 
       {/* Existing Sliders */}
       <h2 className="text-lg font-semibold mb-2">Existing Sliders</h2>
       {sliders.map((slider) => (
         <div key={slider._id} className="border p-4 rounded mb-3 bg-gray-50">
-          <h3 className="font-bold mb-2">{slider.title}</h3>
+          <div className="flex justify-between items-center mb-2">
+            <h3 className="font-bold">{slider.title}</h3>
+            <div className="flex gap-2">
+              <button
+                onClick={() => handleEdit(slider)}
+                className="px-3 py-1 bg-green-600 text-white rounded"
+              >
+                Edit
+              </button>
+              <button
+                onClick={() => handleDelete(slider._id)}
+                className="px-3 py-1 bg-red-600 text-white rounded"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {slider.chairs?.map((chair, i) => (
               <div key={i} className="border rounded p-2 text-center">
@@ -193,12 +266,6 @@ const AdminSlider2 = () => {
               </div>
             ))}
           </div>
-          <button
-            onClick={() => handleDelete(slider._id)}
-            className="mt-3 text-red-600 hover:underline"
-          >
-            Delete Slider
-          </button>
         </div>
       ))}
     </div>
