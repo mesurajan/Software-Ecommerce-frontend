@@ -50,10 +50,12 @@ export function AdminSidebar() {
             ]
           },
           {
-            title: "Banners Management" ,
+            title: "Home Page Management" ,
             items:[
               {title: "Banner One" , url: "/admin/banners", icon: LayoutDashboard},
               { title: "Sliders", url: "/admin/slider", icon: Images },
+              { title: "Latest Products", url: "/admin/latestproduct", icon: Images },
+
             ]
           }
         ]
