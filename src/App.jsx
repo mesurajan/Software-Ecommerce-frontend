@@ -24,6 +24,8 @@ import AdminSellers from "./pages/admin/AdminSellers";
 import AdminBanners from "./pages/admin/AdminBanner1";
 import AdminSlider from "./pages/admin/AdminSlider2";
 import AdminLatestProduct from "./pages/admin/AdminLatestProduct";
+import AdminDiscountItem from "./pages/admin/AdminDiscountItem";
+
 // ScrollToTop Component
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -71,7 +73,7 @@ function App() {
           <Route path="/admin/banners" element={<AdminBanners />} />
           <Route path="/admin/slider" element={<AdminSlider />} />
           <Route path="/admin/latestproduct" element={<AdminLatestProduct />} />
- 
+           <Route path="/admin/discountitem" element={<AdminDiscountItem />} />
 
         </Route>
       </Routes>

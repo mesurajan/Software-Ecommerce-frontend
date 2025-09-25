@@ -55,6 +55,7 @@ export function AdminSidebar() {
               {title: "Banner One" , url: "/admin/banners", icon: LayoutDashboard},
               { title: "Sliders", url: "/admin/slider", icon: Images },
               { title: "Latest Products", url: "/admin/latestproduct", icon:  PackageSearch  },
+              { title: "Discount Item", url: "/admin/discountitem", icon:  PackageSearch  },
 
             ]
           }
