@@ -1,6 +1,5 @@
 // src/components/Slider/LatestProductSlider.jsx
 import React, { useState, useEffect } from "react";
-import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import ProductCard from "../../../components/ProductCard";
@@ -26,31 +25,19 @@ function LatestProductSlider() {
     fetchLatest();
   }, []);
 
-  const getImageUrl = (filename) => {
-    if (!filename) return "/placeholder.png"; // fallback
-    return `${BACKEND_URL}/uploads/latestproducts/${filename}`;
+  const getImageUrl = (path) => {
+    if (!path) return "/placeholder.png";
+    if (path.startsWith("uploads/")) {
+      return `${BACKEND_URL}/${path.replace(/\\/g, "/")}`;
+    }
+    return `${BACKEND_URL}/uploads/latestproducts/${path.replace(/\\/g, "/")}`;
   };
 
-  // ✅ Group all entries by category (fixes bug #1 and #2)
+  // ✅ Group by category but keep multiple rows separate
   const grouped = navItems.reduce((acc, cat) => {
-    acc[cat] = latestProducts
-      .filter((lp) => lp.category === cat)
-      .flatMap((lp) => lp.products);
+    acc[cat] = latestProducts.filter((lp) => lp.category === cat);
     return acc;
   }, {});
-
-  const settings = {
-    dots: false,
-    arrows: true,
-    infinite: false,
-    speed: 600,
-    slidesToShow: 3,
-    slidesToScroll: 1,
-    responsive: [
-      { breakpoint: 1024, settings: { slidesToShow: 2 } },
-      { breakpoint: 640, settings: { slidesToShow: 1 } },
-    ],
-  };
 
   return (
     <div className="px-4 mx-auto slider-container max-w-7xl md:px-0">
@@ -76,19 +63,26 @@ function LatestProductSlider() {
         ))}
       </ul>
 
-      {/* Slider */}
+      {/* Products grid by rows */}
       {grouped[activeCategory]?.length > 0 ? (
-        <Slider {...settings}>
-          {grouped[activeCategory].map((p, i) => {
-            const formatted = {
-              id: p._id || i,
-              title: p.title,
-              price: p.price,
-              image: getImageUrl(p.productImage),
-            };
-            return <ProductCard key={i} product={formatted} />;
-          })}
-        </Slider>
+        <div className="flex flex-col gap-6">
+          {grouped[activeCategory].map((entry, idx) => (
+            <div
+              key={entry._id || idx}
+              className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
+            >
+              {entry.products.map((p, i) => {
+                const formatted = {
+                  id: p._id || i,
+                  title: p.title,
+                  price: p.price,
+                  image: getImageUrl(p.productImage),
+                };
+                return <ProductCard key={i} product={formatted} />;
+              })}
+            </div>
+          ))}
+        </div>
       ) : (
         <p className="text-center text-gray-500">No products found</p>
       )}
