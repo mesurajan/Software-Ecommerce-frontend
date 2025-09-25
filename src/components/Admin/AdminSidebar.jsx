@@ -3,7 +3,7 @@ import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import {
   Menu, X, LayoutDashboard, Users, MessageSquare, BarChart3,
   PhoneCall, ClipboardList, FileText, CreditCard, Database,
-  Shield, Bell, LogOut
+  Shield, Bell, LogOut,Images
 } from "lucide-react";
 import {
   SidebarContent, SidebarGroup, SidebarGroupContent,
@@ -52,7 +52,8 @@ export function AdminSidebar() {
           {
             title: "Banners Management" ,
             items:[
-              {title: "Banner One" , url: "/admin/banners", icon: LayoutDashboard}
+              {title: "Banner One" , url: "/admin/banners", icon: LayoutDashboard},
+              { title: "Sliders", url: "/admin/slider", icon: Images },
             ]
           }
         ]

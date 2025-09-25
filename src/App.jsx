@@ -22,6 +22,7 @@ import AdminLayout from "./layout/AdminLayout";
 import AdminCustomers from "./pages/admin/AdminCustomers";
 import AdminSellers from "./pages/admin/AdminSellers";
 import AdminBanners from "./pages/admin/AdminBanner1";
+import AdminSlider from "./pages/admin/AdminSlider2";
 
 // ScrollToTop Component
 const ScrollToTop = () => {
@@ -68,6 +69,8 @@ function App() {
           <Route path="customers" element={<ProtectedRoute><AdminCustomers /></ProtectedRoute>} />
           <Route path="sellers" element={<ProtectedRoute><AdminSellers /></ProtectedRoute>} />
           <Route path="/admin/banners" element={<AdminBanners />} />
+          <Route path="/admin/slider" element={<AdminSlider />} /> 
+
         </Route>
       </Routes>
     </>
