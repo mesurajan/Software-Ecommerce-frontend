@@ -1,31 +1,69 @@
-import React from "react";
+// src/pages/ProductDetails.jsx
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import AppBreadcrumbs from "../../components/Breadcrumbs";
-import { latestProducts } from "../../assets/mockdata";
 import { addToCart } from "../../Apps/Reducers/cartSlice";
-import { Products } from "../../assets/productmockdata";
-import { TopCategory } from "../../assets/mockdata";
+import axios from "axios";
+
+const BACKEND_URL = "http://localhost:5174"; // ✅ Centralized base URL
 
 function ProductDetails() {
-  const { id } = useParams();
-  const productId = parseInt(id);
+  const { id, slug } = useParams(); // Route: /productdetails/:id/:slug
   const navigate = useNavigate();
-
-  // Combine products from both sources
-  const allLatest = latestProducts.flatMap((group) => group.chairs);
-  const allTopCategories = TopCategory.flatMap((group) => group.chairs);
-  const allProducts = [...allLatest, ...Products, ...allTopCategories];
-
-  // ✅ Find the product by ID
-  const product = allProducts.find((item) => item.id === productId);
-
   const dispatch = useDispatch();
 
-  if (!product) {
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [activeTab, setActiveTab] = useState("description");
+
+  // ✅ Fetch product from backend
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        setLoading(true);
+        const { data } = await axios.get(`${BACKEND_URL}/api/products/${id}`);
+
+        // Normalize image path
+        const normalizedProduct = {
+          ...data,
+          image: data.image?.startsWith("http")
+            ? data.image
+            : `${BACKEND_URL}${data.image}`,
+        };
+
+        setProduct(normalizedProduct);
+
+        // ✅ Redirect to correct slug if mismatch
+        if (normalizedProduct.slug && normalizedProduct.slug !== slug) {
+          navigate(
+            `/productdetails/${normalizedProduct._id}/${normalizedProduct.slug}`,
+            { replace: true }
+          );
+        }
+      } catch (err) {
+        setError("Failed to fetch product");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) fetchProduct();
+  }, [id, slug, navigate]);
+
+  if (loading) {
     return (
       <div className="container py-10">
-        <h1>Product not found</h1>
+        <p>Loading product...</p>
+      </div>
+    );
+  }
+
+  if (error || !product) {
+    return (
+      <div className="container py-10">
+        <h1>{error || "Product not found"}</h1>
       </div>
     );
   }
@@ -41,18 +79,17 @@ function ProductDetails() {
 
     dispatch(
       addToCart({
-        id: product.id,
+        id: product._id,
         title: product.title,
         price: product.price,
-        // ✅ fix image issue: use chairimage OR image
-        chairimage: product.chairimage || product.image,
+        chairimage: product.image,
       })
     );
     alert("Product added to cart!");
   };
 
   // ✅ Buy now handler
-  const handlebuynow = () => {
+  const handleBuyNow = () => {
     const token = localStorage.getItem("token");
     if (!token) {
       alert("Please login to proceed with purchase!");
@@ -60,52 +97,49 @@ function ProductDetails() {
       return;
     }
 
-    // First add to cart
     dispatch(
       addToCart({
-        id: product.id,
+        id: product._id,
         title: product.title,
         price: product.price,
-        chairimage: product.chairimage || product.image,
+        chairimage: product.image,
       })
     );
 
-    // Then redirect to cart/checkout page
-   navigate("/Buynow", { state: { product } });
+    navigate("/Buynow", { state: { product } });
   };
 
+  // ✅ Availability: If stock > 0 → Available
+  const isAvailable = product.stock && product.stock > 0;
+
   return (
-    <div className="bg-white container ">
+    <div className="bg-white container">
       {/* Header with Breadcrumbs */}
       <div className="bg-backgroundlite py-4">
-        <h1 className="text-3xl font-bold px-4 text-mainbackground">Products Details</h1>
+        <h1 className="text-3xl font-bold px-4 text-mainbackground">
+          Product Details
+        </h1>
         <AppBreadcrumbs />
       </div>
+
       {/* Main Product Section */}
-      <div className="container grid gap-2 px-4 py-12 mt-10 md:grid-cols-2 md:px-15">
+      <div className="container grid gap-6 px-4 py-12 mt-10 md:grid-cols-2 md:px-15">
         {/* Left Side - Images */}
-        <div className="flex gap-2">
+        <div className="flex gap-4">
           <div className="flex flex-col gap-2">
-            <img
-              src={product.chairimage || product.image}
-              alt={product.title}
-              className="p-1 border max-w-25 max-h-30"
-            />
-            <img
-              src={product.chairimage || product.image}
-              alt={product.title}
-              className="p-1 border max-w-25 max-h-30"
-            />
-            <img
-              src={product.chairimage || product.image}
-              alt={product.title}
-              className="p-1 border max-w-25 max-h-30"
-            />
+            {[...Array(3)].map((_, i) => (
+              <img
+                key={i}
+                src={product.image}
+                alt={product.title}
+                className="p-1 border w-20 h-20 object-cover"
+              />
+            ))}
           </div>
           <img
-            src={product.chairimage || product.image}
+            src={product.image}
             alt={product.title}
-            className="max-w-[300px] max-h-[380px] rounded shadow"
+            className="max-w-[320px] max-h-[400px] rounded shadow object-cover"
           />
         </div>
 
@@ -115,7 +149,23 @@ function ProductDetails() {
 
           {/* Ratings */}
           <div className="flex items-center gap-2 mt-2 text-yellow-500">
-            ⭐⭐⭐⭐☆ <span className="text-sm text-gray-500">(120 reviews)</span>
+            ⭐⭐⭐⭐☆{" "}
+            <span className="text-sm text-gray-500">
+              ({product.reviews?.length || 0} reviews)
+            </span>
+          </div>
+
+          {/* Availability Badge */}
+          <div className="mt-2">
+            {isAvailable ? (
+              <span className="inline-block px-3 py-1 text-sm font-medium text-green-700 bg-green-100 rounded-full">
+                ✅ Available
+              </span>
+            ) : (
+              <span className="inline-block px-3 py-1 text-sm font-medium text-red-700 bg-red-100 rounded-full">
+                ❌ Sold Out
+              </span>
+            )}
           </div>
 
           {/* Price */}
@@ -123,24 +173,13 @@ function ProductDetails() {
             <span className="text-2xl font-bold text-blue-900">
               Rs.{product.price}
             </span>
-            {/* <span className="ml-3 text-gray-400 line-through">$500</span> */}
           </div>
 
           {/* Short description */}
           <p className="mt-4 text-gray-600 text-justify">
             {product.description ||
-              "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit."}
+              "Detailed description is not available for this product."}
           </p>
-
-          {/* Colors */}
-          <div className="mt-4">
-            <span className="font-medium">Color:</span>
-            <div className="flex gap-2 mt-2">
-              <div className="w-3 h-3 bg-red-500 rounded-full cursor-pointer"></div>
-              <div className="w-3 h-3 bg-blue-500 rounded-full cursor-pointer"></div>
-              <div className="w-3 h-3 bg-green-500 rounded-full cursor-pointer"></div>
-            </div>
-          </div>
 
           {/* Action Buttons */}
           <div className="flex gap-4 mt-6">
@@ -150,10 +189,7 @@ function ProductDetails() {
             >
               Add to Cart
             </button>
-            <button
-              onClick={handlebuynow}
-              className="buynow-btn"
-            >
+            <button onClick={handleBuyNow} className="buynow-btn">
               Buy Now
             </button>
           </div>
@@ -163,7 +199,7 @@ function ProductDetails() {
             <p>
               Category:{" "}
               <span className="font-medium">
-                {product.category || "Furniture"}
+                {product.category?.name || "Uncategorized"}
               </span>
             </p>
             <p>
@@ -178,25 +214,62 @@ function ProductDetails() {
       {/* Tabs Section */}
       <div className="container py-12">
         <div className="flex gap-6 border-b">
-          <button className="pb-2 font-medium border-b-2 border-pink-500">
-            Description
-          </button>
-          <button className="pb-2 text-gray-500 hover:text-black">
-            Additional Info
-          </button>
-          <button className="pb-2 text-gray-500 hover:text-black">Reviews</button>
-          <button className="pb-2 text-gray-500 hover:text-black">Video</button>
+          {["description", "additional", "reviews"].map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`pb-2 font-medium ${
+                activeTab === tab
+                  ? "border-b-2 border-pink-500 text-black"
+                  : "text-gray-500 hover:text-black"
+              }`}
+            >
+              {tab === "description"
+                ? "Description"
+                : tab === "additional"
+                ? "Additional Info"
+                : "Reviews"}
+            </button>
+          ))}
         </div>
+
+        {/* Tab Content */}
         <div className="mt-6 leading-relaxed text-gray-600">
-          <p>
-            Various versions have evolved over the years, sometimes by accident,
-            sometimes on purpose. Lorem ipsum dolor sit amet, consectetur
-            adipiscing elit.
-          </p>
+          {activeTab === "description" && <p>{product.description}</p>}
+          {activeTab === "additional" && (
+            <ul className="list-disc pl-6 space-y-2">
+              <li>Material: {product.material || "Premium Quality"}</li>
+              <li>Dimensions: {product.dimensions || "Standard Size"}</li>
+              <li>
+                Warranty: {product.warranty || "1 Year Manufacturer Warranty"}
+              </li>
+              <li>Delivery: Free Home Delivery within 7 days</li>
+            </ul>
+          )}
+          {activeTab === "reviews" && (
+            <div>
+              <p className="font-medium">Customer Reviews</p>
+              {product.reviews?.length > 0 ? (
+                product.reviews.map((rev, idx) => (
+                  <p key={idx} className="text-gray-500 mt-2">
+                    {rev.rating}★ – {rev.comment}
+                  </p>
+                ))
+              ) : (
+                <p className="text-gray-500 mt-2">
+                  No reviews yet for this product.
+                </p>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
-      <div className="container">Related items</div>
+      {/* Related Items Section */}
+      <div className="container py-10">
+        <h2 className="text-xl font-bold mb-4">Related Items</h2>
+        <p className="text-gray-500">Coming soon...</p>
+      </div>
     </div>
   );
 }

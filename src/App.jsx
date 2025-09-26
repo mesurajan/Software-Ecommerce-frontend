@@ -28,6 +28,7 @@ import AdminDiscountItem from "./pages/admin/AdminDiscountItem";
 import AdminTopCategories from "./pages/admin/AdminTopCategories";
 import AdminProduct from "./pages/admin/AdminProduct";
 import AdminCategories from "./pages/admin/AdminCategories";
+import AdminProductDetails from "./pages/admin/AdminProductDetails";
 // ScrollToTop Component
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -46,7 +47,7 @@ function App() {
         <Route path="/" element={<Layout />}>
           <Route index element={<Home/>} />
           <Route path="product" element={<Product/>}/>
-          <Route path="productDetails/:id" element={<ProductDetails/>}/>
+          <Route path="productDetails/:id/:slug" element={<ProductDetails />} />
           <Route path="contact" element={<Contact/>}/>
           <Route path="blogs" element={<Blogs/>}/>
           <Route path="about" element={<AboutUs/>}/>
@@ -79,6 +80,8 @@ function App() {
             <Route path="discountitem" element={<AdminDiscountItem />} />
             <Route path="topcategories" element={<AdminTopCategories />} />
             <Route path="categories" element={<AdminCategories />} />
+            <Route path="product-details/:id" element={<AdminProductDetails />} />
+
           </Route>
       </Routes>
     </>

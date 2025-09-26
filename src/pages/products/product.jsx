@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from "react";
 import { CiSearch } from "react-icons/ci";
 import axios from "axios";
-import { Link } from "react-router-dom";
 import AppBreadcrumbs from "../../components/Breadcrumbs";
 import BrandPromotion from "../../assets/images/Home/BrandPromotion.png";
 import ProductCard from "../../components/ProductCard";
@@ -23,7 +22,7 @@ function Product() {
         // ✅ Normalize products to always use `id` (_id from backend)
         const normalizedProducts = resProducts.data.map((p) => ({
           ...p,
-          id: p.id || p._id, // ensure consistent id
+          id: p.id || p._id,
           image: p.image
             ? p.image.startsWith("http")
               ? p.image
@@ -31,6 +30,7 @@ function Product() {
             : "/placeholder.png",
           category:
             typeof p.category === "object" ? p.category.name : p.category,
+          slug: p.slug, // ✅ include slug for SEO URLs
         }));
         setProducts(normalizedProducts);
 
@@ -125,12 +125,7 @@ function Product() {
                     </h2>
                     <div className="grid grid-cols-1 sm:grid-cols-4 gap-6">
                       {items.map((product) => (
-                        <Link
-                          key={product.id}
-                          to={`/productDetails/${product.id}`} // ✅ always use id
-                        >
-                          <ProductCard product={product} />
-                        </Link>
+                        <ProductCard key={product.id} product={product} />
                       ))}
                     </div>
                   </div>
@@ -142,12 +137,7 @@ function Product() {
             {searchFilteredProducts
               .filter((p) => p.category === selectedCategory)
               .map((product) => (
-                <Link
-                  key={product.id}
-                  to={`/productDetails/${product.id}`} // ✅ always use id
-                >
-                  <ProductCard product={product} />
-                </Link>
+                <ProductCard key={product.id} product={product} />
               ))}
           </div>
         )}

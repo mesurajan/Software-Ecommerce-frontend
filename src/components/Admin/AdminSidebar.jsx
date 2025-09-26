@@ -50,13 +50,14 @@ export function AdminSidebar() {
             ]
           },
           {
-            title: "Home Page Management" ,
+            title: "Page Management" ,
             items:[
               {title: "Banner One" , url: "/admin/banners", icon: LayoutDashboard},
               { title: "Sliders", url: "/admin/slider", icon: Images },
               { title: "Latest Products", url: "/admin/latestproduct", icon:  PackageSearch  },
               { title: "Discount Item", url: "/admin/discountitem", icon:  PackageSearch  },
              { title: " Top Categories", url: "/admin/topcategories", icon:  PackageSearch  },
+             { title: "Categories", url: "/admin/categories", icon: ClipboardList },
 
              
             ]
@@ -65,10 +66,12 @@ export function AdminSidebar() {
       : []),
       
             {
-        title: "Products",
+        title: "Product Management ",
         items: [
-          { title: "Manage Products", url: "/admin/products", icon: ClipboardList },
-          { title: "Categories", url: "/admin/categories", icon: ClipboardList },
+          { title: "Add Products", url: "/admin/products", icon: ClipboardList },
+          { title: "Product Details", url: "/admin/productdetails", icon: ClipboardList },
+
+
           { title: "Collections", url: "/admin/collections", icon: ClipboardList },
           ...(role === "admin"
             ? [{ title: "Product Approval", url: "/admin/approval", icon: ClipboardList }]

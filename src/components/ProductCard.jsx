@@ -13,13 +13,17 @@ const ProductCard = ({ product }) => {
 
   if (!product) return null;
 
+  // ✅ Normalize product fields based on backend (_id or id)
   const normalized = {
-    id: product.id,
-    title: product.title || "Untitled Chair",
+    id: product._id || product.id, // accept both
+    title: product.title || "Untitled Product",
     price: product.price || 0,
     image: product.image || "/placeholder.png",
-    link: product.link || `/productDetails/${product.id}`,
+    slug: product.slug || "product", // fallback slug
   };
+
+  // ✅ Build link with hybrid id + slug
+  const productLink = `/productdetails/${normalized.id}/${normalized.slug}`;
 
   const handleWishlist = () => {
     const token = localStorage.getItem("token");
@@ -41,6 +45,7 @@ const ProductCard = ({ product }) => {
 
   return (
     <div className="relative flex flex-col items-center p-4 bg-white shadow rounded border hover:shadow-xl transition">
+      {/* Wishlist + Cart Buttons */}
       <div className="absolute top-2 right-2 flex gap-2">
         <button
           onClick={handleWishlist}
@@ -56,6 +61,7 @@ const ProductCard = ({ product }) => {
         </button>
       </div>
 
+      {/* Product Image */}
       <div className="overflow-hidden rounded-lg">
         <img
           src={normalized.image}
@@ -64,13 +70,15 @@ const ProductCard = ({ product }) => {
         />
       </div>
 
+      {/* Product Info */}
       <div className="mt-2 text-center">
         <h3 className="text-sm font-semibold">{normalized.title}</h3>
         <p className="text-xs text-gray-600">Rs.{normalized.price}</p>
       </div>
 
+      {/* Action Buttons */}
       <div className="mt-4 flex gap-2">
-        <Link to={normalized.link}>
+        <Link to={productLink}>
           <button className="viewdetails-btn">View Details</button>
         </Link>
         <button onClick={handleBuyNow} className="buynow-btn">

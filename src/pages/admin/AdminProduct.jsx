@@ -1,6 +1,7 @@
 // src/pages/AdminProduct.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom"; // ✅ for navigation
 
 const BACKEND_URL = "http://localhost:5174";
 
@@ -18,6 +19,7 @@ function AdminProduct() {
   const [editingId, setEditingId] = useState(null);
 
   const token = localStorage.getItem("token");
+  const navigate = useNavigate(); // ✅ hook
 
   // Fetch products
   const fetchProducts = async () => {
@@ -120,6 +122,11 @@ function AdminProduct() {
     }
   };
 
+  // ✅ Navigate to AdminProductDetails
+  const handleAdditionalInfo = (id) => {
+    navigate(`/admin/product-details/${id}`);
+  };
+
   return (
     <div className="p-6">
       <h1 className="text-xl font-bold mb-4">Manage Products</h1>
@@ -184,6 +191,7 @@ function AdminProduct() {
             <tr className="bg-gray-100">
               <th className="border p-2">Product ID</th>
               <th className="border p-2">Title</th>
+              <th className="border p-2">Slug</th>
               <th className="border p-2">Price</th>
               <th className="border p-2">Category</th>
               <th className="border p-2">Image</th>
@@ -195,6 +203,7 @@ function AdminProduct() {
               <tr key={p._id}>
                 <td className="border p-2">{p.productId}</td>
                 <td className="border p-2">{p.title}</td>
+                <td className="border p-2">{p.slug}</td>
                 <td className="border p-2">Rs.{p.price}</td>
                 <td className="border p-2">
                   {typeof p.category === "object"
@@ -222,6 +231,12 @@ function AdminProduct() {
                     className="bg-red-600 text-white px-2 py-1 rounded"
                   >
                     Delete
+                  </button>
+                  <button
+                    onClick={() => handleAdditionalInfo(p._id)}
+                    className="bg-green-600 text-white px-2 py-1 rounded"
+                  >
+                    Additional Info
                   </button>
                 </td>
               </tr>
