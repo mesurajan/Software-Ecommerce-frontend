@@ -56,7 +56,9 @@ export function AdminSidebar() {
               { title: "Sliders", url: "/admin/slider", icon: Images },
               { title: "Latest Products", url: "/admin/latestproduct", icon:  PackageSearch  },
               { title: "Discount Item", url: "/admin/discountitem", icon:  PackageSearch  },
+             { title: " Top Categories", url: "/admin/topcategories", icon:  PackageSearch  },
 
+             
             ]
           }
         ]

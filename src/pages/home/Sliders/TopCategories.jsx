@@ -1,12 +1,28 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import ProductCard from "../../../components/ProductCard"; // ✅ Added import
+import ProductCard from "../../../components/ProductCard";
+import axios from "axios";
 
-function TopCategories({ BannerData = [] }) {
+const BACKEND_URL = "http://localhost:5174";
+
+function TopCategories() {
+  const [categories, setCategories] = useState([]);
   const [currentSlide, setCurrentSlide] = useState(0);
   const sliderRef = useRef(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const { data } = await axios.get(`${BACKEND_URL}/api/topcategories`);
+        setCategories(Array.isArray(data) ? data : data.data || []);
+      } catch (err) {
+        console.error("Error fetching top categories:", err);
+      }
+    };
+    fetchData();
+  }, []);
 
   const settings = {
     dots: true,
@@ -19,39 +35,55 @@ function TopCategories({ BannerData = [] }) {
     autoplaySpeed: 3000,
     beforeChange: (_, next) => setCurrentSlide(next),
     appendDots: () => (
-      <ul className="flex justify-center gap-4 mt-6 ">
-        {BannerData.map((_, index) => {
-          const isActive = index === currentSlide;
-          return (
-            <li
-              key={index}
-              onClick={() => sliderRef.current?.slickGoTo(index)}
-              className={`cursor-pointer transition-colors duration-300 rounded-sm ${
-                isActive ? "bg-[#0A174E]" : "bg-gray-400"
-              }`}
-              style={{ width: "16px", height: "4px" }}
-            />
-          );
-        })}
+      <ul className="flex justify-center gap-4 mt-6">
+        {categories.map((_, idx) => (
+          <li
+            key={idx}
+            onClick={() => sliderRef.current?.slickGoTo(idx)}
+            className={`cursor-pointer rounded-sm ${
+              idx === currentSlide ? "bg-[#0A174E]" : "bg-gray-400"
+            }`}
+            style={{ width: "16px", height: "4px" }}
+          />
+        ))}
       </ul>
     ),
   };
 
-  if (!BannerData.length) return null;
+  const getImageUrl = (path) =>
+    path ? `${BACKEND_URL}/${path.replace(/\\/g, "/")}` : "/placeholder.png";
+
+  if (!categories.length) return null;
 
   return (
-    <div className="px-4 mx-auto slider-container max-w-7xl md:px-0">
-      <div>
-        <h1 className="text-center text-[35px] font-semibold sm:py-8 md:py-10 text-[#0A174E]">
-          Top Categories
-        </h1>
-      </div>
+    <div className="px-4 mx-auto max-w-7xl">
+      <h1 className="text-center text-[35px] font-semibold py-8 text-[#0A174E]">
+        Top Categories
+      </h1>
+
       <Slider ref={sliderRef} {...settings}>
-        {BannerData.map((slide) => (
-          <div key={slide.id}>
-            <div className="grid grid-cols-1 gap-6 mt-5 md:grid-cols-2 md:gap-4 lg:grid-cols-4 lg:gap-6">
-              {slide.chairs.map((chair) => (
-                <ProductCard key={chair.id} product={chair} />
+        {categories.map((slide) => (
+          <div key={slide._id}>
+            {/* ✅ Category Header */}
+            <h2 className="text-xl font-bold text-center mb-6 text-[#0A174E]">
+              {slide.title}
+            </h2>
+
+            {/* ✅ Responsive Product Grid */}
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+              {slide.chairs.map((chair, idx) => (
+                <ProductCard
+                  key={idx}
+                  product={{
+                    id: chair._id || idx,
+                    title: chair.title,
+                    price: chair.price,
+                    image: getImageUrl(chair.chairimage),
+                    link: chair.productLink
+                      ? `/productDetails/${chair.productLink}`
+                      : null,
+                  }}
+                />
               ))}
             </div>
           </div>
