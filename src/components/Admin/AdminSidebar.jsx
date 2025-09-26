@@ -63,15 +63,21 @@ export function AdminSidebar() {
           }
         ]
       : []),
+      
+            {
+        title: "Products",
+        items: [
+          { title: "Manage Products", url: "/admin/products", icon: ClipboardList },
+          { title: "Categories", url: "/admin/categories", icon: ClipboardList },
+          { title: "Collections", url: "/admin/collections", icon: ClipboardList },
+          ...(role === "admin"
+            ? [{ title: "Product Approval", url: "/admin/approval", icon: ClipboardList }]
+            : [])
+        ]
+      },
 
-    {
-      title: "Products",
-      items: [
-        { title: "Manage Products", url: "/admin/products", icon: ClipboardList },
-        { title: "Categories & Collections", url: "/admin/categories", icon: ClipboardList },
-        { title: "Product Approval", url: "/admin/approval", icon: ClipboardList }
-      ]
-    },
+
+ 
     {
       title: "Orders & Sales",
       items: [

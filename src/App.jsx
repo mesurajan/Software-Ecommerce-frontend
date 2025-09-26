@@ -26,6 +26,8 @@ import AdminSlider from "./pages/admin/AdminSlider2";
 import AdminLatestProduct from "./pages/admin/AdminLatestProduct";
 import AdminDiscountItem from "./pages/admin/AdminDiscountItem";
 import AdminTopCategories from "./pages/admin/AdminTopCategories";
+import AdminProduct from "./pages/admin/AdminProduct";
+import AdminCategories from "./pages/admin/AdminCategories";
 // ScrollToTop Component
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -65,18 +67,19 @@ function App() {
           path="/admin"  
           element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}
         >
-          <Route index element={<AdminDashboard />} />
-          <Route path="dashboard" element={<AdminDashboard />} />
-          <Route path="users" element={<ProtectedRoute><AdminUsers /></ProtectedRoute>} />
-          <Route path="customers" element={<ProtectedRoute><AdminCustomers /></ProtectedRoute>} />
-          <Route path="sellers" element={<ProtectedRoute><AdminSellers /></ProtectedRoute>} />
-          <Route path="/admin/banners" element={<AdminBanners />} />
-          <Route path="/admin/slider" element={<AdminSlider />} />
-          <Route path="/admin/latestproduct" element={<AdminLatestProduct />} />
-           <Route path="/admin/discountitem" element={<AdminDiscountItem />} />
-           <Route path="/admin/topcategories" element={<AdminTopCategories />} />
-
-        </Route>
+            <Route index element={<AdminDashboard />} />
+            <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="users" element={<ProtectedRoute><AdminUsers /></ProtectedRoute>} />
+            <Route path="customers" element={<ProtectedRoute><AdminCustomers /></ProtectedRoute>} />
+            <Route path="sellers" element={<ProtectedRoute><AdminSellers /></ProtectedRoute>} />
+            <Route path="products" element={<AdminProduct />} />
+            <Route path="banners" element={<AdminBanners />} />
+            <Route path="slider" element={<AdminSlider />} />
+            <Route path="latestproduct" element={<AdminLatestProduct />} />
+            <Route path="discountitem" element={<AdminDiscountItem />} />
+            <Route path="topcategories" element={<AdminTopCategories />} />
+            <Route path="categories" element={<AdminCategories />} />
+          </Route>
       </Routes>
     </>
   );
