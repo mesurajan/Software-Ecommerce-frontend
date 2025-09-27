@@ -1,4 +1,4 @@
-// src/pages/admin/AdminSlider2.jsx
+// src/components/Admin/Slider/AdminSlider2.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
@@ -6,17 +6,18 @@ const BACKEND_URL = "http://localhost:5174";
 
 const AdminSlider2 = () => {
   const [sliders, setSliders] = useState([]);
+  const [products, setProducts] = useState([]); // ✅ products from backend
   const [title, setTitle] = useState("");
   const [chairs, setChairs] = useState([
-    { title: "", price: "", image: null, productLink: "" },
-    { title: "", price: "", image: null, productLink: "" },
-    { title: "", price: "", image: null, productLink: "" },
-    { title: "", price: "", image: null, productLink: "" },
+    { title: "", price: "", image: null, chairimage: "", product: "", productSlug: "" },
+    { title: "", price: "", image: null, chairimage: "", product: "", productSlug: "" },
+    { title: "", price: "", image: null, chairimage: "", product: "", productSlug: "" },
+    { title: "", price: "", image: null, chairimage: "", product: "", productSlug: "" },
   ]);
-  const [editingId, setEditingId] = useState(null); // ✅ track which slider is being edited
+  const [editingId, setEditingId] = useState(null);
   const token = localStorage.getItem("token");
 
-  // Fetch sliders
+  // ✅ Fetch sliders
   const fetchSliders = async () => {
     try {
       const { data } = await axios.get(`${BACKEND_URL}/api/slider`);
@@ -25,11 +26,39 @@ const AdminSlider2 = () => {
       console.error("Error fetching sliders:", err);
     }
   };
+
+  // ✅ Fetch products
+  const fetchProducts = async () => {
+    try {
+      const { data } = await axios.get(`${BACKEND_URL}/api/products`);
+      setProducts(Array.isArray(data) ? data : data.data || []);
+    } catch (err) {
+      console.error("Error fetching products:", err);
+    }
+  };
+
   useEffect(() => {
     fetchSliders();
+    fetchProducts();
   }, []);
 
-  const handleChairChange = (index, field, value) => {
+  const handleProductSelect = (index, productId) => {
+    const selected = products.find((p) => p._id === productId);
+    if (!selected) return;
+    const updated = [...chairs];
+    updated[index] = {
+      ...updated[index],
+      title: selected.title,
+      price: selected.price,
+      chairimage: selected.images?.[0] || "",
+      image: null,
+      product: selected._id,
+      productSlug: selected.slug,
+    };
+    setChairs(updated);
+  };
+
+  const handleInputChange = (index, field, value) => {
     const updated = [...chairs];
     updated[index][field] = value;
     setChairs(updated);
@@ -38,10 +67,10 @@ const AdminSlider2 = () => {
   const resetForm = () => {
     setTitle("");
     setChairs([
-      { title: "", price: "", image: null, productLink: "" },
-      { title: "", price: "", image: null, productLink: "" },
-      { title: "", price: "", image: null, productLink: "" },
-      { title: "", price: "", image: null, productLink: "" },
+      { title: "", price: "", image: null, chairimage: "", product: "", productSlug: "" },
+      { title: "", price: "", image: null, chairimage: "", product: "", productSlug: "" },
+      { title: "", price: "", image: null, chairimage: "", product: "", productSlug: "" },
+      { title: "", price: "", image: null, chairimage: "", product: "", productSlug: "" },
     ]);
     setEditingId(null);
   };
@@ -58,7 +87,8 @@ const AdminSlider2 = () => {
         title: c.title,
         price: c.price,
         chairimage: c.image ? c.image.name : c.chairimage || "",
-        productLink: c.productLink,
+        product: c.product,
+        productSlug: c.productSlug,
       }));
       formData.append("chairs", JSON.stringify(chairsData));
 
@@ -67,7 +97,6 @@ const AdminSlider2 = () => {
       });
 
       if (editingId) {
-        // ✅ Update existing slider
         await axios.put(`${BACKEND_URL}/api/slider/${editingId}`, formData, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -76,7 +105,6 @@ const AdminSlider2 = () => {
         });
         alert("✅ Slider updated successfully!");
       } else {
-        // ✅ Create new slider
         await axios.post(`${BACKEND_URL}/api/slider`, formData, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -112,17 +140,18 @@ const AdminSlider2 = () => {
   const handleEdit = (slider) => {
     setEditingId(slider._id);
     setTitle(slider.title);
-    // preload chairs without wiping old images
+
     setChairs(
       slider.chairs.map((c) => ({
         title: c.title,
         price: c.price,
-        chairimage: c.chairimage, // keep old path
-        image: null, // new file can overwrite
-        productLink: c.productLink,
+        chairimage: c.chairimage,
+        image: null,
+        product: c.product?._id || c.product || "",
+        productSlug: c.productSlug || c.product?.slug || "",
       }))
     );
-    window.scrollTo({ top: 0, behavior: "smooth" }); // scroll up to form
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const getImageUrl = (path) => {
@@ -146,63 +175,64 @@ const AdminSlider2 = () => {
             className="border rounded w-full p-2"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            required
+            
           />
         </div>
 
-        <h3 className="font-medium mb-2">Chairs (4 per slider)</h3>
+        <h3 className="font-medium mb-2">Please Choose Your Products</h3>
         {chairs.map((chair, index) => (
           <div
             key={index}
-            className="border rounded p-3 mb-3 flex flex-col md:flex-row gap-3"
+            className="border rounded p-3 mb-3 flex flex-col md:flex-row gap-3 items-center"
           >
+            {/* Product Dropdown */}
+            <select
+              className="border p-2 rounded flex-1"
+              value={chair.product}
+              onChange={(e) => handleProductSelect(index, e.target.value)}
+            >
+              <option value="">-- Select Product --</option>
+              {products.map((p) => (
+                <option key={p._id} value={p._id}>
+                  {p.title} (Rs.{p.price})
+                </option>
+              ))}
+            </select>
+
+            {/* Manual Input Override */}
             <input
               type="text"
-              placeholder="Chair title"
               className="border p-2 rounded flex-1"
+              placeholder="Custom Title"
               value={chair.title}
-              onChange={(e) =>
-                handleChairChange(index, "title", e.target.value)
-              }
-              required
+              onChange={(e) => handleInputChange(index, "title", e.target.value)}
             />
             <input
               type="number"
-              placeholder="Price"
               className="border p-2 rounded w-28"
+              placeholder="Price"
               value={chair.price}
-              onChange={(e) =>
-                handleChairChange(index, "price", e.target.value)
-              }
-              required
-            />
-            <input
-              type="text"
-              placeholder="Product ID or Name"
-              className="border p-2 rounded flex-1"
-              value={chair.productLink}
-              onChange={(e) =>
-                handleChairChange(index, "productLink", e.target.value)
-              }
+              onChange={(e) => handleInputChange(index, "price", e.target.value)}
             />
 
-            {/* Show existing image preview if editing */}
-            {chair.chairimage && !chair.image && (
+            {/* Preview */}
+            {chair.chairimage && (
               <img
                 src={getImageUrl(chair.chairimage)}
-                alt="chair"
+                alt={chair.title}
                 className="w-16 h-16 object-cover"
               />
             )}
 
+            {/* Upload override */}
             <input
               type="file"
               accept="image/*"
-              onChange={(e) =>
-                handleChairChange(index, "image", e.target.files[0])
-              }
-              // required only when creating
-              required={!editingId}
+              onChange={(e) => {
+                const updated = [...chairs];
+                updated[index].image = e.target.files[0];
+                setChairs(updated);
+              }}
             />
           </div>
         ))}
@@ -258,10 +288,13 @@ const AdminSlider2 = () => {
                 />
                 <p className="font-semibold">{chair.title}</p>
                 <p className="text-sm text-gray-600">Rs.{chair.price}</p>
-                {chair.productLink && (
+                {chair.product && (
                   <p className="text-xs text-blue-600">
-                    Product Id: {chair.productLink}
+                    Product ID: {chair.product?._id || chair.product}
                   </p>
+                )}
+                {chair.productSlug && (
+                  <p className="text-xs text-gray-500">Slug: {chair.productSlug}</p>
                 )}
               </div>
             ))}

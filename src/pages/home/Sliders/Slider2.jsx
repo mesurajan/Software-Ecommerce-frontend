@@ -59,21 +59,38 @@ function SimpleSlider2() {
   if (!sliders.length) return null;
 
   return (
-    <div className="px-4 mx-auto slider-container max-w-7xl md:px-0">
+    <div className="px-4 mx-auto slider-container max-w-7xl md:px-0 ">
       <Slider ref={sliderRef} {...settings}>
         {sliders.map((slide) => (
           <div key={slide._id}>
+            {/* Slider Title */}
+            {/* {slide.title && (
+              <h2 className="mb-4 text-xl font-bold text-center md:text-2xl">
+                {slide.title}
+              </h2>
+            )} */}
+
+            {/* Grid of Products */}
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
               {slide.chairs.map((chair, idx) => {
+                // ✅ Normalize linked product data
+                const productId =
+                  chair.product?._id || chair.product || idx; // real Product ID
+                const productSlug =
+                  chair.productSlug || chair.product?.slug || "unknown";
+
                 const formattedChair = {
-                  id: chair._id || idx,
-                  title: chair.title,
-                  price: chair.price,
-                  image: getImageUrl(chair.chairimage),
-                  link: chair.productLink
-                    ? `/productDetails/${chair.productLink}`
-                    : null,
+                  id: productId,
+                  title: chair.title || chair.product?.title || "Untitled",
+                  price: chair.price || chair.product?.price || 0,
+                  image: getImageUrl(
+                    chair.chairimage ||
+                      chair.product?.images?.[0] ||
+                      chair.product?.image
+                  ),
+                  slug: productSlug,
                 };
+
                 return <ProductCard key={idx} product={formattedChair} />;
               })}
             </div>

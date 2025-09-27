@@ -7,22 +7,30 @@ import { addToCart } from "../Apps/Reducers/cartSlice";
 import { addToWishlist } from "../Apps/Reducers/wishlistSlice";
 import { ShoppingCart } from "lucide-react";
 
+// ✅ Helper to generate slug from title
+const slugify = (str) =>
+  str?.toString().toLowerCase().trim().replace(/\s+/g, "-").replace(/[^\w-]+/g, "") || "product";
+
+const BACKEND_URL = "http://localhost:5174";
+
 const ProductCard = ({ product }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   if (!product) return null;
 
-  // ✅ Normalize product fields based on backend (_id or id)
+  // ✅ Normalize product fields
   const normalized = {
     id: product._id || product.id, // accept both
     title: product.title || "Untitled Product",
     price: product.price || 0,
-    image: product.image || "/placeholder.png",
-    slug: product.slug || "product", // fallback slug
+    image: product.image?.startsWith("http")
+      ? product.image
+      : `${BACKEND_URL}${product.image || "/uploads/Default/lightimage.png"}`,
+    slug: product.slug || slugify(product.title),
   };
 
-  // ✅ Build link with hybrid id + slug
+  // ✅ Build hybrid link
   const productLink = `/productdetails/${normalized.id}/${normalized.slug}`;
 
   const handleWishlist = () => {
