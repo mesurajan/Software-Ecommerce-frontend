@@ -50,8 +50,12 @@ function TopCategories() {
     ),
   };
 
-  const getImageUrl = (path) =>
-    path ? `${BACKEND_URL}/${path.replace(/\\/g, "/")}` : "/placeholder.png";
+  // ✅ Fixed: removes trailing "/" from BACKEND_URL and leading "/" from path
+  const getImageUrl = (path) => {
+    if (!path) return `${BACKEND_URL}/uploads/Default/lightimage.png`;
+    if (path.startsWith("http")) return path;
+    return `${BACKEND_URL.replace(/\/$/, "")}/${path.replace(/^\/+/, "")}`;
+  };
 
   if (!categories.length) return null;
 
@@ -65,14 +69,13 @@ function TopCategories() {
         {categories.map((category) => (
           <div key={category._id}>
             {/* ✅ Category Header */}
-            <h2 className="text-xl font-bold text-center mb-6 text-[#0A174E]">
+            <h2 className="text:[8px] font-light text-center mb-6 text-[#0A174E]">
               {category.title}
             </h2>
 
             {/* ✅ Responsive Product Grid */}
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
               {category.chairs.map((chair, idx) => {
-                // Normalize chair + product (like SimpleSlider2)
                 const productId = chair.product?._id || chair.product || idx;
                 const productSlug =
                   chair.productSlug || chair.product?.slug || "unknown";
@@ -86,7 +89,7 @@ function TopCategories() {
                       chair.product?.images?.[0] ||
                       chair.product?.image
                   ),
-                  slug: productSlug, // ✅ slug for viewDetails
+                  slug: productSlug,
                 };
 
                 return <ProductCard key={idx} product={formattedChair} />;

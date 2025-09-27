@@ -1,3 +1,4 @@
+// src/components/Admin/TopCategories/AdminTopCategories.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
@@ -50,7 +51,7 @@ const AdminTopCategories = () => {
       ...updated[index],
       title: selected.title,
       price: selected.price,
-      chairimage: selected.images?.[0] || updated[index].chairimage,
+      chairimage: selected.images?.[0] || "", // ✅ normalized way
       image: null,
       product: selected._id,
       productSlug: selected.slug,
@@ -90,7 +91,7 @@ const AdminTopCategories = () => {
       const chairsData = chairs.map((c) => ({
         title: c.title,
         price: c.price,
-        chairimage: c.chairimage,
+        chairimage: c.image ? c.image.name : c.chairimage || "",
         product: c.product,
         productSlug: c.productSlug,
       }));
@@ -145,7 +146,7 @@ const AdminTopCategories = () => {
       category.chairs.map((c) => ({
         title: c.title,
         price: c.price,
-        chairimage: c.chairimage,
+        chairimage: c.chairimage || c.product?.images?.[0] || "", // ✅ normalized
         image: null,
         product: c.product?._id || c.product || "",
         productSlug: c.productSlug || c.product?.slug || "",
@@ -157,7 +158,10 @@ const AdminTopCategories = () => {
   // ✅ Image helper
   const getImageUrl = (path) => {
     if (!path) return `${BACKEND_URL}/uploads/Default/lightimage.png`;
-    return `${BACKEND_URL}/${path.replace(/\\/g, "/")}`;
+    if (path.startsWith("http")) return path;
+    return `${BACKEND_URL.replace(/\/$/, "")}/${path.replace(/^\/+/, "")}`;
+
+  
   };
 
   return (
@@ -289,10 +293,8 @@ const AdminTopCategories = () => {
                     Product ID: {chair.product?._id || chair.product}
                   </p>
                 )}
-                {(chair.productSlug || chair.product?.slug) && (
-                  <p className="text-xs text-gray-500">
-                    Slug: {chair.productSlug || chair.product?.slug}
-                  </p>
+                {chair.productSlug && (
+                  <p className="text-xs text-gray-500">Slug: {chair.productSlug}</p>
                 )}
               </div>
             ))}
