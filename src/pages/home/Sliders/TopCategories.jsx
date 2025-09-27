@@ -62,29 +62,35 @@ function TopCategories() {
       </h1>
 
       <Slider ref={sliderRef} {...settings}>
-        {categories.map((slide) => (
-          <div key={slide._id}>
+        {categories.map((category) => (
+          <div key={category._id}>
             {/* ✅ Category Header */}
             <h2 className="text-xl font-bold text-center mb-6 text-[#0A174E]">
-              {slide.title}
+              {category.title}
             </h2>
 
             {/* ✅ Responsive Product Grid */}
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-              {slide.chairs.map((chair, idx) => (
-                <ProductCard
-                  key={idx}
-                  product={{
-                    id: chair._id || idx,
-                    title: chair.title,
-                    price: chair.price,
-                    image: getImageUrl(chair.chairimage),
-                    link: chair.productLink
-                      ? `/productDetails/${chair.productLink}`
-                      : null,
-                  }}
-                />
-              ))}
+              {category.chairs.map((chair, idx) => {
+                // Normalize chair + product (like SimpleSlider2)
+                const productId = chair.product?._id || chair.product || idx;
+                const productSlug =
+                  chair.productSlug || chair.product?.slug || "unknown";
+
+                const formattedChair = {
+                  id: productId,
+                  title: chair.title || chair.product?.title || "Untitled",
+                  price: chair.price || chair.product?.price || 0,
+                  image: getImageUrl(
+                    chair.chairimage ||
+                      chair.product?.images?.[0] ||
+                      chair.product?.image
+                  ),
+                  slug: productSlug, // ✅ slug for viewDetails
+                };
+
+                return <ProductCard key={idx} product={formattedChair} />;
+              })}
             </div>
           </div>
         ))}

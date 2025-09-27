@@ -1,22 +1,22 @@
-// src/pages/admin/AdminTopCategories.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-const BACKEND_URL = "http://localhost:5174";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5174";
 
 const AdminTopCategories = () => {
   const [categories, setCategories] = useState([]);
+  const [products, setProducts] = useState([]);
   const [title, setTitle] = useState("");
   const [chairs, setChairs] = useState([
-    { title: "", price: "", image: null, chairimage: "", productLink: "" },
-    { title: "", price: "", image: null, chairimage: "", productLink: "" },
-    { title: "", price: "", image: null, chairimage: "", productLink: "" },
-    { title: "", price: "", image: null, chairimage: "", productLink: "" },
+    { title: "", price: "", image: null, chairimage: "", product: "", productSlug: "" },
+    { title: "", price: "", image: null, chairimage: "", product: "", productSlug: "" },
+    { title: "", price: "", image: null, chairimage: "", product: "", productSlug: "" },
+    { title: "", price: "", image: null, chairimage: "", product: "", productSlug: "" },
   ]);
   const [editingId, setEditingId] = useState(null);
   const token = localStorage.getItem("token");
 
-  // Fetch categories
+  // ✅ Fetch categories
   const fetchCategories = async () => {
     try {
       const { data } = await axios.get(`${BACKEND_URL}/api/topcategories`);
@@ -26,63 +26,89 @@ const AdminTopCategories = () => {
     }
   };
 
+  // ✅ Fetch products
+  const fetchProducts = async () => {
+    try {
+      const { data } = await axios.get(`${BACKEND_URL}/api/products`);
+      setProducts(Array.isArray(data) ? data : data.data || []);
+    } catch (err) {
+      console.error("Error fetching products:", err);
+    }
+  };
+
   useEffect(() => {
     fetchCategories();
+    fetchProducts();
   }, []);
 
-  const handleChairChange = (index, field, value) => {
+  // ✅ Select product from dropdown
+  const handleProductSelect = (index, productId) => {
+    const selected = products.find((p) => p._id === productId);
+    if (!selected) return;
+    const updated = [...chairs];
+    updated[index] = {
+      ...updated[index],
+      title: selected.title,
+      price: selected.price,
+      chairimage: selected.images?.[0] || updated[index].chairimage,
+      image: null,
+      product: selected._id,
+      productSlug: selected.slug,
+    };
+    setChairs(updated);
+  };
+
+  // ✅ Manual input override
+  const handleInputChange = (index, field, value) => {
     const updated = [...chairs];
     updated[index][field] = value;
     setChairs(updated);
   };
 
+  // ✅ Reset form
   const resetForm = () => {
     setTitle("");
     setChairs([
-      { title: "", price: "", image: null, chairimage: "", productLink: "" },
-      { title: "", price: "", image: null, chairimage: "", productLink: "" },
-      { title: "", price: "", image: null, chairimage: "", productLink: "" },
-      { title: "", price: "", image: null, chairimage: "", productLink: "" },
+      { title: "", price: "", image: null, chairimage: "", product: "", productSlug: "" },
+      { title: "", price: "", image: null, chairimage: "", product: "", productSlug: "" },
+      { title: "", price: "", image: null, chairimage: "", product: "", productSlug: "" },
+      { title: "", price: "", image: null, chairimage: "", product: "", productSlug: "" },
     ]);
     setEditingId(null);
   };
 
+  // ✅ Create / Update
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!token) return alert("You must be logged in!");
+    if (!token) return alert("⚠️ You must be logged in as Admin!");
 
     try {
       const formData = new FormData();
       formData.append("title", title);
 
+      // Prepare chairs JSON
       const chairsData = chairs.map((c) => ({
         title: c.title,
         price: c.price,
-        chairimage: c.image ? c.image.name : c.chairimage || "",
-        productLink: c.productLink,
+        chairimage: c.chairimage,
+        product: c.product,
+        productSlug: c.productSlug,
       }));
       formData.append("chairs", JSON.stringify(chairsData));
 
+      // Append new images
       chairs.forEach((c) => {
         if (c.image) formData.append("images", c.image);
       });
 
       if (editingId) {
-        // Update
         await axios.put(`${BACKEND_URL}/api/topcategories/${editingId}`, formData, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
+          headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" },
         });
         alert("✅ Category updated successfully!");
       } else {
-        // Create
         await axios.post(`${BACKEND_URL}/api/topcategories`, formData, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
+          headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" },
         });
         alert("✅ Category created successfully!");
       }
@@ -95,8 +121,9 @@ const AdminTopCategories = () => {
     }
   };
 
+  // ✅ Delete
   const handleDelete = async (id) => {
-    if (!token) return alert("You must be logged in!");
+    if (!token) return alert("⚠️ You must be logged in as Admin!");
     if (!window.confirm("Delete this category?")) return;
     try {
       await axios.delete(`${BACKEND_URL}/api/topcategories/${id}`, {
@@ -110,6 +137,7 @@ const AdminTopCategories = () => {
     }
   };
 
+  // ✅ Edit
   const handleEdit = (category) => {
     setEditingId(category._id);
     setTitle(category.title);
@@ -119,12 +147,14 @@ const AdminTopCategories = () => {
         price: c.price,
         chairimage: c.chairimage,
         image: null,
-        productLink: c.productLink,
+        product: c.product?._id || c.product || "",
+        productSlug: c.productSlug || c.product?.slug || "",
       }))
     );
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  // ✅ Image helper
   const getImageUrl = (path) => {
     if (!path) return `${BACKEND_URL}/uploads/Default/lightimage.png`;
     return `${BACKEND_URL}/${path.replace(/\\/g, "/")}`;
@@ -137,10 +167,12 @@ const AdminTopCategories = () => {
       {/* Form */}
       <form onSubmit={handleSubmit} className="bg-white shadow rounded p-4 mb-6">
         <h2 className="text-lg font-semibold mb-2">
-          {editingId ? "Edit Category" : "Create New Category"}
+          {editingId ? "✏️ Edit Category" : "➕ Create New Category"}
         </h2>
+
+        {/* Title */}
         <div className="mb-4">
-          <label className="block font-medium mb-1">Category Header</label>
+          <label className="block font-medium mb-1">Category Title</label>
           <input
             type="text"
             className="border rounded w-full p-2"
@@ -150,74 +182,69 @@ const AdminTopCategories = () => {
           />
         </div>
 
-        <h3 className="font-medium mb-2">Chairs (4 per category)</h3>
+        {/* Chairs */}
+        <h3 className="font-medium mb-2">Please Choose Your Products</h3>
         {chairs.map((chair, index) => (
-          <div
-            key={index}
-            className="border rounded p-3 mb-3 flex flex-col md:flex-row gap-3"
-          >
+          <div key={index} className="border rounded p-3 mb-3 flex flex-col md:flex-row gap-3 items-center">
+            {/* Product Dropdown */}
+            <select
+              className="border p-2 rounded flex-1"
+              value={chair.product}
+              onChange={(e) => handleProductSelect(index, e.target.value)}
+            >
+              <option value="">-- Select Product --</option>
+              {products.map((p) => (
+                <option key={p._id} value={p._id}>
+                  {p.title} (Rs.{p.price})
+                </option>
+              ))}
+            </select>
+
+            {/* Manual Override */}
             <input
               type="text"
-              placeholder="Chair title"
               className="border p-2 rounded flex-1"
+              placeholder="Custom Title"
               value={chair.title}
-              onChange={(e) =>
-                handleChairChange(index, "title", e.target.value)
-              }
-              required
+              onChange={(e) => handleInputChange(index, "title", e.target.value)}
             />
             <input
               type="number"
-              placeholder="Price"
               className="border p-2 rounded w-28"
+              placeholder="Price"
               value={chair.price}
-              onChange={(e) =>
-                handleChairChange(index, "price", e.target.value)
-              }
-              required
-            />
-            <input
-              type="text"
-              placeholder="Product ID or Name"
-              className="border p-2 rounded flex-1"
-              value={chair.productLink}
-              onChange={(e) =>
-                handleChairChange(index, "productLink", e.target.value)
-              }
+              onChange={(e) => handleInputChange(index, "price", e.target.value)}
             />
 
-            {chair.chairimage && !chair.image && (
+            {/* Preview */}
+            {chair.chairimage && (
               <img
                 src={getImageUrl(chair.chairimage)}
-                alt="chair"
+                alt={chair.title}
                 className="w-16 h-16 object-cover"
               />
             )}
 
+            {/* Upload override */}
             <input
               type="file"
               accept="image/*"
-              onChange={(e) =>
-                handleChairChange(index, "image", e.target.files[0])
-              }
-              required={!editingId}
+              onChange={(e) => {
+                const updated = [...chairs];
+                updated[index].image = e.target.files[0];
+                setChairs(updated);
+              }}
             />
           </div>
         ))}
 
+        {/* Buttons */}
         <div className="flex gap-3">
-          <button
-            type="submit"
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-          >
-            {editingId ? "Save Changes" : "Create Category"}
+          <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+            {editingId ? "💾 Save Changes" : "📂 Create Category"}
           </button>
           {editingId && (
-            <button
-              type="button"
-              onClick={resetForm}
-              className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
-            >
+            <button type="button" onClick={resetForm} className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
               Cancel
             </button>
           )}
@@ -246,6 +273,7 @@ const AdminTopCategories = () => {
             </div>
           </div>
 
+          {/* Chairs */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {category.chairs?.map((chair, i) => (
               <div key={i} className="border rounded p-2 text-center">
@@ -256,9 +284,14 @@ const AdminTopCategories = () => {
                 />
                 <p className="font-semibold">{chair.title}</p>
                 <p className="text-sm text-gray-600">Rs.{chair.price}</p>
-                {chair.productLink && (
+                {chair.product && (
                   <p className="text-xs text-blue-600">
-                    Product Id: {chair.productLink}
+                    Product ID: {chair.product?._id || chair.product}
+                  </p>
+                )}
+                {(chair.productSlug || chair.product?.slug) && (
+                  <p className="text-xs text-gray-500">
+                    Slug: {chair.productSlug || chair.product?.slug}
                   </p>
                 )}
               </div>
