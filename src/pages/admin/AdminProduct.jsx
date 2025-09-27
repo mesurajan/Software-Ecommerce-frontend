@@ -1,7 +1,7 @@
 // src/pages/AdminProduct.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom"; // ✅ for navigation
+import { useNavigate } from "react-router-dom";
 
 const BACKEND_URL = "http://localhost:5174";
 
@@ -13,21 +13,32 @@ function AdminProduct() {
     title: "",
     price: "",
     category: "",
-    description: "",
+    subtitle: "", // ✅ short description
   });
   const [file, setFile] = useState(null);
   const [editingId, setEditingId] = useState(null);
 
   const token = localStorage.getItem("token");
-  const navigate = useNavigate(); // ✅ hook
+  const navigate = useNavigate();
 
   // Fetch products
   const fetchProducts = async () => {
     try {
       const res = await axios.get(`${BACKEND_URL}/api/products`);
-      setProducts(res.data);
+      const normalizedProducts = res.data.map((p) => ({
+        ...p,
+        id: p._id,
+        image: p.image
+          ? p.image.startsWith("http")
+            ? p.image
+            : `${BACKEND_URL}${p.image}`
+          : "/placeholder.png",
+        category:
+          typeof p.category === "object" ? p.category.name : p.category,
+      }));
+      setProducts(normalizedProducts);
     } catch (err) {
-      console.error("Fetch products error:", err);
+      console.error("❌ Fetch products error:", err);
     }
   };
 
@@ -40,7 +51,7 @@ function AdminProduct() {
         setForm((prev) => ({ ...prev, category: res.data[0]._id }));
       }
     } catch (err) {
-      console.error("Fetch categories error:", err);
+      console.error("❌ Fetch categories error:", err);
     }
   };
 
@@ -82,17 +93,18 @@ function AdminProduct() {
         title: "",
         price: "",
         category: categories.length > 0 ? categories[0]._id : "",
-        description: "",
+        subtitle: "",
       });
       setFile(null);
       setEditingId(null);
       fetchProducts();
     } catch (err) {
-      console.error("Submit product error:", err);
+      console.error("❌ Submit product error:", err);
       alert("❌ Failed to save product.");
     }
   };
 
+  // Edit product
   const handleEdit = (product) => {
     setForm({
       productId: product.productId,
@@ -102,11 +114,12 @@ function AdminProduct() {
         typeof product.category === "object"
           ? product.category._id
           : product.category,
-      description: product.description,
+      subtitle: product.subtitle || "", // ✅ load short desc
     });
-    setEditingId(product._id);
+    setEditingId(product.id);
   };
 
+  // Delete product
   const handleDelete = async (id) => {
     if (!token) return alert("❌ You must be logged in!");
     if (!window.confirm("Delete this product?")) return;
@@ -117,12 +130,12 @@ function AdminProduct() {
       alert("🗑️ Product deleted!");
       fetchProducts();
     } catch (err) {
-      console.error("Delete product error:", err);
+      console.error("❌ Delete product error:", err);
       alert("❌ Failed to delete product.");
     }
   };
 
-  // ✅ Navigate to AdminProductDetails
+  // Go to additional info
   const handleAdditionalInfo = (id) => {
     navigate(`/admin/product-details/${id}`);
   };
@@ -133,7 +146,7 @@ function AdminProduct() {
       <form onSubmit={handleSubmit} className="space-y-3">
         <input
           type="text"
-          placeholder="Product ID"
+          placeholder="Enter unique Product ID"
           value={form.productId}
           onChange={(e) => setForm({ ...form, productId: e.target.value })}
           className="border p-2 w-full"
@@ -142,7 +155,7 @@ function AdminProduct() {
         />
         <input
           type="text"
-          placeholder="Title"
+          placeholder="Enter product title"
           value={form.title}
           onChange={(e) => setForm({ ...form, title: e.target.value })}
           className="border p-2 w-full"
@@ -150,7 +163,7 @@ function AdminProduct() {
         />
         <input
           type="number"
-          placeholder="Price"
+          placeholder="Enter product price"
           value={form.price}
           onChange={(e) => setForm({ ...form, price: e.target.value })}
           className="border p-2 w-full"
@@ -170,12 +183,16 @@ function AdminProduct() {
         </select>
 
         <textarea
-          placeholder="Description"
-          value={form.description}
-          onChange={(e) => setForm({ ...form, description: e.target.value })}
+          placeholder="Enter short description (subtitle)"
+          value={form.subtitle}
+          onChange={(e) => setForm({ ...form, subtitle: e.target.value })}
           className="border p-2 w-full"
         />
-        <input type="file" onChange={(e) => setFile(e.target.files[0])} />
+        <input
+          type="file"
+          onChange={(e) => setFile(e.target.files[0])}
+          className="border p-2 w-full"
+        />
         <button
           type="submit"
           className="bg-blue-600 text-white px-4 py-2 rounded"
@@ -194,26 +211,24 @@ function AdminProduct() {
               <th className="border p-2">Slug</th>
               <th className="border p-2">Price</th>
               <th className="border p-2">Category</th>
+              <th className="border p-2">Subtitle</th>
               <th className="border p-2">Image</th>
               <th className="border p-2">Actions</th>
             </tr>
           </thead>
           <tbody>
             {products.map((p) => (
-              <tr key={p._id}>
+              <tr key={p.id}>
                 <td className="border p-2">{p.productId}</td>
                 <td className="border p-2">{p.title}</td>
                 <td className="border p-2">{p.slug}</td>
                 <td className="border p-2">Rs.{p.price}</td>
-                <td className="border p-2">
-                  {typeof p.category === "object"
-                    ? p.category?.name
-                    : p.category}
-                </td>
+                <td className="border p-2">{p.category}</td>
+                <td className="border p-2">{p.subtitle || "-"}</td>
                 <td className="border p-2">
                   {p.image && (
                     <img
-                      src={`${BACKEND_URL}${p.image}`}
+                      src={p.image}
                       alt={p.title}
                       className="h-12 object-cover"
                     />
@@ -227,13 +242,13 @@ function AdminProduct() {
                     Edit
                   </button>
                   <button
-                    onClick={() => handleDelete(p._id)}
+                    onClick={() => handleDelete(p.id)}
                     className="bg-red-600 text-white px-2 py-1 rounded"
                   >
                     Delete
                   </button>
                   <button
-                    onClick={() => handleAdditionalInfo(p._id)}
+                    onClick={() => handleAdditionalInfo(p.id)}
                     className="bg-green-600 text-white px-2 py-1 rounded"
                   >
                     Additional Info

@@ -10,32 +10,41 @@ const BACKEND_URL = "http://localhost:5174";
 
 function Product() {
   const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState(["all"]);
+  const [categories, setCategories] = useState([{ _id: "all", name: "All" }]);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // ✅ Fetch Products
         const resProducts = await axios.get(`${BACKEND_URL}/api/products`);
 
-        // ✅ Normalize products to always use `id` (_id from backend)
         const normalizedProducts = resProducts.data.map((p) => ({
           ...p,
-          id: p.id || p._id,
+          id: p._id,
+          // Handle single or multiple images
           image: p.image
-            ? p.image.startsWith("http")
-              ? p.image
-              : `${BACKEND_URL}${p.image}`
+            ? `${BACKEND_URL}${p.image}`
+            : p.images?.length
+            ? `${BACKEND_URL}${p.images[0]}`
             : "/placeholder.png",
           category:
             typeof p.category === "object" ? p.category.name : p.category,
-          slug: p.slug, // ✅ include slug for SEO URLs
+          categoryId:
+            typeof p.category === "object" ? p.category._id : p.category,
+          slug: p.slug,
         }));
         setProducts(normalizedProducts);
 
+        // ✅ Fetch Categories
         const resCategories = await axios.get(`${BACKEND_URL}/api/categories`);
-        setCategories(["all", ...resCategories.data.map((c) => c.name)]);
+        const normalizedCategories = resCategories.data.map((c) => ({
+          _id: c._id,
+          name: c.name,
+          slug: c.slug,
+        }));
+        setCategories([{ _id: "all", name: "All" }, ...normalizedCategories]);
       } catch (err) {
         console.error("Error fetching:", err);
       }
@@ -50,9 +59,9 @@ function Product() {
 
   // Group by category
   const groupedProducts = categories.reduce((acc, category) => {
-    if (category === "all") return acc;
-    acc[category] = searchFilteredProducts.filter(
-      (p) => p.category === category
+    if (category._id === "all") return acc;
+    acc[category.name] = searchFilteredProducts.filter(
+      (p) => p.category === category.name
     );
     return acc;
   }, {});
@@ -69,10 +78,16 @@ function Product() {
       <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-6 px-2 md:px-0 w-full mt-10">
         <div className="flex flex-col">
           <p className="text-xl md:text-3xl font-semibold px-2 md:px-4 py-2">
-            Our Collection of Stylish Furniture
+            {/* ✅ Dynamic subtitle if available */}
+            {products.length > 0
+              ? products[0].subtitle || "Our Collection of Stylish Furniture"
+              : "Our Collection of Stylish Furniture"}
           </p>
           <p className="text-gray-600 text-sm px-2 md:px-4">
-            Stylish furniture crafted for comfort, elegance, and everyday living.
+            {products.length > 0
+              ? products[0].description ||
+                "Stylish furniture crafted for comfort, elegance, and everyday living."
+              : "Stylish furniture crafted for comfort, elegance, and everyday living."}
           </p>
         </div>
 
@@ -100,8 +115,8 @@ function Product() {
               className="w-full md:w-auto border border-gray-300 rounded-md px-3 py-2"
             >
               {categories.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                <option key={cat._id} value={cat._id}>
+                  {cat.name}
                 </option>
               ))}
             </select>
@@ -114,14 +129,14 @@ function Product() {
         {selectedCategory === "all" ? (
           <>
             {categories
-              .filter((cat) => cat !== "all")
+              .filter((cat) => cat._id !== "all")
               .map((cat) => {
-                const items = groupedProducts[cat] || [];
+                const items = groupedProducts[cat.name] || [];
                 if (items.length === 0) return null;
                 return (
-                  <div key={cat}>
+                  <div key={cat._id}>
                     <h2 className="text-xl font-semibold mb-4">
-                      {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                      {cat.name}
                     </h2>
                     <div className="grid grid-cols-1 sm:grid-cols-4 gap-6">
                       {items.map((product) => (
@@ -135,7 +150,7 @@ function Product() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-6">
             {searchFilteredProducts
-              .filter((p) => p.category === selectedCategory)
+              .filter((p) => p.categoryId === selectedCategory)
               .map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}

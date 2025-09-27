@@ -69,7 +69,7 @@ export function AdminSidebar() {
         title: "Product Management ",
         items: [
           { title: "Add Products", url: "/admin/products", icon: ClipboardList },
-          { title: "Product Details", url: "/admin/productdetails", icon: ClipboardList },
+         
 
 
           { title: "Collections", url: "/admin/collections", icon: ClipboardList },

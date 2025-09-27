@@ -6,10 +6,10 @@ import AppBreadcrumbs from "../../components/Breadcrumbs";
 import { addToCart } from "../../Apps/Reducers/cartSlice";
 import axios from "axios";
 
-const BACKEND_URL = "http://localhost:5174"; // ✅ Centralized base URL
+const BACKEND_URL = "http://localhost:5174";
 
 function ProductDetails() {
-  const { id, slug } = useParams(); // Route: /productdetails/:id/:slug
+  const { id, slug } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -18,24 +18,49 @@ function ProductDetails() {
   const [error, setError] = useState("");
   const [activeTab, setActiveTab] = useState("description");
 
-  // ✅ Fetch product from backend
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         setLoading(true);
-        const { data } = await axios.get(`${BACKEND_URL}/api/products/${id}`);
+        const { data } = await axios.get(
+          `${BACKEND_URL}/api/products/${id}/${slug || ""}`
+        );
 
-        // Normalize image path
+        // Normalize product data
         const normalizedProduct = {
           ...data,
-          image: data.image?.startsWith("http")
-            ? data.image
-            : `${BACKEND_URL}${data.image}`,
+          image: data?.image
+            ? data.image.startsWith("http")
+              ? data.image
+              : `${BACKEND_URL}${data.image}`
+            : "",
+          videoUrl: data.videoUrl || data.video || "",
+          colors: Array.isArray(data.colors)
+            ? data.colors.join(", ")
+            : data.colors || "",
+          stock: data.stock ?? 0,
+          discount: data.discount ?? 0,
+          brand: data.brand || "",
+          sku: data.sku || "",
+          weight: data.weight || "",
+          length: data.length || "",
+          width: data.width || "",
+          height: data.height || "",
+          material: data.material || "",
+          warranty: data.warranty || "",
+          delivery: data.delivery || "",
+          subtitle: data.subtitle || "",
+          additionalInfo: data.additionalInfo || "",
+          reviews: data.reviews || [],
+          category: data.category || null,
+          createdBy: data.createdBy || null,
+          createdAt: data.createdAt || null,
+          updatedAt: data.updatedAt || null,
         };
 
         setProduct(normalizedProduct);
 
-        // ✅ Redirect to correct slug if mismatch
+        // ✅ Handle redirect if slug mismatch
         if (normalizedProduct.slug && normalizedProduct.slug !== slug) {
           navigate(
             `/productdetails/${normalizedProduct._id}/${normalizedProduct.slug}`,
@@ -68,7 +93,6 @@ function ProductDetails() {
     );
   }
 
-  // ✅ Add to cart handler
   const handleAddToCart = () => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -88,7 +112,6 @@ function ProductDetails() {
     alert("Product added to cart!");
   };
 
-  // ✅ Buy now handler
   const handleBuyNow = () => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -109,12 +132,15 @@ function ProductDetails() {
     navigate("/Buynow", { state: { product } });
   };
 
-  // ✅ Availability: If stock > 0 → Available
   const isAvailable = product.stock && product.stock > 0;
+
+  const discountedPrice = product.discount
+    ? (product.price - (product.price * product.discount) / 100).toFixed(2)
+    : null;
 
   return (
     <div className="bg-white container">
-      {/* Header with Breadcrumbs */}
+      {/* Header */}
       <div className="bg-backgroundlite py-4">
         <h1 className="text-3xl font-bold px-4 text-mainbackground">
           Product Details
@@ -122,9 +148,9 @@ function ProductDetails() {
         <AppBreadcrumbs />
       </div>
 
-      {/* Main Product Section */}
+      {/* Product Section */}
       <div className="container grid gap-6 px-4 py-12 mt-10 md:grid-cols-2 md:px-15">
-        {/* Left Side - Images */}
+        {/* Images */}
         <div className="flex gap-4">
           <div className="flex flex-col gap-2">
             {[...Array(3)].map((_, i) => (
@@ -136,17 +162,25 @@ function ProductDetails() {
               />
             ))}
           </div>
-          <img
-            src={product.image}
-            alt={product.title}
-            className="max-w-[320px] max-h-[400px] rounded shadow object-cover"
-          />
+          <div className="relative">
+            <img
+              src={product.image}
+              alt={product.title}
+              className="max-w-[320px] max-h-[400px] rounded shadow object-cover"
+            />
+            {product.discount ? (
+              <span className="absolute top-2 left-2 bg-red-600 text-white text-sm font-bold px-2 py-1 rounded">
+                -{product.discount}% OFF
+              </span>
+            ) : null}
+          </div>
         </div>
 
-        {/* Right Side - Info */}
+        {/* Info */}
         <div>
           <h2 className="text-3xl font-bold">{product.title}</h2>
 
+         
           {/* Ratings */}
           <div className="flex items-center gap-2 mt-2 text-yellow-500">
             ⭐⭐⭐⭐☆{" "}
@@ -155,11 +189,11 @@ function ProductDetails() {
             </span>
           </div>
 
-          {/* Availability Badge */}
+          {/* Availability */}
           <div className="mt-2">
             {isAvailable ? (
               <span className="inline-block px-3 py-1 text-sm font-medium text-green-700 bg-green-100 rounded-full">
-                ✅ Available
+                ✅ Available ({product.stock} in stock)
               </span>
             ) : (
               <span className="inline-block px-3 py-1 text-sm font-medium text-red-700 bg-red-100 rounded-full">
@@ -170,16 +204,61 @@ function ProductDetails() {
 
           {/* Price */}
           <div className="mt-4">
-            <span className="text-2xl font-bold text-blue-900">
-              Rs.{product.price}
-            </span>
+            {discountedPrice ? (
+              <div>
+                <span className="text-lg text-gray-500 line-through">
+                  Rs.{product.price}
+                </span>
+                <span className="ml-2 text-2xl font-bold text-blue-900">
+                  Rs.{discountedPrice}
+                </span>
+                <span className="ml-2 text-green-600 font-medium">
+                  ({product.discount}% OFF)
+                </span>
+              </div>
+            ) : (
+              <span className="text-2xl font-bold text-blue-900">
+                Rs.{product.price}
+              </span>
+            )}
+
+             <p className="mt-1 text-gray-600 italic">
+            {product.subtitle || "No short description available."}
+          </p>
+
           </div>
 
-          {/* Short description */}
-          <p className="mt-4 text-gray-600 text-justify">
-            {product.description ||
-              "Detailed description is not available for this product."}
-          </p>
+          {/* Extra info */}
+          <ul className="mt-4 text-sm text-gray-700 space-y-1">
+            <li>
+              <b>Brand:</b> {product.brand || "N/A"}
+            </li>
+            <li>
+              <b>Colors:</b> {product.colors || "N/A"}
+            </li>
+            <li>
+              <b>Material:</b> {product.material || "N/A"}
+            </li>
+            <li>
+              <b>Warranty:</b> {product.warranty || "N/A"}
+            </li>
+           
+            <li>
+              <b>Video:</b>{" "}
+              {product.videoUrl ? (
+                <a
+                  href={product.videoUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-blue-600 underline"
+                >
+                  Watch
+                </a>
+              ) : (
+                "N/A"
+              )}
+            </li>
+          </ul>
 
           {/* Action Buttons */}
           <div className="flex gap-4 mt-6">
@@ -194,14 +273,23 @@ function ProductDetails() {
             </button>
           </div>
 
-          {/* Categories & Share */}
+          {/* Category & Share */}
           <div className="mt-6 text-sm text-gray-600">
-            <p>
+            {/* <p>
               Category:{" "}
               <span className="font-medium">
                 {product.category?.name || "Uncategorized"}
               </span>
             </p>
+            <p>
+              Created By: {product.createdBy?.name || "Admin"}
+            </p>
+            <p>
+              Last Updated:{" "}
+              {product.updatedAt
+                ? new Date(product.updatedAt).toLocaleDateString()
+                : "N/A"}
+            </p> */}
             <p>
               Share:{" "}
               <span className="text-blue-600 cursor-pointer">Facebook</span>,{" "}
@@ -211,7 +299,7 @@ function ProductDetails() {
         </div>
       </div>
 
-      {/* Tabs Section */}
+      {/* Tabs */}
       <div className="container py-12">
         <div className="flex gap-6 border-b">
           {["description", "additional", "reviews"].map((tab) => (
@@ -235,17 +323,72 @@ function ProductDetails() {
 
         {/* Tab Content */}
         <div className="mt-6 leading-relaxed text-gray-600">
-          {activeTab === "description" && <p>{product.description}</p>}
-          {activeTab === "additional" && (
-            <ul className="list-disc pl-6 space-y-2">
-              <li>Material: {product.material || "Premium Quality"}</li>
-              <li>Dimensions: {product.dimensions || "Standard Size"}</li>
-              <li>
-                Warranty: {product.warranty || "1 Year Manufacturer Warranty"}
-              </li>
-              <li>Delivery: Free Home Delivery within 7 days</li>
-            </ul>
+          {activeTab === "description" && (
+            <div
+              className="prose max-w-none text-gray-700"
+              dangerouslySetInnerHTML={{
+                __html:
+                  product.description ||
+                  "<p>No detailed description available.</p>",
+              }}
+            />
           )}
+
+          {activeTab === "additional" && (
+            <div className="mt-4 space-y-6 text-gray-700">
+              {/* Structured details */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                <div>
+                  <p>
+                    <strong>Brand:</strong> {product.brand || "N/A"}
+                  </p>
+                  <p>
+                    <strong>SKU:</strong> {product.sku || "N/A"}
+                  </p>
+                  <p>
+                    <strong>Weight:</strong>{" "}
+                    {product.weight ? `${product.weight} kg` : "N/A"}
+                  </p>
+                  <p>
+                    <strong>Dimensions:</strong>{" "}
+                    {product.length && product.width && product.height
+                      ? `${product.length} x ${product.width} x ${product.height} cm`
+                      : "N/A"}
+                  </p>
+                </div>
+
+                <div>
+                  <p>
+                    <strong>Material:</strong> {product.material || "N/A"}
+                  </p>
+                  <p>
+                    <strong>Warranty:</strong> {product.warranty || "N/A"}
+                  </p>
+                  <p>
+                    <strong>Delivery:</strong> {product.delivery || "N/A"}
+                  </p>
+                  <p>
+                    <strong>Colors:</strong> {product.colors || "N/A"}
+                  </p>
+                </div>
+              </div>
+
+              <div className="pt-2">
+                <h3 className="text-lg font-semibold mb-2">Brief details</h3>
+                {product.additionalInfo ? (
+                  <div
+                    className="prose max-w-none text-gray-700"
+                    dangerouslySetInnerHTML={{ __html: product.additionalInfo }}
+                  />
+                ) : (
+                  <p className="text-sm text-gray-600">
+                    No additional information provided.
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+
           {activeTab === "reviews" && (
             <div>
               <p className="font-medium">Customer Reviews</p>
@@ -263,12 +406,6 @@ function ProductDetails() {
             </div>
           )}
         </div>
-      </div>
-
-      {/* Related Items Section */}
-      <div className="container py-10">
-        <h2 className="text-xl font-bold mb-4">Related Items</h2>
-        <p className="text-gray-500">Coming soon...</p>
       </div>
     </div>
   );

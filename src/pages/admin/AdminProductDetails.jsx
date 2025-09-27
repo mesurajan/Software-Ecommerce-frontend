@@ -11,29 +11,44 @@ function AdminProductDetails() {
 
   const [product, setProduct] = useState(null);
   const [categories, setCategories] = useState([]);
-  const [files, setFiles] = useState([]); // multiple new images
+  const [file, setFile] = useState(null); // ✅ single file
   const token = localStorage.getItem("token");
 
   // Fetch product
   const fetchProduct = async () => {
     try {
       const res = await axios.get(
-        `${BACKEND_URL}/api/products/${id}/${slug || ""}`
+        `${BACKEND_URL}/api/products/${id}${slug ? "/" + slug : ""}`
       );
 
       if (res.data.redirect) {
         navigate(res.data.redirect, { replace: true });
       } else {
-        // Ensure default values to avoid undefined
-        setProduct({
+        const normalized = {
           ...res.data,
+          id: res.data._id || res.data.id,
           stock: res.data.stock || 0,
+          subtitle: res.data.subtitle || "",
+          description: res.data.description || "",
           colors: Array.isArray(res.data.colors)
             ? res.data.colors.join(", ")
             : res.data.colors || "",
           videoUrl: res.data.videoUrl || "",
           additionalInfo: res.data.additionalInfo || "",
-        });
+          brand: res.data.brand || "",
+          sku: res.data.sku || "",
+          discount: res.data.discount || 0,
+          oldPrice: res.data.oldPrice || "",
+          weight: res.data.weight || "",
+          length: res.data.length || "",
+          width: res.data.width || "",
+          height: res.data.height || "",
+          material: res.data.material || "",
+          warranty: res.data.warranty || "",
+          delivery: res.data.delivery || "",
+          image: res.data.image || "", // ✅ single image
+        };
+        setProduct(normalized);
       }
     } catch (err) {
       console.error("Fetch product error:", err);
@@ -70,7 +85,33 @@ function AdminProductDetails() {
 
     const formData = new FormData();
 
-    // Convert colors (comma → array)
+    // Normal fields
+    formData.append("title", product.title);
+    formData.append("subtitle", product.subtitle || "");
+    formData.append("price", product.price);
+    formData.append("oldPrice", product.oldPrice || "");
+    formData.append("stock", product.stock);
+    formData.append("description", product.description || "");
+    formData.append("videoUrl", product.videoUrl || "");
+    formData.append("additionalInfo", product.additionalInfo || "");
+    formData.append("brand", product.brand || "");
+    formData.append("sku", product.sku || "");
+    formData.append("discount", product.discount || 0);
+    formData.append("weight", product.weight || "");
+    formData.append("length", product.length || "");
+    formData.append("width", product.width || "");
+    formData.append("height", product.height || "");
+    formData.append("material", product.material || "");
+    formData.append("warranty", product.warranty || "");
+    formData.append("delivery", product.delivery || "");
+    formData.append(
+      "category",
+      typeof product.category === "object"
+        ? product.category._id
+        : product.category
+    );
+
+    // Colors → array
     if (product.colors) {
       product.colors
         .split(",")
@@ -79,23 +120,9 @@ function AdminProductDetails() {
         .forEach((c) => formData.append("colors", c));
     }
 
-    // Append normal fields
-    formData.append("title", product.title);
-    formData.append("price", product.price);
-    formData.append("stock", product.stock);
-    formData.append("description", product.description || "");
-    formData.append("videoUrl", product.videoUrl || "");
-    formData.append("additionalInfo", product.additionalInfo || "");
-    formData.append(
-      "category",
-      typeof product.category === "object"
-        ? product.category._id
-        : product.category
-    );
-
-    // New images
-    if (files.length > 0) {
-      files.forEach((f) => formData.append("images", f));
+    // ✅ Single image upload
+    if (file) {
+      formData.append("image", file);
     }
 
     try {
@@ -134,31 +161,157 @@ function AdminProductDetails() {
     <div className="p-6 max-w-3xl mx-auto">
       <h1 className="text-xl font-bold mb-4">Edit Product</h1>
       <form onSubmit={handleSave} className="space-y-3">
-        {/* Basic fields */}
+        {/* Title */}
         <input
           type="text"
           name="title"
           value={product.title}
           onChange={handleChange}
-          placeholder="Title"
+          placeholder="Enter product title"
           className="border p-2 w-full"
           required
         />
+
+        {/* Subtitle */}
+        <input
+          type="text"
+          name="subtitle"
+          value={product.subtitle}
+          onChange={handleChange}
+          placeholder="Enter product subtitle"
+          className="border p-2 w-full"
+        />
+
+        {/* Brand */}
+        <input
+          type="text"
+          name="brand"
+          value={product.brand}
+          onChange={handleChange}
+          placeholder="Enter product brand"
+          className="border p-2 w-full"
+        />
+
+        {/* SKU */}
+        <input
+          type="text"
+          name="sku"
+          value={product.sku}
+          onChange={handleChange}
+          placeholder="Enter product SKU"
+          className="border p-2 w-full"
+        />
+
+        {/* Price */}
         <input
           type="number"
           name="price"
           value={product.price}
           onChange={handleChange}
-          placeholder="Price"
+          placeholder="Enter product price"
           className="border p-2 w-full"
           required
         />
+
+        {/* Old Price */}
+        <input
+          type="number"
+          name="oldPrice"
+          value={product.oldPrice}
+          onChange={handleChange}
+          placeholder="Enter old price (for discount display)"
+          className="border p-2 w-full"
+        />
+
+        {/* Discount */}
+        <input
+          type="number"
+          name="discount"
+          value={product.discount}
+          onChange={handleChange}
+          placeholder="Enter discount %"
+          className="border p-2 w-full"
+        />
+
+        {/* Stock */}
         <input
           type="number"
           name="stock"
           value={product.stock}
           onChange={handleChange}
-          placeholder="Stock"
+          placeholder="Enter stock quantity"
+          className="border p-2 w-full"
+        />
+
+        {/* Weight */}
+        <input
+          type="number"
+          step="0.01"
+          name="weight"
+          value={product.weight}
+          onChange={handleChange}
+          placeholder="Enter weight (kg)"
+          className="border p-2 w-full"
+        />
+
+        {/* Dimensions */}
+        <div className="grid grid-cols-3 gap-2">
+          <input
+            type="number"
+            step="0.1"
+            name="length"
+            value={product.length}
+            onChange={handleChange}
+            placeholder="Length (cm)"
+            className="border p-2 w-full"
+          />
+          <input
+            type="number"
+            step="0.1"
+            name="width"
+            value={product.width}
+            onChange={handleChange}
+            placeholder="Width (cm)"
+            className="border p-2 w-full"
+          />
+          <input
+            type="number"
+            step="0.1"
+            name="height"
+            value={product.height}
+            onChange={handleChange}
+            placeholder="Height (cm)"
+            className="border p-2 w-full"
+          />
+        </div>
+
+        {/* Material */}
+        <input
+          type="text"
+          name="material"
+          value={product.material}
+          onChange={handleChange}
+          placeholder="Enter product material"
+          className="border p-2 w-full"
+        />
+
+        {/* Warranty */}
+        <input
+          type="text"
+          name="warranty"
+          value={product.warranty}
+          onChange={handleChange}
+          placeholder="Enter warranty details"
+          className="border p-2 w-full"
+        />
+
+        {/* Delivery */}
+        <input
+          type="text"
+          name="delivery"
+          value={product.delivery}
+          onChange={handleChange}
+          placeholder="Enter delivery info"
           className="border p-2 w-full"
         />
 
@@ -173,6 +326,7 @@ function AdminProductDetails() {
           onChange={handleChange}
           className="border p-2 w-full"
         >
+          <option value="">Select category</option>
           {categories.map((cat) => (
             <option key={cat._id} value={cat._id}>
               {cat.name}
@@ -185,7 +339,7 @@ function AdminProductDetails() {
           name="description"
           value={product.description}
           onChange={handleChange}
-          placeholder="Description"
+          placeholder="Enter detailed product description"
           className="border p-2 w-full"
         />
 
@@ -195,7 +349,7 @@ function AdminProductDetails() {
           name="colors"
           value={product.colors}
           onChange={handleChange}
-          placeholder="Colors (comma separated)"
+          placeholder="Enter colors (comma separated)"
           className="border p-2 w-full"
         />
 
@@ -205,7 +359,7 @@ function AdminProductDetails() {
           name="videoUrl"
           value={product.videoUrl}
           onChange={handleChange}
-          placeholder="Video URL"
+          placeholder="Enter product video URL (optional)"
           className="border p-2 w-full"
         />
 
@@ -214,26 +368,28 @@ function AdminProductDetails() {
           name="additionalInfo"
           value={product.additionalInfo}
           onChange={handleChange}
-          placeholder="Additional Info"
+          placeholder="Enter any additional product info"
           className="border p-2 w-full"
         />
 
-        {/* Image previews */}
-        {product.images &&
-          product.images.map((img, i) => (
+        {/* ✅ Single Image Preview */}
+        {product.image && (
+          <div className="my-2">
             <img
-              key={i}
-              src={`${BACKEND_URL}${img.startsWith("/") ? img : "/" + img}`}
-              alt={`${product.title}-${i}`}
-              className="h-20 object-cover inline-block mr-2"
+              src={`${BACKEND_URL}${
+                product.image.startsWith("/") ? product.image : "/" + product.image
+              }`}
+              alt={product.title}
+              className="h-20 w-20 object-cover border"
             />
-          ))}
+          </div>
+        )}
 
-        {/* Upload new images */}
+        {/* Upload new image */}
         <input
           type="file"
-          multiple
-          onChange={(e) => setFiles(Array.from(e.target.files))}
+          accept="image/*"
+          onChange={(e) => setFile(e.target.files[0])}
         />
 
         <div className="space-x-2">
