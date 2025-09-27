@@ -78,16 +78,10 @@ function Product() {
       <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-6 px-2 md:px-0 w-full mt-10">
         <div className="flex flex-col">
           <p className="text-xl md:text-3xl font-semibold px-2 md:px-4 py-2">
-            {/* ✅ Dynamic subtitle if available */}
-            {products.length > 0
-              ? products[0].subtitle || "Our Collection of Stylish Furniture"
-              : "Our Collection of Stylish Furniture"}
+            Elevate Your Living with Timeless Furniture
           </p>
           <p className="text-gray-600 text-sm px-2 md:px-4">
-            {products.length > 0
-              ? products[0].description ||
-                "Stylish furniture crafted for comfort, elegance, and everyday living."
-              : "Stylish furniture crafted for comfort, elegance, and everyday living."}
+            Elegant pieces designed to bring sophistication, comfort, and functionality into every room.
           </p>
         </div>
 
