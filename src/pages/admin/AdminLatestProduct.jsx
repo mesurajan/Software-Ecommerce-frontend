@@ -2,155 +2,174 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-const BACKEND_URL = "http://localhost:5174";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5174";
 
 function AdminLatestProduct() {
   const [latestProducts, setLatestProducts] = useState([]);
+  const [products, setProducts] = useState([]);
   const [category, setCategory] = useState("New Arrivals");
-  const [products, setProducts] = useState([
-    { productId: "", title: "", price: "", image: null },
-    { productId: "", title: "", price: "", image: null },
-    { productId: "", title: "", price: "", image: null },
+  const [items, setItems] = useState([
+    { product: "", productSlug: "", title: "", price: "", image: null, productImage: "" },
+    { product: "", productSlug: "", title: "", price: "", image: null, productImage: "" },
+    { product: "", productSlug: "", title: "", price: "", image: null, productImage: "" },
   ]);
-  const [editing, setEditing] = useState(null);
-
+  const [editingId, setEditingId] = useState(null);
   const token = localStorage.getItem("token");
 
+  // ✅ Fetch existing latest products
   const fetchLatestProducts = async () => {
     try {
       const { data } = await axios.get(`${BACKEND_URL}/api/latestproduct`);
-      setLatestProducts(data || []);
+      setLatestProducts(Array.isArray(data) ? data : data.data || []);
     } catch (err) {
       console.error("Error fetching latest products:", err);
     }
   };
 
-  useEffect(() => {
-    fetchLatestProducts();
-  }, []);
-
-  const handleProductChange = (index, field, value) => {
-    const updated = [...products];
-    updated[index][field] = value;
-    setProducts(updated);
+  // ✅ Fetch available products
+  const fetchProducts = async () => {
+    try {
+      const { data } = await axios.get(`${BACKEND_URL}/api/products`);
+      setProducts(Array.isArray(data) ? data : data.data || []);
+    } catch (err) {
+      console.error("Error fetching products:", err);
+    }
   };
 
+  useEffect(() => {
+    fetchLatestProducts();
+    fetchProducts();
+  }, []);
+
+  // ✅ Select product from dropdown
+  const handleProductSelect = (index, productId) => {
+    const selected = products.find((p) => p._id === productId);
+    if (!selected) return;
+    const updated = [...items];
+    updated[index] = {
+      ...updated[index],
+      title: selected.title,
+      price: selected.price,
+      productImage: selected.images?.[0] || "",
+      image: null,
+      product: selected._id,
+      productSlug: selected.slug,
+    };
+    setItems(updated);
+  };
+
+  // ✅ Manual input override
+  const handleInputChange = (index, field, value) => {
+    const updated = [...items];
+    updated[index][field] = value;
+    setItems(updated);
+  };
+
+  // ✅ Reset form
+  const resetForm = () => {
+    setCategory("New Arrivals");
+    setItems([
+      { product: "", productSlug: "", title: "", price: "", image: null, productImage: "" },
+      { product: "", productSlug: "", title: "", price: "", image: null, productImage: "" },
+      { product: "", productSlug: "", title: "", price: "", image: null, productImage: "" },
+    ]);
+    setEditingId(null);
+  };
+
+  // ✅ Create / Update
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!token) return alert("Login required");
+    if (!token) return alert("⚠️ You must be logged in as Admin!");
 
     try {
       const formData = new FormData();
       formData.append("category", category);
 
-      const productsData = products.map((p) => ({
-        productId: p.productId,
-        title: p.title,
-        price: p.price,
-        productImage: p.image ? p.image.name : "",
+      const productsData = items.map((i) => ({
+        product: i.product,
+        productSlug: i.productSlug,
+        title: i.title,
+        price: i.price,
+        productImage: i.image ? i.image.name : i.productImage || "",
       }));
       formData.append("products", JSON.stringify(productsData));
 
-      products.forEach((p) => {
-        if (p.image) formData.append("images", p.image);
+      // Append uploaded overrides
+      items.forEach((i) => {
+        if (i.image) formData.append("images", i.image);
       });
 
-      await axios.post(`${BACKEND_URL}/api/latestproduct`, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      if (editingId) {
+        await axios.put(`${BACKEND_URL}/api/latestproduct/${editingId}`, formData, {
+          headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" },
+        });
+        alert("✅ Latest product category updated!");
+      } else {
+        await axios.post(`${BACKEND_URL}/api/latestproduct`, formData, {
+          headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" },
+        });
+        alert("✅ Latest product category created!");
+      }
 
-      alert("✅ Latest products added");
-      setProducts([
-        { productId: "", title: "", price: "", image: null },
-        { productId: "", title: "", price: "", image: null },
-        { productId: "", title: "", price: "", image: null },
-      ]);
+      resetForm();
       fetchLatestProducts();
     } catch (err) {
-      console.error("Error:", err.response?.data || err.message);
-      alert("❌ Failed to create latest product entry");
+      console.error("Save error:", err.response?.data || err.message);
+      alert("❌ Failed to save latest products.");
     }
   };
 
-  const handleEditSave = async () => {
-    if (!editing) return;
-    try {
-      const formData = new FormData();
-      formData.append("title", editing.title);
-      formData.append("price", editing.price);
-      if (editing.image) formData.append("image", editing.image);
-
-      await axios.put(
-        `${BACKEND_URL}/api/latestproduct/${editing.productId}`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-
-      alert("✅ Product updated");
-      setEditing(null);
-      fetchLatestProducts();
-    } catch (err) {
-      console.error("Update error:", err.response?.data || err.message);
-      alert("❌ Update failed");
-    }
-  };
-
+  // ✅ Delete entire category
   const handleDeleteCategory = async (categoryName) => {
-    if (!token) return alert("Login required");
+    if (!token) return alert("⚠️ Login required!");
     if (!window.confirm(`Delete all items for "${categoryName}"?`)) return;
     try {
-      await axios.delete(
-        `${BACKEND_URL}/api/latestproduct/category/${encodeURIComponent(
-          categoryName
-        )}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      await axios.delete(`${BACKEND_URL}/api/latestproduct/category/${encodeURIComponent(categoryName)}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      alert("🗑️ Category deleted!");
       fetchLatestProducts();
     } catch (err) {
       console.error("Error deleting category:", err);
-      alert("Delete category failed");
+      alert("❌ Failed to delete category.");
     }
   };
 
-  // 🆕 Delete a single product
-  const handleDeleteProduct = async (productId) => {
-    if (!token) return alert("Login required");
-    if (!window.confirm("Delete this product?")) return;
-    try {
-      await axios.delete(`${BACKEND_URL}/api/latestproduct/${productId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      alert("✅ Product deleted");
-      fetchLatestProducts();
-    } catch (err) {
-      console.error("Error deleting product:", err);
-      alert("❌ Failed to delete product");
-    }
+  // ✅ Edit existing category
+  const handleEdit = (doc) => {
+    setEditingId(doc._id);
+    setCategory(doc.category);
+    setItems(
+      doc.products.map((p) => ({
+        product: p.product?._id || p.product || "",
+        productSlug: p.productSlug || p.product?.slug || "",
+        title: p.title || p.product?.title || "",
+        price: p.price || p.product?.price || "",
+        productImage: p.productImage || p.product?.images?.[0] || "",
+        image: null,
+      }))
+    );
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  // ✅ Image helper
   const getImageUrl = (path) => {
     if (!path) return `${BACKEND_URL}/uploads/Default/lightimage.png`;
-    if (path.startsWith("uploads/"))
-      return `${BACKEND_URL}/${path.replace(/\\/g, "/")}`;
-    return `${BACKEND_URL}/uploads/latestproducts/${path.replace(/\\/g, "/")}`;
+    if (path.startsWith("http")) return path;
+    return `${BACKEND_URL.replace(/\/$/, "")}/${path.replace(/^\/+/, "")}`;
   };
 
   return (
     <div className="p-6">
-      <h1 className="text-xl font-bold mb-6">Manage Latest Products</h1>
+      <h1 className="text-xl font-bold mb-4">Manage Latest Products</h1>
 
-      {/* ADD NEW FORM */}
-      <form onSubmit={handleSubmit} className="bg-white p-4 shadow rounded mb-8">
+      {/* Form */}
+      <form onSubmit={handleSubmit} className="bg-white shadow rounded p-4 mb-6">
+        <h2 className="text-lg font-semibold mb-2">
+          {editingId ? "✏️ Edit Latest Product Category" : "➕ Create New Latest Product Category"}
+        </h2>
+
+        {/* Category Selector */}
         <div className="mb-4">
           <label className="block font-medium mb-1">Category</label>
           <select
@@ -165,161 +184,119 @@ function AdminLatestProduct() {
           </select>
         </div>
 
-        <h3 className="font-medium mb-2">Products (3 per submission)</h3>
-        {products.map((p, i) => (
-          <div
-            key={i}
-            className="flex flex-col md:flex-row gap-3 mb-3 border p-3 rounded"
-          >
-            <input
-              type="text"
-              placeholder="Product ID"
-              value={p.productId}
-              onChange={(e) =>
-                handleProductChange(i, "productId", e.target.value)
-              }
-              className="border p-2 rounded w-40"
-              required
-            />
-            <input
-              type="text"
-              placeholder="Title"
-              value={p.title}
-              onChange={(e) => handleProductChange(i, "title", e.target.value)}
+        {/* Products */}
+        <h3 className="font-medium mb-2">Please Choose Your Products</h3>
+        {items.map((item, index) => (
+          <div key={index} className="border rounded p-3 mb-3 flex flex-col md:flex-row gap-3 items-center">
+            {/* Dropdown */}
+            <select
               className="border p-2 rounded flex-1"
-              required
+              value={item.product}
+              onChange={(e) => handleProductSelect(index, e.target.value)}
+            >
+              <option value="">-- Select Product --</option>
+              {products.map((p) => (
+                <option key={p._id} value={p._id}>
+                  {p.title} (Rs.{p.price})
+                </option>
+              ))}
+            </select>
+
+            {/* Override Inputs */}
+            <input
+              type="text"
+              className="border p-2 rounded flex-1"
+              placeholder="Custom Title"
+              value={item.title}
+              onChange={(e) => handleInputChange(index, "title", e.target.value)}
             />
             <input
               type="number"
-              placeholder="Price"
-              value={p.price}
-              onChange={(e) => handleProductChange(i, "price", e.target.value)}
               className="border p-2 rounded w-28"
-              required
+              placeholder="Price"
+              value={item.price}
+              onChange={(e) => handleInputChange(index, "price", e.target.value)}
             />
+
+            {/* Preview */}
+            {item.productImage && (
+              <img
+                src={getImageUrl(item.productImage)}
+                alt={item.title}
+                className="w-16 h-16 object-cover"
+              />
+            )}
+
+            {/* Upload override */}
             <input
               type="file"
               accept="image/*"
-              onChange={(e) =>
-                handleProductChange(i, "image", e.target.files[0])
-              }
-              required
+              onChange={(e) => {
+                const updated = [...items];
+                updated[index].image = e.target.files[0];
+                setItems(updated);
+              }}
             />
           </div>
         ))}
 
-        <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">
-          Add Latest Product
-        </button>
+        {/* Buttons */}
+        <div className="flex gap-3">
+          <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+            {editingId ? "💾 Save Changes" : "📂 Create Category"}
+          </button>
+          {editingId && (
+            <button type="button" onClick={resetForm} className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
+              Cancel
+            </button>
+          )}
+        </div>
       </form>
 
-      {/* EXISTING PRODUCTS TABLE */}
+      {/* Existing Categories */}
+      <h2 className="text-lg font-semibold mb-2">Existing Latest Products</h2>
       {latestProducts.map((doc) => (
-        <div key={doc._id} className="bg-white p-4 shadow rounded mb-8">
-          <div className="flex justify-between items-center mb-3">
-            <h2 className="font-semibold">{doc.category}</h2>
-            <button
-              onClick={() => handleDeleteCategory(doc.category)}
-              className="px-3 py-1 bg-red-600 text-white rounded"
-            >
-              Delete Category
-            </button>
+        <div key={doc._id} className="border p-4 rounded mb-3 bg-gray-50">
+          <div className="flex justify-between items-center mb-2">
+            <h3 className="font-bold">{doc.category}</h3>
+            <div className="flex gap-2">
+              <button
+                onClick={() => handleEdit(doc)}
+                className="px-3 py-1 bg-green-600 text-white rounded"
+              >
+                Edit
+              </button>
+              <button
+                onClick={() => handleDeleteCategory(doc.category)}
+                className="px-3 py-1 bg-red-600 text-white rounded"
+              >
+                Delete
+              </button>
+            </div>
           </div>
 
-          <table className="w-full border-collapse">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="border p-2">Image</th>
-                <th className="border p-2">Product ID</th>
-                <th className="border p-2">Title</th>
-                <th className="border p-2">Price</th>
-                <th className="border p-2">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {doc.products.map((p) => (
-                <tr key={p._id}>
-                  <td className="border p-2 text-center">
-                    <img
-                      src={getImageUrl(p.productImage)}
-                      alt={p.title}
-                      className="w-16 h-16 object-cover mx-auto"
-                    />
-                  </td>
-                  <td className="border p-2">{p.productId}</td>
-                  <td className="border p-2">
-                    {editing?.productId === p._id ? (
-                      <input
-                        type="text"
-                        value={editing.title}
-                        onChange={(e) =>
-                          setEditing({ ...editing, title: e.target.value })
-                        }
-                        className="border p-1 w-full"
-                      />
-                    ) : (
-                      p.title
-                    )}
-                  </td>
-                  <td className="border p-2">
-                    {editing?.productId === p._id ? (
-                      <input
-                        type="number"
-                        value={editing.price}
-                        onChange={(e) =>
-                          setEditing({ ...editing, price: e.target.value })
-                        }
-                        className="border p-1 w-full"
-                      />
-                    ) : (
-                      `Rs.${p.price}`
-                    )}
-                  </td>
-                  <td className="border p-2 text-center">
-                    {editing?.productId === p._id ? (
-                      <div className="flex gap-2 justify-center">
-                        <button
-                          onClick={handleEditSave}
-                          className="bg-green-600 text-white px-2 py-1 rounded"
-                        >
-                          Save
-                        </button>
-                        <button
-                          onClick={() => setEditing(null)}
-                          className="bg-gray-400 text-white px-2 py-1 rounded"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="flex gap-2 justify-center">
-                        <button
-                          onClick={() =>
-                            setEditing({
-                              docId: doc._id,
-                              productId: p._id,
-                              title: p.title,
-                              price: p.price,
-                              image: null,
-                            })
-                          }
-                          className="bg-blue-600 text-white px-2 py-1 rounded"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleDeleteProduct(p._id)}
-                          className="bg-red-600 text-white px-2 py-1 rounded"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          {/* Products */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {doc.products?.map((p, i) => (
+              <div key={i} className="border rounded p-2 text-center">
+                <img
+                  src={getImageUrl(p.productImage)}
+                  alt={p.title}
+                  className="w-24 h-24 object-cover mx-auto"
+                />
+                <p className="font-semibold">{p.title}</p>
+                <p className="text-sm text-gray-600">Rs.{p.price}</p>
+                {p.product && (
+                  <p className="text-xs text-blue-600">
+                    Product ID: {p.product?._id || p.product}
+                  </p>
+                )}
+                {p.productSlug && (
+                  <p className="text-xs text-gray-500">Slug: {p.productSlug}</p>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       ))}
     </div>
