@@ -13,11 +13,12 @@ function LatestProductSlider() {
 
   const navItems = ["New Arrivals", "Best Seller", "Featured", "Special Offer"];
 
+  // ✅ Fetch latest products once
   useEffect(() => {
     const fetchLatest = async () => {
       try {
         const { data } = await axios.get(`${BACKEND_URL}/api/latestproduct`);
-        setLatestProducts(data);
+        setLatestProducts(Array.isArray(data) ? data : data.data || []);
       } catch (err) {
         console.error("❌ Error fetching latest products:", err);
       }
@@ -32,11 +33,8 @@ function LatestProductSlider() {
     return `${BACKEND_URL.replace(/\/$/, "")}/${path.replace(/^\/+/, "")}`;
   };
 
-  // ✅ Group docs by category
-  const grouped = navItems.reduce((acc, cat) => {
-    acc[cat] = latestProducts.filter((lp) => lp.category === cat);
-    return acc;
-  }, {});
+  // ✅ Filter products by active category
+  const activeDocs = latestProducts.filter((doc) => doc.category === activeCategory);
 
   return (
     <div className="px-4 mx-auto slider-container max-w-7xl md:px-0">
@@ -63,20 +61,20 @@ function LatestProductSlider() {
       </ul>
 
       {/* Products grid */}
-      {grouped[activeCategory]?.length > 0 ? (
+      {activeDocs.length > 0 ? (
         <div className="flex flex-col gap-6">
-          {grouped[activeCategory].map((entry) => (
+          {activeDocs.map((doc) => (
             <div
-              key={entry._id}
+              key={doc._id}
               className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
             >
-              {entry.products.map((p) => {
+              {doc.products?.map((p) => {
                 const formatted = {
-                  id: p.productId || p._id, // ✅ ensure we pass product ref id if available
+                  id: p.productId || p._id, // ✅ fallback for product reference
                   title: p.title,
                   price: p.price,
                   image: getImageUrl(p.chairimage),
-                  slug: p.slug, // optional for navigation
+                  slug: p.productSlug || p.slug, // ✅ safe slug for navigation
                 };
                 return <ProductCard key={formatted.id} product={formatted} />;
               })}

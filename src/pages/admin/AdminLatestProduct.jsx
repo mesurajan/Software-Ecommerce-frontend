@@ -1,4 +1,3 @@
-// src/pages/admin/AdminLatestProduct.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
@@ -13,7 +12,8 @@ function AdminLatestProduct() {
     { product: "", productSlug: "", title: "", price: "", chairimage: null },
     { product: "", productSlug: "", title: "", price: "", chairimage: null },
   ]);
-  const [editingId, setEditingId] = useState(null);
+  const [editingDocId, setEditingDocId] = useState(null);
+  const [editingProductId, setEditingProductId] = useState(null);
   const token = localStorage.getItem("token");
 
   // ✅ Fetch existing latest products
@@ -52,7 +52,7 @@ function AdminLatestProduct() {
       productSlug: selected.slug,
       title: selected.title,
       price: selected.price,
-      chairimage: null, // until admin uploads
+      chairimage: null,
     };
     setItems(updated);
   };
@@ -72,10 +72,11 @@ function AdminLatestProduct() {
       { product: "", productSlug: "", title: "", price: "", chairimage: null },
       { product: "", productSlug: "", title: "", price: "", chairimage: null },
     ]);
-    setEditingId(null);
+    setEditingDocId(null);
+    setEditingProductId(null);
   };
 
-  // ✅ Create / Update
+  // ✅ Create or Update
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!token) return alert("⚠️ You must be logged in as Admin!");
@@ -92,17 +93,20 @@ function AdminLatestProduct() {
       }));
       formData.append("products", JSON.stringify(productsData));
 
-      // append chairimages
       items.forEach((i) => {
         if (i.chairimage) formData.append("chairimage", i.chairimage);
       });
 
-      if (editingId) {
-        await axios.put(`${BACKEND_URL}/api/latestproduct/${editingId}`, formData, {
-          headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" },
-        });
-        alert("✅ Latest product category updated!");
+      if (editingDocId && editingProductId) {
+        // ✅ Update single product
+        await axios.put(
+          `${BACKEND_URL}/api/latestproduct/${editingDocId}/product/${editingProductId}`,
+          formData,
+          { headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" } }
+        );
+        alert("✅ Product updated!");
       } else {
+        // ✅ Create new category
         await axios.post(`${BACKEND_URL}/api/latestproduct`, formData, {
           headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" },
         });
@@ -134,19 +138,20 @@ function AdminLatestProduct() {
     }
   };
 
-  // ✅ Edit existing
-  const handleEdit = (doc) => {
-    setEditingId(doc._id);
-    setCategory(doc.category);
-    setItems(
-      doc.products.map((p) => ({
-        product: p.productId || "",
-        productSlug: p.slug || "",
-        title: p.title || "",
-        price: p.price || "",
-        chairimage: null, // reset to upload new if needed
-      }))
-    );
+  // ✅ Edit a product inside a category
+  const handleEditProduct = (docId, product) => {
+    setEditingDocId(docId);
+    setEditingProductId(product._id || product.productId);
+    setCategory(product.category || "");
+    setItems([
+      {
+        product: product.productId || "",
+        productSlug: product.slug || "",
+        title: product.title || "",
+        price: product.price || "",
+        chairimage: null,
+      },
+    ]);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -164,7 +169,7 @@ function AdminLatestProduct() {
       {/* Form */}
       <form onSubmit={handleSubmit} className="bg-white shadow rounded p-4 mb-6">
         <h2 className="text-lg font-semibold mb-2">
-          {editingId ? "✏️ Edit Latest Product Category" : "➕ Create New Latest Product Category"}
+          {editingDocId ? "✏️ Edit Product in Category" : "➕ Create New Latest Product Category"}
         </h2>
 
         {/* Category */}
@@ -189,7 +194,6 @@ function AdminLatestProduct() {
             key={index}
             className="border rounded p-3 mb-3 flex flex-col md:flex-row gap-3 items-center"
           >
-            {/* Dropdown */}
             <select
               className="border p-2 rounded flex-1"
               value={item.product}
@@ -203,7 +207,6 @@ function AdminLatestProduct() {
               ))}
             </select>
 
-            {/* Title & Price */}
             <input
               type="text"
               className="border p-2 rounded flex-1"
@@ -219,7 +222,6 @@ function AdminLatestProduct() {
               onChange={(e) => handleInputChange(index, "price", e.target.value)}
             />
 
-            {/* Preview */}
             {(item.chairimage || item.previewUrl) && (
               <img
                 src={item.chairimage ? URL.createObjectURL(item.chairimage) : getImageUrl(item.previewUrl)}
@@ -228,7 +230,6 @@ function AdminLatestProduct() {
               />
             )}
 
-            {/* Upload */}
             <input
               type="file"
               accept="image/*"
@@ -242,15 +243,14 @@ function AdminLatestProduct() {
           </div>
         ))}
 
-        {/* Buttons */}
         <div className="flex gap-3">
           <button
             type="submit"
             className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
           >
-            {editingId ? "💾 Save Changes" : "📂 Create Category"}
+            {editingDocId ? "💾 Save Changes" : "📂 Create Category"}
           </button>
-          {editingId && (
+          {editingDocId && (
             <button
               type="button"
               onClick={resetForm}
@@ -268,26 +268,17 @@ function AdminLatestProduct() {
         <div key={doc._id} className="border p-4 rounded mb-3 bg-gray-50">
           <div className="flex justify-between items-center mb-2">
             <h3 className="font-bold">{doc.category}</h3>
-            <div className="flex gap-2">
-              <button
-                onClick={() => handleEdit(doc)}
-                className="px-3 py-1 bg-green-600 text-white rounded"
-              >
-                Edit
-              </button>
-              <button
-                onClick={() => handleDeleteCategory(doc.category)}
-                className="px-3 py-1 bg-red-600 text-white rounded"
-              >
-                Delete
-              </button>
-            </div>
+            <button
+              onClick={() => handleDeleteCategory(doc.category)}
+              className="px-3 py-1 bg-red-600 text-white rounded"
+            >
+              Delete Category
+            </button>
           </div>
 
-          {/* Products */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {doc.products?.map((p, i) => (
-              <div key={i} className="border rounded p-2 text-center">
+            {doc.products?.map((p) => (
+              <div key={p._id || p.productId} className="border rounded p-2 text-center">
                 <img
                   src={getImageUrl(p.chairimage)}
                   alt={p.title}
@@ -295,10 +286,14 @@ function AdminLatestProduct() {
                 />
                 <p className="font-semibold">{p.title}</p>
                 <p className="text-sm text-gray-600">Rs.{p.price}</p>
-                {p.productId && (
-                  <p className="text-xs text-blue-600">Product ID: {p.productId}</p>
-                )}
+                {p.productId && <p className="text-xs text-blue-600">Product ID: {p.productId}</p>}
                 {p.slug && <p className="text-xs text-gray-500">Slug: {p.slug}</p>}
+                <button
+                  onClick={() => handleEditProduct(doc._id, p)}
+                  className="mt-2 px-3 py-1 bg-green-600 text-white rounded"
+                >
+                  Edit
+                </button>
               </div>
             ))}
           </div>
