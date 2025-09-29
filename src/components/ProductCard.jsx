@@ -70,13 +70,14 @@ const ProductCard = ({ product }) => {
       </div>
 
       {/* Product Image */}
-      <div className="overflow-hidden rounded-lg">
+   <div className="w-[200px] h-[240px] flex items-center justify-center overflow-hidden rounded-lg bg-white mb-1">
         <img
           src={normalized.image}
           alt={normalized.title}
-          className="w-full max-w-[220px] max-h-[240px] object-contain hover:scale-110 transition"
+          className="max-w-full max-h-full object-contain hover:scale-110 transition"
         />
       </div>
+
 
       {/* Product Info */}
       <div className="mt-2 text-center">
