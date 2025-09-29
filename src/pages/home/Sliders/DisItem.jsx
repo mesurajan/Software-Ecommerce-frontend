@@ -6,7 +6,7 @@ import "slick-carousel/slick/slick-theme.css";
 import { Link } from "react-router-dom";
 import { Check } from "lucide-react";
 
-const BACKEND_URL = "http://localhost:5174";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5174";
 
 function DisItem() {
   const [groupedItems, setGroupedItems] = useState({});

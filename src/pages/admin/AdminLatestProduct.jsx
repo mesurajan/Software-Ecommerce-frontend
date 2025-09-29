@@ -9,9 +9,9 @@ function AdminLatestProduct() {
   const [products, setProducts] = useState([]);
   const [category, setCategory] = useState("New Arrivals");
   const [items, setItems] = useState([
-    { product: "", productSlug: "", title: "", price: "", image: null, productImage: "" },
-    { product: "", productSlug: "", title: "", price: "", image: null, productImage: "" },
-    { product: "", productSlug: "", title: "", price: "", image: null, productImage: "" },
+    { product: "", productSlug: "", title: "", price: "", chairimage: null },
+    { product: "", productSlug: "", title: "", price: "", chairimage: null },
+    { product: "", productSlug: "", title: "", price: "", chairimage: null },
   ]);
   const [editingId, setEditingId] = useState(null);
   const token = localStorage.getItem("token");
@@ -41,19 +41,18 @@ function AdminLatestProduct() {
     fetchProducts();
   }, []);
 
-  // ✅ Select product from dropdown
+  // ✅ Select product
   const handleProductSelect = (index, productId) => {
     const selected = products.find((p) => p._id === productId);
     if (!selected) return;
     const updated = [...items];
     updated[index] = {
       ...updated[index],
-      title: selected.title,
-      price: selected.price,
-      productImage: selected.images?.[0] || "",
-      image: null,
       product: selected._id,
       productSlug: selected.slug,
+      title: selected.title,
+      price: selected.price,
+      chairimage: null, // until admin uploads
     };
     setItems(updated);
   };
@@ -69,9 +68,9 @@ function AdminLatestProduct() {
   const resetForm = () => {
     setCategory("New Arrivals");
     setItems([
-      { product: "", productSlug: "", title: "", price: "", image: null, productImage: "" },
-      { product: "", productSlug: "", title: "", price: "", image: null, productImage: "" },
-      { product: "", productSlug: "", title: "", price: "", image: null, productImage: "" },
+      { product: "", productSlug: "", title: "", price: "", chairimage: null },
+      { product: "", productSlug: "", title: "", price: "", chairimage: null },
+      { product: "", productSlug: "", title: "", price: "", chairimage: null },
     ]);
     setEditingId(null);
   };
@@ -86,17 +85,16 @@ function AdminLatestProduct() {
       formData.append("category", category);
 
       const productsData = items.map((i) => ({
-        product: i.product,
+        productId: i.product,
         productSlug: i.productSlug,
         title: i.title,
         price: i.price,
-        productImage: i.image ? i.image.name : i.productImage || "",
       }));
       formData.append("products", JSON.stringify(productsData));
 
-      // Append uploaded overrides
+      // append chairimages
       items.forEach((i) => {
-        if (i.image) formData.append("images", i.image);
+        if (i.chairimage) formData.append("chairimage", i.chairimage);
       });
 
       if (editingId) {
@@ -119,14 +117,15 @@ function AdminLatestProduct() {
     }
   };
 
-  // ✅ Delete entire category
+  // ✅ Delete category
   const handleDeleteCategory = async (categoryName) => {
     if (!token) return alert("⚠️ Login required!");
     if (!window.confirm(`Delete all items for "${categoryName}"?`)) return;
     try {
-      await axios.delete(`${BACKEND_URL}/api/latestproduct/category/${encodeURIComponent(categoryName)}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.delete(
+        `${BACKEND_URL}/api/latestproduct/category/${encodeURIComponent(categoryName)}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       alert("🗑️ Category deleted!");
       fetchLatestProducts();
     } catch (err) {
@@ -135,18 +134,17 @@ function AdminLatestProduct() {
     }
   };
 
-  // ✅ Edit existing category
+  // ✅ Edit existing
   const handleEdit = (doc) => {
     setEditingId(doc._id);
     setCategory(doc.category);
     setItems(
       doc.products.map((p) => ({
-        product: p.product?._id || p.product || "",
-        productSlug: p.productSlug || p.product?.slug || "",
-        title: p.title || p.product?.title || "",
-        price: p.price || p.product?.price || "",
-        productImage: p.productImage || p.product?.images?.[0] || "",
-        image: null,
+        product: p.productId || "",
+        productSlug: p.slug || "",
+        title: p.title || "",
+        price: p.price || "",
+        chairimage: null, // reset to upload new if needed
       }))
     );
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -154,7 +152,7 @@ function AdminLatestProduct() {
 
   // ✅ Image helper
   const getImageUrl = (path) => {
-    if (!path) return `${BACKEND_URL}/uploads/Default/lightimage.png`;
+    if (!path) return `${BACKEND_URL}/uploads/default/lightimage.png`;
     if (path.startsWith("http")) return path;
     return `${BACKEND_URL.replace(/\/$/, "")}/${path.replace(/^\/+/, "")}`;
   };
@@ -169,7 +167,7 @@ function AdminLatestProduct() {
           {editingId ? "✏️ Edit Latest Product Category" : "➕ Create New Latest Product Category"}
         </h2>
 
-        {/* Category Selector */}
+        {/* Category */}
         <div className="mb-4">
           <label className="block font-medium mb-1">Category</label>
           <select
@@ -187,7 +185,10 @@ function AdminLatestProduct() {
         {/* Products */}
         <h3 className="font-medium mb-2">Please Choose Your Products</h3>
         {items.map((item, index) => (
-          <div key={index} className="border rounded p-3 mb-3 flex flex-col md:flex-row gap-3 items-center">
+          <div
+            key={index}
+            className="border rounded p-3 mb-3 flex flex-col md:flex-row gap-3 items-center"
+          >
             {/* Dropdown */}
             <select
               className="border p-2 rounded flex-1"
@@ -202,7 +203,7 @@ function AdminLatestProduct() {
               ))}
             </select>
 
-            {/* Override Inputs */}
+            {/* Title & Price */}
             <input
               type="text"
               className="border p-2 rounded flex-1"
@@ -219,21 +220,22 @@ function AdminLatestProduct() {
             />
 
             {/* Preview */}
-            {item.productImage && (
+            {(item.chairimage || item.previewUrl) && (
               <img
-                src={getImageUrl(item.productImage)}
+                src={item.chairimage ? URL.createObjectURL(item.chairimage) : getImageUrl(item.previewUrl)}
                 alt={item.title}
                 className="w-16 h-16 object-cover"
               />
             )}
 
-            {/* Upload override */}
+            {/* Upload */}
             <input
               type="file"
               accept="image/*"
               onChange={(e) => {
                 const updated = [...items];
-                updated[index].image = e.target.files[0];
+                updated[index].chairimage = e.target.files[0];
+                updated[index].previewUrl = e.target.files[0]?.name || "";
                 setItems(updated);
               }}
             />
@@ -242,11 +244,18 @@ function AdminLatestProduct() {
 
         {/* Buttons */}
         <div className="flex gap-3">
-          <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+          <button
+            type="submit"
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          >
             {editingId ? "💾 Save Changes" : "📂 Create Category"}
           </button>
           {editingId && (
-            <button type="button" onClick={resetForm} className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
+            <button
+              type="button"
+              onClick={resetForm}
+              className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+            >
               Cancel
             </button>
           )}
@@ -280,20 +289,16 @@ function AdminLatestProduct() {
             {doc.products?.map((p, i) => (
               <div key={i} className="border rounded p-2 text-center">
                 <img
-                  src={getImageUrl(p.productImage)}
+                  src={getImageUrl(p.chairimage)}
                   alt={p.title}
                   className="w-24 h-24 object-cover mx-auto"
                 />
                 <p className="font-semibold">{p.title}</p>
                 <p className="text-sm text-gray-600">Rs.{p.price}</p>
-                {p.product && (
-                  <p className="text-xs text-blue-600">
-                    Product ID: {p.product?._id || p.product}
-                  </p>
+                {p.productId && (
+                  <p className="text-xs text-blue-600">Product ID: {p.productId}</p>
                 )}
-                {p.productSlug && (
-                  <p className="text-xs text-gray-500">Slug: {p.productSlug}</p>
-                )}
+                {p.slug && <p className="text-xs text-gray-500">Slug: {p.slug}</p>}
               </div>
             ))}
           </div>

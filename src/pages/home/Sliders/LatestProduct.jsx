@@ -5,7 +5,7 @@ import "slick-carousel/slick/slick-theme.css";
 import ProductCard from "../../../components/ProductCard";
 import axios from "axios";
 
-const BACKEND_URL = "http://localhost:5174";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5174";
 
 function LatestProductSlider() {
   const [latestProducts, setLatestProducts] = useState([]);
@@ -19,21 +19,20 @@ function LatestProductSlider() {
         const { data } = await axios.get(`${BACKEND_URL}/api/latestproduct`);
         setLatestProducts(data);
       } catch (err) {
-        console.error("Error fetching latest products:", err);
+        console.error("❌ Error fetching latest products:", err);
       }
     };
     fetchLatest();
   }, []);
 
+  // ✅ Universal image resolver
   const getImageUrl = (path) => {
-    if (!path) return "/placeholder.png";
-    if (path.startsWith("uploads/")) {
-      return `${BACKEND_URL}/${path.replace(/\\/g, "/")}`;
-    }
-    return `${BACKEND_URL}/uploads/latestproducts/${path.replace(/\\/g, "/")}`;
+    if (!path) return `${BACKEND_URL}/uploads/default/lightimage.png`;
+    if (path.startsWith("http")) return path;
+    return `${BACKEND_URL.replace(/\/$/, "")}/${path.replace(/^\/+/, "")}`;
   };
 
-  // ✅ Group by category but keep multiple rows separate
+  // ✅ Group docs by category
   const grouped = navItems.reduce((acc, cat) => {
     acc[cat] = latestProducts.filter((lp) => lp.category === cat);
     return acc;
@@ -63,22 +62,23 @@ function LatestProductSlider() {
         ))}
       </ul>
 
-      {/* Products grid by rows */}
+      {/* Products grid */}
       {grouped[activeCategory]?.length > 0 ? (
         <div className="flex flex-col gap-6">
-          {grouped[activeCategory].map((entry, idx) => (
+          {grouped[activeCategory].map((entry) => (
             <div
-              key={entry._id || idx}
+              key={entry._id}
               className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
             >
-              {entry.products.map((p, i) => {
+              {entry.products.map((p) => {
                 const formatted = {
-                  id: p._id || i,
+                  id: p.productId || p._id, // ✅ ensure we pass product ref id if available
                   title: p.title,
                   price: p.price,
-                  image: getImageUrl(p.productImage),
+                  image: getImageUrl(p.chairimage),
+                  slug: p.slug, // optional for navigation
                 };
-                return <ProductCard key={i} product={formatted} />;
+                return <ProductCard key={formatted.id} product={formatted} />;
               })}
             </div>
           ))}

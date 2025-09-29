@@ -6,7 +6,7 @@ import AppBreadcrumbs from "../../components/Breadcrumbs";
 import { addToCart } from "../../Apps/Reducers/cartSlice";
 import axios from "axios";
 
-const BACKEND_URL = "http://localhost:5174";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5174";
 
 function ProductDetails() {
   const { id, slug } = useParams();

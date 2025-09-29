@@ -11,7 +11,7 @@ import { ShoppingCart } from "lucide-react";
 const slugify = (str) =>
   str?.toString().toLowerCase().trim().replace(/\s+/g, "-").replace(/[^\w-]+/g, "") || "product";
 
-const BACKEND_URL = "http://localhost:5174";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5174";
 
 const ProductCard = ({ product }) => {
   const dispatch = useDispatch();

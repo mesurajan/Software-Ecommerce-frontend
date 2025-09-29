@@ -8,7 +8,7 @@ import axios from "axios";
 // Fixed left image from frontend assets
 import leftImage from "../../../assets/images/Home/lightimage.png";
 
-const BACKEND_URL = "http://localhost:5174"; // change if backend is hosted
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5174";
 
 function SimpleSlider() {
   const [banners, setBanners] = useState([]);
@@ -87,7 +87,7 @@ function SimpleSlider() {
                 <div className="text-[24px] md:text-[40px] font-bold">
                   <h1>{el.title}</h1>
                 </div>
-                <p className="text-[12px] sm:text-sm py-[15px] leading-relaxed">
+                <p className="text-[12px] sm:text-sm py-[15px] leading-relaxed text-justify">
                   {el.description}
                 </p>
                 <Link to={`/product`} className="primary-btn">
@@ -96,14 +96,14 @@ function SimpleSlider() {
               </div>
 
               {/* Right image */}
-              <div className="sofaimage flex-shrink-0 md:gap-0 py-8 md:py-[100px] relative">
+              <div className="sofaimage flex-shrink-0 md:gap-0 py-8 md:py-[100px] relative md:px-[80px]">
                 <img
                   src={getImageUrl(el.image)}
                   alt="banner visual"
-                  className="w-full max-w-[350px] max-h-[300px]"
+                  className="w-full max-w-[450px] max-h-[400px]"
                 />
                 {el.discountPercentage > 0 && (
-                  <div className="absolute top-20 -right-3 bg-[#00BFFF] text-white text-xs sm:text-sm font-bold px-8 py-3 rounded-full shadow-md">
+                  <div className="absolute top-30 -right-1 bg-[#ee1641] text-white text-xs sm:text-sm font-bold px-10 py-3 rounded-full shadow-md">
                     {el.discountPercentage}%
                   </div>
                 )}

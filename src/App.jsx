@@ -14,7 +14,6 @@ import Cart from './pages/products/Cart';
 import ProtectedRoute from './hoc/ProtectedRoutes'; 
 import WhishList from './pages/products/WhishList';
 import AdminDashboard from './pages/admin/AdminDashboard';
-import ProductManagement from "./pages/admin/ProductManagement";
 import PaymentProcessing from "./components/paymentprocessing";
 import BuyNow from "./components/BuyNow";
 import AdminUsers from "./pages/admin/AdminUsers";

@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import UserTable from "../../components/Admin/UserTable";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5174";
+
 function AdminSellers() {
   const [sellers, setSellers] = useState([]);
   const [showForm, setShowForm] = useState(false);
@@ -18,7 +20,7 @@ function AdminSellers() {
   const fetchSellers = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:5174/api/auth/users", {
+      const res = await axios.get(`${BACKEND_URL}/api/auth/users`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       // ✅ Only sellers
@@ -36,7 +38,7 @@ function AdminSellers() {
     e.preventDefault();
     try {
       const token = localStorage.getItem("token");
-      await axios.post("http://localhost:5174/api/auth/signup", formData, {
+      await axios.post(`${BACKEND_URL}/api/auth/signup`, formData, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setShowForm(false);

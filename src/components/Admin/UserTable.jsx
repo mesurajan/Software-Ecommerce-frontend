@@ -2,6 +2,8 @@
 import React, { useState } from "react";
 import axios from "axios";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5174";
+
 function UserTable({ title, data, refreshData }) {
   const [editingUser, setEditingUser] = useState(null);
   const [formData, setFormData] = useState({ name: "", email: "", phone: "", address: "", age: "" });
@@ -11,7 +13,7 @@ function UserTable({ title, data, refreshData }) {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:5174/api/auth/users/${id}`, {
+      await axios.delete(`${BACKEND_URL}/api/auth/users/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       refreshData(); // reload data after delete
@@ -38,7 +40,7 @@ function UserTable({ title, data, refreshData }) {
     try {
       const token = localStorage.getItem("token");
       await axios.put(
-        `http://localhost:5174/api/auth/users/${editingUser}`,
+        `${BACKEND_URL}/api/auth/users/${editingUser}`,
         formData,
         { headers: { Authorization: `Bearer ${token}` } }
       );

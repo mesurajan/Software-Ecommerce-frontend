@@ -2,13 +2,15 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import UserTable from "../../components/Admin/UserTable";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5174";
+
 function AdminCustomers() {
   const [customers, setCustomers] = useState([]);
 
   const fetchCustomers = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:5174/api/auth/users", {
+      const res = await axios.get(`${BACKEND_URL}/api/auth/users`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setCustomers(res.data.filter(u => u.role === "user"));
