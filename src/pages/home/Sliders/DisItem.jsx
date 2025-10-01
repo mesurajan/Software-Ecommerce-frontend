@@ -120,7 +120,7 @@ function DisItem() {
 
                     {/* Button */}
                     <Link
-                      to={`/productDetails/${slide.productId}`}   // ✅ dynamic link
+                      to={`/product`}   // ✅ dynamic link
                       className="inline-block px-6 py-3 mt-6 text-white transition rounded primary-btn hover:primary-btn"
                     >
                       {slide.buttonText || "Shop Now"}
