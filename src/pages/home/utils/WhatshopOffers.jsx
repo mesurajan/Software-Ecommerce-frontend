@@ -16,7 +16,7 @@ function WhatshopOffers() {
               </header>
     
               {/* Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-10">
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-6 mt-10">
                 {/* 1st */}
                 <div className="text-[#0A174E] flex flex-col items-center text-center gap-3 p-4 bg-white rounded shadow-sm transform transition-transform duration-300 hover:scale-105 hover:shadow-md">
                   <img src={Car} alt="Support" className="w-20 h-16 sm:w-20 sm:h-20 md:w-32 md:h-24" />

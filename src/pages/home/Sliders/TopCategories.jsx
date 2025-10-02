@@ -61,7 +61,7 @@ function TopCategories() {
 
   return (
     <div className="px-4 mx-auto max-w-7xl">
-      <h1 className="text-center text-[35px] font-semibold py-8 text-[#0A174E]">
+      <h1 className="text-center text-[35px] font-semibold  text-[#0A174E]">
         Top Categories
       </h1>
 
@@ -69,12 +69,12 @@ function TopCategories() {
         {categories.map((category) => (
           <div key={category._id}>
             {/* ✅ Category Header */}
-            <h2 className="text:[8px] font-light text-center mb-6 text-[#0A174E]">
+            <h2 className="text:[8px] font-light text-center mb-6 text-[#0A174E] mt-4">
               {category.title}
             </h2>
 
             {/* ✅ Responsive Product Grid */}
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+            <div className="grid grid-cols-2 gap-6 md:grid-cols-4 lg:grid-cols-4">
               {category.chairs.map((chair, idx) => {
                 const productId = chair.product?._id || chair.product || idx;
                 const productSlug =

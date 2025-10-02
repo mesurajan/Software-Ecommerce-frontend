@@ -16,7 +16,7 @@ function TrendingProducts() {
       </div>
 
       {/* section 01 chairs */}
-      <div className="grid md:grid-cols-4 grid-cols-1 gap-8 md:gap-6 px-4 md:px-20 mb-10">
+      <div className="grid md:grid-cols-4 grid-cols-2 gap-8 md:gap-6 px-4 md:px-20 mb-10">
             {TrendingProduct.map((el, i) => (
             <ProductCard key={i} product={el} />
             ))}

@@ -66,7 +66,7 @@ function LatestProductSlider() {
           {activeDocs.map((doc) => (
             <div
               key={doc._id}
-              className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
+              className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-3"
             >
               {doc.products?.map((p) => {
                 const formatted = {

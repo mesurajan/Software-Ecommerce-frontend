@@ -92,7 +92,7 @@ function DisItem() {
               return (
                 <div
                   key={slide._id}
-                  className="flex flex-col items-center justify-center gap-4 md:flex-row md:gap-20 mb-10"
+                  className="flex flex-col items-center justify-center gap-6 md:flex-row md:gap-20 mb-10"
                 >
                   {/* Left side */}
                   <div className="leftside">
@@ -133,7 +133,7 @@ function DisItem() {
                       <img
                         src={`${BACKEND_URL}/${slide.chairImage}`}
                         alt={slide.subtitle}
-                        className="max-w-[500px] w-full"
+                        className="md:w-[400px] md:h-[350px]"
                       />
                     </div>
                   </div>

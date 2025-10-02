@@ -70,18 +70,18 @@ function UniqueFeatures() {
           {/* Button */}
           <div>
             <button
-                onClick={handleAddToCart}
+                  onClick={() => navigate("/product")}
                 className="primary-btn sm:py-10 md:py-4 md:px-12"
               >
-                Add to Cart
+                Shop Now
             </button>
           </div>
 
-          {/* Title & Price */}
-          <div className="text-center sm:text-left ">
+      
+          {/* <div className="text-center sm:text-left ">
             <h1 className="font-semibold">B&B Italian Sofa</h1>
             <p className="text-gray-600">$32.00</p>
-          </div>
+          </div> */}
         </div>
 
         </div>

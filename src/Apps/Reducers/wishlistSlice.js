@@ -14,7 +14,15 @@ const wishlistSlice = createSlice({
   reducers: {
     addToWishlist: (state, action) => {
       const exists = state.items.find(item => item.id === action.payload.id);
-      if (!exists) state.items.push({ ...action.payload, quantity: 1 });
+
+      if (!exists) {
+        state.items.push({
+          ...action.payload,
+          quantity: 1,
+          image: action.payload.image || "/uploads/Default/lightimage.png", // ✅ ensure image
+        });
+      }
+
       localStorage.setItem("wishlist", JSON.stringify(state.items));
     },
     removeFromWishlist: (state, action) => {

@@ -40,7 +40,7 @@
       @apply container mx-auto max-w-[1920px];
   }
   .viewdetails-btn{
-    @apply bg-[#002366] text-white py-[6px] px-[20px] md:py-[10px] md:px-[20px] rounded-[6px] transition-all duration-300 ease-in-out cursor-pointer;
+    @apply bg-[#002366] text-white text-[10px]  md:text-[15px] py-[6px] px-[12px] md:py-[12px] md:px-[25px] rounded-[6px] transition-all duration-300 ease-in-out cursor-pointer;
 
   }
    .viewdetails-btn:hover{
@@ -48,7 +48,7 @@
   }
 
   .buynow-btn{
-    @apply bg-[#034C36] text-white py-[6px] px-[20px] md:py-[10px] md:px-[20px] rounded-[6px] transition-all duration-300 ease-in-out cursor-pointer;
+    @apply bg-[#034C36] text-white text-[10px]  md:text-[15px]  py-[4px] px-[12px] md:py-[12px] md:px-[25px] rounded-[6px] transition-all duration-300 ease-in-out cursor-pointer;
   }
   .buynow-btn:hover{
     @apply bg-[003332] shadow-lg scale-105 brightness-110;

@@ -132,7 +132,7 @@ function Product() {
                     <h2 className="text-xl font-semibold mb-4">
                       {cat.name}
                     </h2>
-                    <div className="grid grid-cols-1 sm:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                       {items.map((product) => (
                         <ProductCard key={product.id} product={product} />
                       ))}
@@ -142,7 +142,8 @@ function Product() {
               })}
           </>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-6">
+       <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+
             {searchFilteredProducts
               .filter((p) => p.categoryId === selectedCategory)
               .map((product) => (

@@ -158,7 +158,7 @@ function ProductDetails() {
                 key={i}
                 src={product.image}
                 alt={product.title}
-                className="p-1 border w-20 h-20 object-cover"
+                className="p-1 border w-20 h-22 object-cover md:w-[120px] md:h-[145px]"
               />
             ))}
           </div>
@@ -166,7 +166,7 @@ function ProductDetails() {
             <img
               src={product.image}
               alt={product.title}
-              className="max-w-[320px] max-h-[400px] rounded shadow object-cover"
+              className="w-[250px] h-[280px] rounded shadow object-cover md:w-[350px] md:h-[450px]"
             />
             {product.discount ? (
               <span className="absolute top-2 left-2 bg-red-600 text-white text-sm font-bold px-2 py-1 rounded">

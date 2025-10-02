@@ -64,7 +64,7 @@ function SimpleSlider() {
   };
 
   return (
-    <div className="container mx-auto slider-container bg-backgroundlite">
+    <div className="container mx-auto slider-container bg-backgroundlite ">
       <Slider ref={sliderRef} {...settings}>
         {banners.map((el, i) => (
           <div key={i}>
@@ -80,8 +80,8 @@ function SimpleSlider() {
               </div>
 
               {/* Text Content */}
-              <div className="subheader w-full md:w-[550px] flex flex-col items-center md:items-start text-center md:text-left md:gap-0 py-8 md:py-[120px]">
-                <p className="mb-2 text-xs font-medium text-pink-500 sm:text-sm">
+              <div className="subheader w-full md:w-[550px] flex flex-col items-center md:items-start text-center md:text-left md:gap-0 py-8 md:py-[120px] px-[20px]">
+                <p className="mb-2 text-xs font-medium text-pink-500 sm:text-sm text-justify ">
                   {el.subtitle}
                 </p>
                 <div className="text-[24px] md:text-[40px] font-bold">
@@ -96,14 +96,14 @@ function SimpleSlider() {
               </div>
 
               {/* Right image */}
-              <div className="sofaimage flex-shrink-0 md:gap-0 py-8 md:py-[100px] relative md:px-[80px]">
+              <div className="sofaimage flex-shrink-0 md:gap-0 py-8 md:py-[100px] relative md:px-[80px] px-10 transform transition-transform ease-in-out duration-300 hover:scale-105">
                 <img
                   src={getImageUrl(el.image)}
                   alt="banner visual"
-                  className="w-full max-w-[450px] max-h-[400px]"
+                  className="md:w-[350px]  md:h-[350px] "
                 />
                 {el.discountPercentage > 0 && (
-                  <div className="absolute top-30 -right-1 bg-[#ee1641] text-white text-xs sm:text-sm font-bold px-10 py-3 rounded-full shadow-md">
+                  <div className="absolute top-20 -right-0 bg-[#ee1641] text-white text-xs sm:text-sm font-bold px-10 py-3 rounded-full shadow-md md:top-35 md:right-0 transform transition-transform ease-in-out duration-300 hover:scale-105">
                     {el.discountPercentage}%
                   </div>
                 )}

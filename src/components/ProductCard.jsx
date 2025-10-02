@@ -7,7 +7,6 @@ import { addToCart } from "../Apps/Reducers/cartSlice";
 import { addToWishlist } from "../Apps/Reducers/wishlistSlice";
 import { ShoppingCart } from "lucide-react";
 
-// ✅ Helper to generate slug from title
 const slugify = (str) =>
   str?.toString().toLowerCase().trim().replace(/\s+/g, "-").replace(/[^\w-]+/g, "") || "product";
 
@@ -19,9 +18,8 @@ const ProductCard = ({ product }) => {
 
   if (!product) return null;
 
-  // ✅ Normalize product fields
   const normalized = {
-    id: product._id || product.id, // accept both
+    id: product._id || product.id,
     title: product.title || "Untitled Product",
     price: product.price || 0,
     image: product.image?.startsWith("http")
@@ -30,24 +28,53 @@ const ProductCard = ({ product }) => {
     slug: product.slug || slugify(product.title),
   };
 
-  // ✅ Build hybrid link
   const productLink = `/productdetails/${normalized.id}/${normalized.slug}`;
 
   const handleWishlist = () => {
     const token = localStorage.getItem("token");
     if (!token) return navigate("/login");
-    dispatch(addToWishlist(normalized));
+
+    dispatch(
+      addToWishlist({
+        id: normalized.id,
+        title: normalized.title,
+        price: normalized.price,
+        chairimage: normalized.image,
+      })
+    );
+    alert("Product added to wishlist!");
   };
 
   const handleCart = () => {
     const token = localStorage.getItem("token");
     if (!token) return navigate("/login");
-    dispatch(addToCart({ ...normalized, quantity: 1 }));
+
+    dispatch(
+      addToCart({
+        id: normalized.id,
+        title: normalized.title,
+        price: normalized.price,
+        chairimage: normalized.image,
+        quantity: 1,
+      })
+    );
+    alert("Product added to cart!");
   };
 
   const handleBuyNow = () => {
     const token = localStorage.getItem("token");
     if (!token) return navigate("/login");
+
+    dispatch(
+      addToCart({
+        id: normalized.id,
+        title: normalized.title,
+        price: normalized.price,
+        chairimage: normalized.image,
+        quantity: 1,
+      })
+    );
+
     navigate("/Buynow", { state: { product: normalized } });
   };
 
@@ -59,25 +86,25 @@ const ProductCard = ({ product }) => {
           onClick={handleWishlist}
           className="p-2 bg-white rounded-full shadow hover:bg-pink-100"
         >
-          <FaRegHeart className="text-pink-500" />
+          <FaRegHeart className="text-pink-500 size-3 md:size-4" />
         </button>
         <button
           onClick={handleCart}
           className="p-2 bg-white rounded-full shadow hover:bg-blue-100"
         >
-          <ShoppingCart size={16} />
+          <ShoppingCart className="size-3 md:size-4" />
+
         </button>
       </div>
 
       {/* Product Image */}
-   <div className="w-[200px] h-[240px] flex items-center justify-center overflow-hidden rounded-lg bg-white mb-1">
+      <div className="w-[100px] h-[140px] md:w-[200px] md:h-[240px] flex items-center justify-center overflow-hidden rounded-lg bg-white mb-1">
         <img
           src={normalized.image}
           alt={normalized.title}
-          className="max-w-full max-h-full object-contain hover:scale-110 transition"
+          className="max-w-full max-h-full object-contain hover:scale-110 transition-transform duration-300 ease-in-out"
         />
       </div>
-
 
       {/* Product Info */}
       <div className="mt-2 text-center">
@@ -86,14 +113,15 @@ const ProductCard = ({ product }) => {
       </div>
 
       {/* Action Buttons */}
-      <div className="mt-4 flex gap-2">
-        <Link to={productLink}>
-          <button className="viewdetails-btn">View Details</button>
-        </Link>
-        <button onClick={handleBuyNow} className="buynow-btn">
-          Buy Now
-        </button>
-      </div>
+     <div className="mt-4 flex flex-nowrap gap-1">
+      <Link to={productLink}>
+        <button className="viewdetails-btn whitespace-nowrap">View Details</button>
+      </Link>
+      <button onClick={handleBuyNow} className="buynow-btn whitespace-nowrap">
+        Buy Now
+      </button>
+    </div>
+
     </div>
   );
 };
