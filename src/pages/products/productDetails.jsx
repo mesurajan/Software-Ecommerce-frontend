@@ -149,10 +149,10 @@ function ProductDetails() {
       </div>
 
       {/* Product Section */}
-      <div className="container grid gap-6 px-4 py-12 mt-10 md:grid-cols-2 md:px-15">
+      <div className="w-full max-w-6xl mx-auto grid md:grid-cols-2 gap-6 px-4 py-8 mt-6">
         {/* Images */}
-        <div className="flex gap-4">
-          <div className="flex flex-col gap-2">
+        <div className="flex gap-4 hover:scale-110 transition-transform duration-300 ease-in-out">
+          <div className="flex flex-col gap-2 ">
             {[...Array(3)].map((_, i) => (
               <img
                 key={i}
@@ -169,7 +169,7 @@ function ProductDetails() {
               className="w-[250px] h-[280px] rounded shadow object-cover md:w-[350px] md:h-[450px]"
             />
             {product.discount ? (
-              <span className="absolute top-2 left-2 bg-red-600 text-white text-sm font-bold px-2 py-1 rounded">
+              <span className="absolute top-6 right-2 bg-red-600 text-white text-sm font-bold px-2 py-1 rounded">
                 -{product.discount}% OFF
               </span>
             ) : null}
@@ -178,11 +178,11 @@ function ProductDetails() {
 
         {/* Info */}
         <div>
-          <h2 className="text-3xl font-bold">{product.title}</h2>
+          <h2 className=" text-2xl md:text-3xl font-bold px-5">{product.title}</h2>
 
          
           {/* Ratings */}
-          <div className="flex items-center gap-2 mt-2 text-yellow-500">
+          <div className="flex items-center gap-2 mt-2 text-yellow-500 px-5">
             ⭐⭐⭐⭐☆{" "}
             <span className="text-sm text-gray-500">
               ({product.reviews?.length || 0} reviews)
@@ -190,7 +190,7 @@ function ProductDetails() {
           </div>
 
           {/* Availability */}
-          <div className="mt-2">
+          <div className="mt-2 px-5">
             {isAvailable ? (
               <span className="inline-block px-3 py-1 text-sm font-medium text-green-700 bg-green-100 rounded-full">
                 ✅ Available ({product.stock} in stock)
@@ -203,10 +203,10 @@ function ProductDetails() {
           </div>
 
           {/* Price */}
-          <div className="mt-4">
+          <div className="mt-4 px-5">
             {discountedPrice ? (
               <div>
-                <span className="text-lg text-gray-500 line-through">
+                <span className=" md:text-lg text-gray-500 line-through">
                   Rs.{product.price}
                 </span>
                 <span className="ml-2 text-2xl font-bold text-blue-900">
@@ -222,14 +222,14 @@ function ProductDetails() {
               </span>
             )}
 
-             <p className="mt-1 text-gray-600 italic">
+             <p className="mt-1 text-gray-600 text-justify">
             {product.subtitle || "No short description available."}
           </p>
 
           </div>
 
           {/* Extra info */}
-          <ul className="mt-4 text-sm text-gray-700 space-y-1">
+          <ul className="mt-4 text-sm text-gray-700 space-y-1 px-5">
             <li>
               <b>Brand:</b> {product.brand || "N/A"}
             </li>
@@ -261,7 +261,7 @@ function ProductDetails() {
           </ul>
 
           {/* Action Buttons */}
-          <div className="flex gap-4 mt-6">
+          <div className="flex gap-4 mt-6 px-5">
             <button
               onClick={handleAddToCart}
               className="px-6 py-3 text-white shadow-md primary-btn hover:bg-primary"
@@ -274,7 +274,7 @@ function ProductDetails() {
           </div>
 
           {/* Category & Share */}
-          <div className="mt-6 text-sm text-gray-600">
+          <div className="mt-6 text-sm text-gray-600 px-5">
             {/* <p>
               Category:{" "}
               <span className="font-medium">
@@ -300,7 +300,7 @@ function ProductDetails() {
       </div>
 
       {/* Tabs */}
-      <div className="container py-12">
+      <div className="container py-12 px-5 md:px-15">
         <div className="flex gap-6 border-b">
           {["description", "additional", "reviews"].map((tab) => (
             <button
@@ -322,10 +322,10 @@ function ProductDetails() {
         </div>
 
         {/* Tab Content */}
-        <div className="mt-6 leading-relaxed text-gray-600">
+        <div className="mt-6 leading-relaxed text-gray-600 ">
           {activeTab === "description" && (
             <div
-              className="prose max-w-none text-gray-700"
+              className="prose max-w-none mt-1 text-gray-600 text-justify" 
               dangerouslySetInnerHTML={{
                 __html:
                   product.description ||
@@ -335,7 +335,7 @@ function ProductDetails() {
           )}
 
           {activeTab === "additional" && (
-            <div className="mt-4 space-y-6 text-gray-700">
+            <div className="mt-4 space-y-6 text-gray-600 text-justify">
               {/* Structured details */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
                 <div>
