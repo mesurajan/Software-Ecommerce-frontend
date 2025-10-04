@@ -264,7 +264,7 @@ function ProductDetails() {
           <div className="flex gap-4 mt-6 px-5">
             <button
               onClick={handleAddToCart}
-              className="px-6 py-3 text-white shadow-md primary-btn hover:bg-primary"
+              className="px-6 py-3 text-white shadow-md primary-btn hover:bg-primary rounded-[6px]"
             >
               Add to Cart
             </button>

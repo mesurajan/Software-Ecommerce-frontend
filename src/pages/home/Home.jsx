@@ -71,13 +71,16 @@ function Home() {
       <div className="flex flex-row flex-wrap items-center justify-center h-full md:flex-col ">
         <div className="#">
           <h2 className=" text-[#0A174E] text-center text-2xl sm:text-2xl md:text-4xl font-bold sm:mx-auto md:max-w-[650px] mt-12">
-            Get Leatest Update By Subscribing Our Newslater
+            Discover Your Sapce For Creativity 
           </h2>
+          <h3 className=" text-[#0A174E] text-center text-[18px]  font-semibold sm:mx-auto md:max-w-[650px] md:mt-4 mt-2 ">
+            Find Unique Ideas & Daily Inspiration
+          </h3>
         </div>
 
          <div className="py-2 md:py-10">
-          <Link to="/shop"> 
-              <button className="px-10 primary-btn">Shop Now</button>
+          <Link to="/product"> 
+              <button className="px-10 primary-btn rounded-[6px] py-4">Explore Now</button>
           </Link>
         </div>
       </div>

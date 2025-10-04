@@ -38,11 +38,11 @@ function Footer() {
           <div className='mt-4 text-sm'>
           <nav>
             <ul >
-              <li className='py-1'><a href="#">Laptops & Computers</a></li>
-              <li className='py-1'><a href="#">Cameras & Photography</a></li>
-              <li className='py-1'><a href="#">Smart Phones & Tablets</a></li>
-              <li className='py-1'><a href="#">Video Games & Consoles</a></li>
-              <li className='py-1'><a href="#">Waterproof Headphones</a></li>
+              <li className='py-1'><a href="/product">Beds</a></li>
+              <li className='py-1'><a href="/product">Chairs</a></li>
+              <li className='py-1'><a href="/product">Wardrobes</a></li>
+              <li className='py-1'><a href="/product">Dining Table</a></li>
+              <li className='py-1'><a href="/product">Door Frames</a></li>
             </ul>
           </nav>
           </div>
