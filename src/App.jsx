@@ -28,6 +28,8 @@ import AdminTopCategories from "./pages/admin/AdminTopCategories";
 import AdminProduct from "./pages/admin/AdminProduct";
 import AdminCategories from "./pages/admin/AdminCategories";
 import AdminProductDetails from "./pages/admin/AdminProductDetails";
+import AdminTrendingProduct from "./pages/admin/AdminTrendingProduct";
+
 // ScrollToTop Component
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -80,6 +82,7 @@ function App() {
             <Route path="topcategories" element={<AdminTopCategories />} />
             <Route path="categories" element={<AdminCategories />} />
             <Route path="product-details/:id" element={<AdminProductDetails />} />
+            <Route path="trendingproducts" element={<AdminTrendingProduct />} />
 
           </Route>
       </Routes>

@@ -58,6 +58,8 @@ export function AdminSidebar() {
               { title: "Discount Item", url: "/admin/discountitem", icon:  PackageSearch  },
              { title: " Top Categories", url: "/admin/topcategories", icon:  PackageSearch  },
              { title: "Categories", url: "/admin/categories", icon: ClipboardList },
+              { title: "Trending Products", url: "/admin/trendingproducts", icon: ClipboardList },
+
 
              
             ]
