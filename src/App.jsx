@@ -29,6 +29,7 @@ import AdminProduct from "./pages/admin/AdminProduct";
 import AdminCategories from "./pages/admin/AdminCategories";
 import AdminProductDetails from "./pages/admin/AdminProductDetails";
 import AdminTrendingProduct from "./pages/admin/AdminTrendingProduct";
+import PaymentSuccess from "./components/PaymentSuccess";
 
 // ScrollToTop Component
 const ScrollToTop = () => {
@@ -58,6 +59,7 @@ function App() {
           <Route path="wishlist" element={<ProtectedRoute><WhishList /></ProtectedRoute>} />
           <Route path="paymentprocessing" element={<ProtectedRoute><PaymentProcessing /></ProtectedRoute>} />
           <Route path="/Buynow"  element={<ProtectedRoute><BuyNow /></ProtectedRoute>} />
+          <Route path="/payment-success" element={<PaymentSuccess />} />
         </Route>
 
         {/* routes for login and signup */}
@@ -83,6 +85,7 @@ function App() {
             <Route path="categories" element={<AdminCategories />} />
             <Route path="product-details/:id" element={<AdminProductDetails />} />
             <Route path="trendingproducts" element={<AdminTrendingProduct />} />
+           
 
           </Route>
       </Routes>

@@ -86,11 +86,18 @@ function Cart() {
                     alt={item.title}
                     className="w-24 h-24 object-cover bg-backgroundlite rounded"
                   />
-                  <div>
-                    <h2 className="font-semibold">{item.title}</h2>
-                    <p className="text-gray-500 text-sm">Color: Brown</p>
-                    <p className="text-gray-500 text-sm">Size: XL</p>
+
+                   {/* Content */}
+                  <div className="flex flex-col items-center text-center px-2 flex-grow">
+                    <h3 className="text-sm md:text-base font-semibold mb-1 line-clamp-2">
+                      {item.title}
+                    </h3>
+                    <p className="text-xs md:text-sm text-gray-600">Rs.{item.price}</p>
+                    {item.description && (
+                      <p className="text-sm text-gray-500 mt-1">{item.description}</p>
+                    )}
                   </div>
+                  
                 </div>
 
                 {/* Price & Quantity */}
