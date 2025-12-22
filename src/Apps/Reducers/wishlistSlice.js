@@ -1,7 +1,6 @@
-// src/Apps/Reducers/wishlistSlice.js
 import { createSlice } from "@reduxjs/toolkit";
 
-// Load wishlist from localStorage if it exists
+// Load wishlist from localStorage
 const savedWishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
 
 const initialState = {
@@ -13,22 +12,34 @@ const wishlistSlice = createSlice({
   initialState,
   reducers: {
     addToWishlist: (state, action) => {
-      const exists = state.items.find(item => item.id === action.payload.id);
+      const exists = state.items.find(
+        (item) => item.id === action.payload.id
+      );
 
       if (!exists) {
         state.items.push({
           ...action.payload,
           quantity: 1,
-          image: action.payload.image || "/uploads/Default/lightimage.png", // ✅ ensure image
+
+          // ✅ NORMALIZED IMAGE (ONE SOURCE OF TRUTH)
+          chairimage:
+            action.payload.chairimage ||
+            action.payload.image ||
+            action.payload.images?.[0] ||
+            "/uploads/Default/lightimage.png",
         });
       }
 
       localStorage.setItem("wishlist", JSON.stringify(state.items));
     },
+
     removeFromWishlist: (state, action) => {
-      state.items = state.items.filter(item => item.id !== action.payload);
+      state.items = state.items.filter(
+        (item) => item.id !== action.payload
+      );
       localStorage.setItem("wishlist", JSON.stringify(state.items));
     },
+
     clearWishlist: (state) => {
       state.items = [];
       localStorage.removeItem("wishlist");
@@ -36,5 +47,10 @@ const wishlistSlice = createSlice({
   },
 });
 
-export const { addToWishlist, removeFromWishlist, clearWishlist } = wishlistSlice.actions;
+export const {
+  addToWishlist,
+  removeFromWishlist,
+  clearWishlist,
+} = wishlistSlice.actions;
+
 export default wishlistSlice.reducer;

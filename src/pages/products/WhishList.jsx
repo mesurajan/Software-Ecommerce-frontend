@@ -126,12 +126,17 @@ export default function WhishList() {
 
                 {/* Image (fixed size) */}
                 <div className="w-[100px] h-[140px] md:w-[200px] md:h-[240px] flex items-center justify-center overflow-hidden rounded-lg bg-white mx-auto mt-4 mb-2">
-                  <img
-                    src={item.chairimage}
+                 <img
+                    src={
+                      item.chairimage?.startsWith("http")
+                        ? item.chairimage
+                        : `${import.meta.env.VITE_BACKEND_URL}/uploads/product/${item.chairimage}`
+                    }
                     alt={item.title}
-                    className="max-w-full max-h-full object-contain hover:scale-110 transition-transform duration-300 ease-in-out"
+                    className="max-w-full max-h-full object-contain hover:scale-110 transition-transform duration-300"
                   />
                 </div>
+                
 
                 {/* Content */}
                 <div className="flex flex-col items-center text-center px-2 flex-grow">

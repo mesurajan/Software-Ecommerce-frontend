@@ -6,12 +6,18 @@ function BuyNow() {
   const navigate = useNavigate();
   const product = location.state?.product;
 
-  // Map product.image to chairimage for consistency
+  // ✅ NORMALIZE IMAGE ONCE (DO NOT OVERWRITE)
   const productForCheckout = product
-    ? { ...product, chairimage: product.image, quantity: 1 }
+    ? {
+        ...product,
+        chairimage:
+          product.chairimage || // wishlist / cart / home
+          product.image || // product details
+          product.images?.[0] || // safety
+          "",
+      }
     : null;
 
-  // Quantity state (in case user wants more than 1)
   const [quantity, setQuantity] = useState(1);
 
   if (!productForCheckout) {
@@ -37,21 +43,25 @@ function BuyNow() {
       {/* Product Summary */}
       <div className="border p-4 rounded">
         <h3 className="text-lg font-bold mb-2">Order Summary</h3>
+
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
           <img
             src={
-              productForCheckout?.chairimage
+              productForCheckout.chairimage
                 ? productForCheckout.chairimage.startsWith("http")
                   ? productForCheckout.chairimage
                   : `${import.meta.env.VITE_BACKEND_URL}/uploads/product/${productForCheckout.chairimage}`
                 : "/placeholder.png"
             }
-            alt={productForCheckout?.title || "Product Image"}
+            alt={productForCheckout.title}
             className="w-24 h-24 object-contain border"
           />
+
           <div className="flex-1">
             <p className="font-semibold">{productForCheckout.title}</p>
-            <p className="text-green-600 font-bold">Rs. {productForCheckout.price}</p>
+            <p className="text-green-600 font-bold">
+              Rs. {productForCheckout.price}
+            </p>
 
             {/* Quantity selector */}
             <div className="flex items-center gap-2 mt-2">
