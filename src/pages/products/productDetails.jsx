@@ -112,25 +112,27 @@ function ProductDetails() {
     alert("Product added to cart!");
   };
 
-  const handleBuyNow = () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      alert("Please login to proceed with purchase!");
-      navigate("/login");
-      return;
-    }
+const handleBuyNow = () => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    alert("Please login to proceed with purchase!");
+    navigate("/login");
+    return;
+  }
 
-    dispatch(
-      addToCart({
+  // Navigate directly to payment page with Buy Now item in state
+  navigate("/paymentprocessing", {
+    state: {
+      buyNowItem: {
         id: product._id,
         title: product.title,
         price: product.price,
         chairimage: product.image,
-      })
-    );
-
-    navigate("/Buynow", { state: { product } });
-  };
+        quantity: 1, // default quantity 1 for Buy Now
+      },
+    },
+  });
+};
 
   const isAvailable = product.stock && product.stock > 0;
 

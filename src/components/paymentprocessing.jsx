@@ -1,84 +1,100 @@
-// src/pages/PaymentProcessing.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { useLocation, useNavigate } from "react-router-dom";
-import AppBreadcrumbs from "./Breadcrumbs";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
+import {
+  FaMoneyBillWave,
+  FaUniversity,
+  FaMobileAlt,
+} from "react-icons/fa";
+import "react-toastify/dist/ReactToastify.css";
 
-function PaymentProcessing() {
-  const location = useLocation();
+const PaymentProcessing = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { items: cartItems } = useSelector((state) => state.cart);
 
-  const { product } = location.state || {};
-  const checkoutItems = product
-    ? [{ ...product, quantity: product.quantity || 1 }]
-    : cartItems;
+  // Get Buy Now item from route state if present
+  const [orderItems, setOrderItems] = useState([]);
 
-  if (!checkoutItems || checkoutItems.length === 0) {
-    return (
-      <div className="p-6 text-center">
-        <h2 className="text-xl font-bold">No items in checkout!</h2>
-        <button
-          onClick={() => navigate("/")}
-          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded"
-        >
-          Back to Home
-        </button>
-      </div>
-    );
-  }
+  useEffect(() => {
+    if (location.state?.buyNowItem) {
+      setOrderItems([location.state.buyNowItem]); // single Buy Now item
+    } else {
+      setOrderItems(cartItems); // default to cart items
+    }
+  }, [location.state, cartItems]);
 
-  const subtotal = checkoutItems.reduce(
-    (acc, item) => acc + Number(item.price) * (item.quantity || 1),
-    0
-  );
-  const deliveryFee = 140;
-  const total = subtotal + deliveryFee;
-
+  /* =======================
+     SHIPPING STATE
+  ======================== */
   const [shipping, setShipping] = useState({
     name: "",
+    email: "",
     phone: "",
     address: "",
   });
 
-  const [paymentMethod, setPaymentMethod] = useState("COD"); // default Cash on Delivery
+  const [selectedPayment, setSelectedPayment] = useState("");
 
+  /* =======================
+     PRICE CALCULATION
+  ======================== */
+  const shippingCharge = 140;
+
+  const subtotal = orderItems.reduce(
+    (acc, item) => acc + Number(item.price) * item.quantity,
+    0
+  );
+
+  const totalPrice = subtotal + shippingCharge;
+
+  const orderId = `ORD-${Date.now()}`;
+  const orderDate = new Date().toLocaleDateString();
+
+  /* =======================
+     HANDLERS
+  ======================== */
   const handleChange = (e) => {
     setShipping({ ...shipping, [e.target.name]: e.target.value });
   };
 
+  const handleCancel = () => navigate("/cart");
+
   const handlePayment = async () => {
     if (!shipping.name || !shipping.phone || !shipping.address) {
-      alert("⚠️ Please fill in all shipping details before proceeding.");
+      toast.error("Please fill all shipping details");
       return;
     }
 
-    if (paymentMethod === "COD") {
-      alert(
-        `✅ Order Placed Successfully!\n\nShipping To:\n${shipping.name}, ${shipping.phone}, ${shipping.address}\nTotal: Rs. ${total}`
-      );
-      navigate("/"); // redirect after COD
+    if (!selectedPayment) {
+      toast.error("Please select a payment method");
       return;
     }
 
-    if (paymentMethod === "ESEWA") {
+    if (selectedPayment === "cod") {
+      toast.success("Order placed successfully (COD)");
+      navigate("/");
+      return;
+    }
+
+    if (selectedPayment === "esewa") {
       try {
         const res = await axios.post(
           `${import.meta.env.VITE_BACKEND_URL}/api/payment/esewa/initiate`,
           {
-            items: checkoutItems,
+            items: orderItems,
             shipping,
             subtotal,
-            deliveryFee,
-            total,
+            deliveryFee: shippingCharge,
+            total: totalPrice,
           }
         );
 
         if (res.data.success) {
           const { esewaUrl, params } = res.data;
 
-          // create and submit form to eSewa
           const form = document.createElement("form");
           form.method = "POST";
           form.action = esewaUrl;
@@ -94,136 +110,193 @@ function PaymentProcessing() {
           document.body.appendChild(form);
           form.submit();
         } else {
-          alert("❌ Failed to initiate eSewa payment");
+          toast.error("Failed to initiate eSewa payment");
         }
-      } catch (err) {
-        console.error(err);
-        alert("❌ Something went wrong with eSewa payment");
+      } catch (error) {
+        console.error(error);
+        toast.error("eSewa payment error");
       }
+      return;
     }
+
+    toast.info("This payment method will be available soon 🚧");
   };
 
-  return (
-    <div className="container">
-      <div className="bg-backgroundlite py-4">
-        <h1 className="text-3xl font-bold px-4 text-mainbackground">Payment</h1>
-        <AppBreadcrumbs />
-      </div>
+  const paymentMethods = [
+    {
+      id: "esewa",
+      name: "eSewa",
+      icon: <FaMobileAlt />,
+      color: "bg-green-600",
+      desc: "Pay using your eSewa wallet",
+    },
+    {
+      id: "khalti",
+      name: "Khalti",
+      icon: <FaMobileAlt />,
+      color: "bg-purple-600",
+      desc: "Fast and secure Khalti payment",
+    },
+    {
+      id: "banking",
+      name: "Net Banking",
+      icon: <FaUniversity />,
+      color: "bg-blue-600",
+      desc: "Pay directly from your bank",
+    },
+    {
+      id: "cod",
+      name: "Cash on Delivery",
+      icon: <FaMoneyBillWave />,
+      color: "bg-gray-800",
+      desc: "Pay when your order arrives",
+    },
+  ];
 
-      <div className="max-w-6xl mx-auto p-6 bg-white shadow rounded grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Left Side - Order Details */}
-        <div className="md:col-span-2 border p-4 rounded bg-gray-50">
-          <h3 className="text-xl font-bold mb-4">Order Details</h3>
-          {checkoutItems.map((item, idx) => (
-            <div
-              key={item.id || idx}
-              className="flex items-center gap-4 border-b pb-4 mb-4 last:border-0 last:pb-0 last:mb-0"
-            >
-              <img
-                src={item.chairimage}
-                alt={item.title}
-                className="w-24 h-24 object-contain border"
-              />
-              <div>
-                <p className="font-semibold">{item.title}</p>
-                <p className="text-green-600 font-bold">
-                  Rs. {item.price} × {item.quantity || 1}
-                </p>
-                <p>Qty: {item.quantity || 1}</p>
+  return (
+    <div className="min-h-screen bg-gray-100 px-4 py-6 flex justify-center">
+      <ToastContainer />
+
+      <div className="bg-white rounded-3xl shadow-xl w-full max-w-6xl p-6 grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* LEFT — ORDER DETAILS */}
+        <div className="space-y-6">
+          <h2 className="text-3xl font-bold">Order Details</h2>
+
+          <div className="bg-gray-50 rounded-xl p-4 space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span>Order ID</span>
+              <span>{orderId}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Order Date</span>
+              <span>{orderDate}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Status</span>
+              <span className="text-orange-600 font-semibold">Pending</span>
+            </div>
+          </div>
+
+          <div className="border rounded-xl p-4 space-y-4 max-h-[400px] overflow-y-auto">
+            {orderItems.map((item, idx) => (
+              <div key={idx} className="flex gap-4 items-center">
+                <img
+                  src={item.chairimage}
+                  alt={item.title}
+                  className="w-20 h-20 object-contain border rounded"
+                />
+                <div className="flex-1">
+                  <p className="font-semibold">{item.title}</p>
+                  <p className="text-sm text-gray-500">
+                    Rs. {item.price} × {item.quantity}
+                  </p>
+                </div>
                 <p className="font-semibold">
-                  Rs. {(Number(item.price) * (item.quantity || 1)).toFixed(2)}
+                  Rs. {(item.price * item.quantity).toFixed(2)}
                 </p>
               </div>
+            ))}
+          </div>
+
+          <div className="bg-gray-50 rounded-xl p-4 space-y-2">
+            <div className="flex justify-between">
+              <span>Subtotal</span>
+              <span>Rs. {subtotal}</span>
             </div>
-          ))}
+            <div className="flex justify-between">
+              <span>Shipping</span>
+              <span>Rs. {shippingCharge}</span>
+            </div>
+            <div className="flex justify-between font-bold text-lg">
+              <span>Total</span>
+              <span>Rs. {totalPrice}</span>
+            </div>
+          </div>
         </div>
 
-        {/* Right Side - Shipping + Payment */}
-        <div className="border p-4 rounded space-y-6 bg-gray-50">
-          {/* Shipping Form */}
-          <div>
-            <h3 className="text-lg font-bold mb-2">Shipping Details</h3>
+        {/* RIGHT — SHIPPING + PAYMENT */}
+        <div className="space-y-6">
+          <div className="bg-gray-50 rounded-xl p-5 space-y-3">
+            <h3 className="text-xl font-bold">Shipping Address</h3>
+
             <input
-              type="text"
               name="name"
               placeholder="Full Name"
               value={shipping.name}
               onChange={handleChange}
-              className="w-full mb-2 px-3 py-2 border rounded"
+              className="w-full p-3 border rounded"
             />
             <input
-              type="text"
+              name="email"
+              placeholder="Email Address"
+              value={shipping.email}
+              onChange={handleChange}
+              className="w-full p-3 border rounded"
+            />
+            <input
               name="phone"
               placeholder="Phone Number"
               value={shipping.phone}
               onChange={handleChange}
-              className="w-full mb-2 px-3 py-2 border rounded"
+              className="w-full p-3 border rounded"
             />
             <textarea
               name="address"
+              rows="3"
               placeholder="Full Address"
               value={shipping.address}
               onChange={handleChange}
-              className="w-full mb-2 px-3 py-2 border rounded"
-              rows="3"
+              className="w-full p-3 border rounded"
             />
           </div>
 
-          {/* Payment Methods */}
-          <div>
-            <h3 className="text-lg font-bold mb-2">Payment Method</h3>
-            <div className="space-y-2">
-              <label className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  name="payment"
-                  value="COD"
-                  checked={paymentMethod === "COD"}
-                  onChange={(e) => setPaymentMethod(e.target.value)}
-                />
-                <span>Cash on Delivery</span>
-              </label>
-              <label className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  name="payment"
-                  value="ESEWA"
-                  checked={paymentMethod === "ESEWA"}
-                  onChange={(e) => setPaymentMethod(e.target.value)}
-                />
-                <span>eSewa / Khalti</span>
-              </label>
+          <div className="bg-white rounded-xl p-5 shadow">
+            <h3 className="text-xl font-bold mb-4">Payment Method</h3>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {paymentMethods.map((method) => (
+                <div
+                  key={method.id}
+                  onClick={() => setSelectedPayment(method.id)}
+                  className={`flex items-center gap-4 p-4 rounded-xl cursor-pointer transition
+                    ${
+                      selectedPayment === method.id
+                        ? "ring-2 ring-purple-600 bg-purple-50"
+                        : "border hover:shadow-md"
+                    }`}
+                >
+                  <div
+                    className={`w-11 h-11 flex items-center justify-center rounded-full text-white ${method.color}`}
+                  >
+                    {method.icon}
+                  </div>
+                  <div>
+                    <p className="font-semibold">{method.name}</p>
+                    <p className="text-sm text-gray-500">{method.desc}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
 
-          {/* Price Summary */}
-          <div>
-            <h3 className="text-lg font-bold mb-2">Price Summary</h3>
-            <div className="flex justify-between">
-              <span>Items Total:</span>
-              <span>Rs. {subtotal.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Delivery Fee:</span>
-              <span>Rs. {deliveryFee}</span>
-            </div>
-            <div className="flex justify-between font-bold text-lg mt-2">
-              <span>Total:</span>
-              <span>Rs. {total.toFixed(2)}</span>
-            </div>
+          <div className="flex gap-3">
+            <button
+              onClick={handleCancel}
+              className="flex-1 border py-3 rounded-xl hover:bg-gray-100"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handlePayment}
+              className="flex-1 bg-purple-600 text-white py-3 rounded-xl hover:bg-purple-700"
+            >
+              Proceed to Payment
+            </button>
           </div>
-
-          {/* Confirm Payment */}
-          <button
-            onClick={handlePayment}
-            className="w-full py-2 bg-green-600 text-white rounded hover:bg-green-700"
-          >
-            Proceed to Checkout
-          </button>
         </div>
       </div>
     </div>
   );
-}
+};
 
 export default PaymentProcessing;

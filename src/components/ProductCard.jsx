@@ -61,22 +61,20 @@ const ProductCard = ({ product }) => {
     alert("Product added to cart!");
   };
 
-  const handleBuyNow = () => {
-    const token = localStorage.getItem("token");
-    if (!token) return navigate("/login");
+const handleBuyNow = () => {
+  const token = localStorage.getItem("token");
+  if (!token) return navigate("/login");
 
-    dispatch(
-      addToCart({
-        id: normalized.id,
-        title: normalized.title,
-        price: normalized.price,
-        chairimage: normalized.image,
-        quantity: 1,
-      })
-    );
+  // Do NOT add to cart here
+  navigate("/paymentprocessing", { state: { buyNowItem: {
+    id: normalized.id,
+    title: normalized.title,
+    price: normalized.price,
+    chairimage: normalized.image,
+    quantity: 1,
+  }} });
+};
 
-    navigate("/Buynow", { state: { product: normalized } });
-  };
 
   return (
     <div className="relative flex flex-col items-center p-4 bg-white shadow rounded border hover:shadow-xl transition">

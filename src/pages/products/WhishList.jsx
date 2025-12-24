@@ -162,7 +162,17 @@ export default function WhishList() {
                         navigate("/login");
                         return;
                       }
-                      navigate("/Buynow", { state: { product: item } });
+                     navigate("/paymentprocessing", {
+                        state: {
+                          buyNowItem: {
+                            id: item.id,
+                            title: item.title,
+                            price: item.price,
+                            chairimage: item.chairimage,
+                            quantity: 1,
+                          },
+                        },
+                      });
                     }}
                     className="buynow-btn whitespace-nowrap"
                   >

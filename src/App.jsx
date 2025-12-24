@@ -15,7 +15,7 @@ import ProtectedRoute from './hoc/ProtectedRoutes';
 import WhishList from './pages/products/WhishList';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import PaymentProcessing from "./components/paymentprocessing";
-import BuyNow from "./components/BuyNow";
+
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminLayout from "./layout/AdminLayout";
 import AdminCustomers from "./pages/admin/AdminCustomers";
@@ -58,7 +58,7 @@ function App() {
           <Route path="cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
           <Route path="wishlist" element={<ProtectedRoute><WhishList /></ProtectedRoute>} />
           <Route path="paymentprocessing" element={<ProtectedRoute><PaymentProcessing /></ProtectedRoute>} />
-          <Route path="/Buynow"  element={<ProtectedRoute><BuyNow /></ProtectedRoute>} />
+         
           <Route path="/payment-success" element={<PaymentSuccess />} />
         </Route>
 
