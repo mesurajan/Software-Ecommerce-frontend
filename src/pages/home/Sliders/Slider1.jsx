@@ -64,7 +64,8 @@ function SimpleSlider() {
   };
 
   return (
-    <div className="container mx-auto slider-container bg-backgroundlite ">
+    <div className="container mx-auto slider-container bg-backgroundlite pt-20  ">
+      
       <Slider ref={sliderRef} {...settings}>
         {banners.map((el, i) => (
           <div key={i}>

@@ -143,7 +143,7 @@ const handleBuyNow = () => {
   return (
     <div className="bg-white container">
       {/* Header */}
-      <div className="bg-backgroundlite py-4">
+      <div className="bg-backgroundlite py-4 pt-20">
         <h1 className="text-3xl font-bold px-4 text-mainbackground">
           Product Details
         </h1>

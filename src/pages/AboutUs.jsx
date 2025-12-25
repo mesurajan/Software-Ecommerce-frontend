@@ -1,305 +1,273 @@
-import AppBreadcrumbs from '@/components/Breadcrumbs';
-import React from 'react'
+// src/pages/AboutUs.jsx
+import React from "react";
+import { Link } from "react-router-dom";
+import { ArrowRight, Leaf, Heart, Shield, Sparkles } from "lucide-react";
+import { Button } from "../components/ui/button";
+import AppBreadcrumbs from "../components/Breadcrumbs";
 import WhatshopOffers from "./home/utils/WhatshopOffers";
-import { Link } from 'react-router-dom';
-import AboutImage from "../assets/images/about/about.png";
-import workspace02 from '../assets/images/blogs/workspace02.png';
-import post01 from '../assets/images/blogs/post01.png';
-import post02 from '../assets/images/blogs/post02.png';
-import post03 from '../assets/images/blogs/post03.png';
-import post04 from '../assets/images/blogs/post04.png';
-import Vector from '../assets/images/Home/Vector.png';
-import Vector2 from '../assets/images/Home/vector2.png';
-import image01 from '../assets/images/about/image01.png';
-import image02 from '../assets/images/about/image02.png';
-import image03 from '../assets/images/about/image03.png';
-import image04 from '../assets/images/about/image04.png';
-import BrandPromotion from "../assets/images/Home/BrandPromotion.png";
 
-function AboutUs() {
+// Images
+import heroImage from "../assets/aboutus/hero-furniture.jpg";
+import craftsmanshipImage from "../assets/aboutus/craftsmanship.jpg";
+import materialsImage from "../assets/aboutus/materials.jpg";
+import premiumsection from "../assets/Products/premiumsection.png"
+
+const AboutUs = () => {
+  const stats = [
+    { number: "15K+", label: "Happy Customers" },
+    { number: "2,500", label: "Products Curated" },
+    { number: "50+", label: "Expert Designers" },
+    { number: "7", label: "Years of Excellence" },
+  ];
+
+  const values = [
+    {
+      icon: Leaf,
+      title: "Sustainability First",
+      description:
+        "We partner with eco-conscious manufacturers and use responsibly sourced materials to minimize our environmental footprint.",
+    },
+    {
+      icon: Heart,
+      title: "Crafted with Love",
+      description:
+        "Every piece in our collection is handpicked by our design team, ensuring quality and aesthetic excellence.",
+    },
+    {
+      icon: Shield,
+      title: "Quality Guaranteed",
+      description:
+        "We stand behind every product with our comprehensive warranty and hassle-free return policy.",
+    },
+    {
+      icon: Sparkles,
+      title: "Timeless Design",
+      description:
+        "Our furniture transcends trends, offering pieces that remain beautiful and functional for generations.",
+    },
+  ];
+
   return (
-    <div className='container'>
-      {/* Starting OF page  */}
+    <div className="min-h-screen bg-white text-[#0A174E] container">
 
-        <div className="bg-backgroundlite py-4">
+      {/* Breadcrumb & Header */}
+      <div className="bg-backgroundlite py-4 pt-20">
         <h1 className="text-3xl font-bold px-4 text-mainbackground">About Us</h1>
         <AppBreadcrumbs />
       </div>
 
-      {/* body section */}
-
-      <div className='flex flex-col md:flex-row gap-8 justify-center mt-10 mb-10 px-4'>
-        <div className='flex md:w-[900px] md:h-[550px] rounded shadow-sm transform transition-transform duration-300 hover:scale-102 hover:shadow-md'>
-          <img src={AboutImage} alt="About Us" 
-          className=" w-full h-auto md:w-[900px] md:h-[550px] 
-          rounded-2xl object-cover shadow-lg " />
+      {/* Hero Section */}
+      <section className="relative min-h-screen flex items-center overflow-hidden ">
+        <div className="absolute inset-0">
+          <img
+            src={heroImage}
+            alt="HEKTO furniture showroom"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0A174E]/90 via-[#0A174E]/70 to-transparent" />
         </div>
-
-        <div className='md:w-[450px] flex flex-col justify-start md:mt-8'>
-          <h2 className='text-xl md:text-3xl font-semibold mb-4 text-[#0A174E]'>
-            Crafted for comfort, built to last, bringing elegance to every corner.
-          </h2>
-          <p className='text-sm md:text-base text-justify text-[#0A174E] mb-4'>
-            Discover furniture that blends timeless design with everyday comfort. 
-            Each piece is meticulously crafted, built to last, and designed to 
-            transform your home. From cozy corners to elegant living spaces, 
-            we combine style and functionality, making every room a sanctuary. 
-            Explore our collection and indulge in warmth, sophistication, and 
-            unmatched quality. Every piece tells a story of comfort, elegance, 
-            and lasting beauty.
-          </p>
-
-          <Link to="/contact">
-          <button className='bg-[#0A174E] mt-4 md:mt-10 
-          text-white py-2 px-4 rounded-md hover:bg-[#0A174E]/80'>
-            Contact Us
-          </button>
-          </Link>
+        <div className="container relative z-10 py-20 text-white px-10">
+          <div className="max-w-2xl ">
+            <span className="inline-block text-secondary font-body text-sm uppercase tracking-[0.3em] mb-4 ">
+              Est. 2025
+            </span>
+            <h1 className="font-heading text-5xl md:text-6xl lg:text-7xl leading-tight mb-6">
+              Crafting Spaces,
+              <br />
+              <span className="text-secondary">Creating Stories</span>
+            </h1>
+            <p className="font-body text-lg md:text-xl leading-relaxed max-w-xl">
+              At HEKTO, we believe furniture is more than just objects — it's the
+              foundation of your home's story. Every piece we curate is designed
+              to inspire, comfort, and endure.
+            </p>
+          </div>
         </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="py-16 bg-[#0A174E]">
+        <div className="container">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
+            {stats.map((stat, index) => (
+              <div key={stat.label} className="text-center">
+                <div className="font-heading text-4xl md:text-5xl lg:text-6xl text-secondary mb-2">
+                  {stat.number}
+                </div>
+                <div className="text-white/80 font-body text-sm md:text-base uppercase tracking-wider">
+                  {stat.label}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+
+        {/* Values Section */}
+      <section className="py-20 md:py-28 bg-background">
+        <div className="container">
+          <div className="text-center max-w-2xl mx-auto mb-16 ">
+            <span className="inline-block text-[#0A174E] font-body text-sm uppercase tracking-[0.3em] mb-4">
+              Our Values
+            </span>
+            <h2 className="font-heading text-4xl md:text-5xl text-foreground mb-6">
+              What Drives Us Forward
+            </h2>
+            <p className="text-muted-foreground font-body text-lg">
+              Our commitment to excellence goes beyond beautiful furniture — it's
+              woven into everything we do.
+            </p>
+          </div>
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {values.map((value, index) => (
+            <div
+              key={value.title}
+              className="group p-8 bg-[#0A174E] rounded-lg shadow-soft
+                        hover:shadow-elevated hover:-translate-y-2 hover:scale-105
+                        transition-all duration-300 ease-in-out"
+            >
+              <div className="w-14 h-14 rounded-full bg-white/10 flex items-center justify-center  mb-6
+                              group-hover:bg-white/20 transition-all duration-300 ease-in-out">
+                <value.icon className="w-7 h-7 text-white" />
+              </div>
+              <h3 className="font-heading text-xl text-white mb-3">
+                {value.title}
+              </h3>
+              <p className="text-white font-body leading-relaxed text-left tracking-wide">
+                {value.description}
+              </p>
+            </div>
+          ))}
       </div>
+        </div>
+      </section>
 
-
-
-      <div className='flex flex-col md:flex-row gap-8 justify-center mb-10 px-4'>
-              
-              {/* Left side (Blog content) */}
-              <div className='w-full md:w-[900px] text-[#0A174E] rounded shadow-sm transform transition-transform duration-300 hover:scale-102 hover:shadow-md'>
-                <img 
-                  src={workspace02} 
-                  alt='workspace02' 
-                  className='w-full h-90 md:h-[550px] object-cover rounded-lg mb-4'
-                />
-      
-                <div className='flex flex-row justify-start gap-8'>
-                  <div className='flex flex-row items-center gap-2 py-4'>
-                    <img src={Vector2} alt='logo' />
-                    <p>Surajan Shrestha</p>
-                  </div>
-                  <div className='flex flex-row items-center gap-2'>
-                    <img src={Vector} alt='logo' className='w-4 h-4' />
-                    <p>Aug 09 2020</p>
-                  </div>
-                </div>
-      
-                <h2 className='text-2xl font-bold mb-2'>
-                 Bringing comfort and style to every corner of your space.
-                </h2>  
-      
-                <p className='text-gray-700 mb-4 text-justify'>
-                    Your home deserves furniture that balances elegance with everyday living. From cozy
-                    living rooms to inspiring workspaces, we bring you designs that add warmth, style, 
-                    and functionality to every corner. Explore timeless collections crafted to reflect 
-                    your personality and make your space truly feel like home.
+      {/* Story Section */}
+      <section className="py-20 md:py-28 bg-muted/50">
+        <div className="container">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center mb-20">
+            <div className="order-2 lg:order-1">
+              <span className="inline-block text-[#0A174E] font-body text-sm uppercase tracking-[0.3em] mb-4">
+                Our Story
+              </span>
+              <h2 className="font-heading text-4xl md:text-5xl text-[#0A174E] mb-6">
+                From Passion to Purpose
+              </h2>
+              <div className="space-y-4 text-muted-foreground font-body text-lg leading-relaxed">
+                <p>
+                  HEKTO was born from a simple belief: everyone deserves a home
+                  that reflects their unique story. What started in 2025 as a
+                  small curated collection has grown into a beloved destination
+                  for discerning homeowners.
                 </p>
-      
-                <Link to="#" className='font-semibold hover:underline'>Read More...</Link>
-              </div>
-      
-              {/* Right side (Sidebar) */}
-              <div className='md:w-[450px] flex flex-col justify-start md:mt-8 gap-6'>
-                {/* Sale Products */}
-                <div className='border p-4 rounded-lg shadow-sm rounded shadow-sm transform transition-transform duration-300 hover:scale-105 hover:shadow-md' >
-                  <h3 className='font-semibold mb-3 text-2xl'>Sale Products</h3>
-                    <ul className='space-y-3 text-sm text-gray-600'>
-                    <li className="flex items-start space-x-3">
-                        <img 
-                          src={post01}
-                          alt="icon" 
-                          className="w-16 h-18 object-cover rounded-lg flex-shrink-0"
-                        />
-                        <div className="flex-1">
-                          <p className="text-gray-800 text-justify">
-                            ✨ "Your home deserves furniture that inspires comfort & elegance. 
-                            Discover our latest collection today!"<br></br>
-                            <span className="text-gray-400"> - Aug 09 2020</span>
-                          </p>
-                        </div>
-                      </li>
-      
-                         <li className="flex items-start space-x-3">
-                        <img 
-                          src={post02}
-                          alt="icon" 
-                          className="w-16 h-16 object-cover rounded-lg flex-shrink-0"
-                        />
-                        <div className="flex-1">
-                          <p className="text-gray-800 text-justify">
-                            🛋️ "A sofa is not just a seat—it’s where memories are made. 
-                            Find yours now.<br></br>
-                            <span className="text-gray-400"> - Aug 11 2025</span>
-                          </p>
-                        </div>
-                      </li>
-      
-      
-                         <li className="flex items-start space-x-3">
-                        <img 
-                          src={post03}
-                          alt="icon" 
-                          className="w-16 h-18 object-cover rounded-lg flex-shrink-0"
-                        />
-                        <div className="flex-1">
-                          <p className="text-gray-800 text-justify">
-                            🌿 "Turn your patio into a relaxing paradise with our 
-                            outdoor furniture range."<br></br>
-                            <span className="text-gray-400"> - Aug 13 2025</span>
-                          </p>
-                        </div>
-                      </li>
-                         <li className="flex items-start space-x-3">
-                        <img 
-                          src={post04}
-                          alt="icon" 
-                          className="w-16 h-18 object-cover rounded-lg flex-shrink-0"
-                        />
-                        <div className="flex-1">
-                          <p className="text-gray-800 text-justify">
-                            🛏️ "Sleep better, live better. Explore bedroom furniture designed
-                             for true comfort."<br></br>
-                            <span className="text-gray-400"> - Aug 15 2025</span>
-                          </p>
-                        </div>
-                      </li>
-                  </ul>
-                </div>
-      
-      
-                  {/* Other Products */}
-                  <div className="border p-4 rounded-lg shadow-sm rounded shadow-sm transform transition-transform duration-300 hover:scale-105 hover:shadow-md">
-                    <h3 className="font-semibold mb-3 text-2xl">Other Products</h3>
-                    
-                    <div className="grid grid-cols-2 gap-2">
-                      {/* Item 1 */}
-                      <div className="flex flex-col items-center text-center cursor-pointer">
-                        <img 
-                          src={post01} 
-                          alt="Living Room Inspirations" 
-                          className="w-20 h-20 object-cover rounded-lg shadow-sm mb-2" 
-                        />
-                        <p className="text-gray-700 font-medium">Living Room</p>
-                      </div>
-      
-                      {/* Item 2 */}
-                      <div className="flex flex-col items-center text-center cursor-pointer">
-                        <img 
-                          src={post02} 
-                          alt="Bedroom Comfort" 
-                          className="w-20 h-20 object-cover rounded-lg shadow-sm mb-2" 
-                        />
-                        <p className="text-gray-700 font-medium">Bedroom</p>
-                      </div>
-      
-                      {/* Item 3 */}
-                      <div className="flex flex-col items-center text-center cursor-pointer">
-                        <img 
-                          src={post03} 
-                          alt="Dining & Kitchen" 
-                          className="w-20 h-20 object-cover rounded-lg shadow-sm mb-2" 
-                        />
-                        <p className="text-gray-700 font-medium">Dining</p>
-                      </div>
-      
-                      {/* Item 4 */}
-                      <div className="flex flex-col items-center text-center cursor-pointer">
-                        <img 
-                          src={post04} 
-                          alt="Office Furniture" 
-                          className="w-20 h-20 object-cover rounded-lg shadow-sm mb-2" 
-                        />
-                        <p className="text-gray-700 font-medium">Office</p>
-                      </div>
-                    </div>
-                  </div>
-      
+                <p>
+                  Our founders, passionate about design and sustainability, set
+                  out to bridge the gap between premium craftsmanship and
+                  accessible luxury. Today, we continue that mission by
+                  partnering with artisans and manufacturers who share our
+                  vision.
+                </p>
               </div>
             </div>
-
-
-
-            {/* Our Workspace  */}
-            <div className='text-xl md:text-4xl font-semibold text-center text-[#0A174E] mb-6 px-4 md:mt-18 md:mb-10'>
-             A glimpse into our creative space
+            <div className="order-1 lg:order-2">
+              <div className="relative">
+                <img
+                  src={craftsmanshipImage}
+                  alt="Craftsmanship"
+                  className="w-full h-64 md:h-72 lg:h-80 rounded-lg shadow-elevated object-cover"
+                />
+                <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-secondary/20 rounded-lg -z-10" />
+                <div className="absolute -top-6 -right-6 w-24 h-24 border-2 border-secondary/30 rounded-lg -z-10" />
+              </div>
             </div>
-
-            <div className='grid grid-cols-1 md:grid-cols-4 
-            gap-6 mb-10 px-4 text-center text-[#0A174E]  '>
-              <div className='flex flex-col items-center rounded shadow-sm transform transition-transform duration-300 hover:scale-105 hover:shadow-md'>
-                <img src={image01} alt="firstimage" 
-                className='mb-4 rounded-md w-full h-48 object-cover'
-                 />
-                <h1 className='text-xl font-semibold mb-2 mt-6'>
-                  <Link to="/">Home Page</Link>
-                </h1>
-                <p className='text-sm text-gray-600 px-4 text-justify mb-6'>
-                  Welcome to our home page, where you can explore the essence 
-                  of our brand and offerings. Here, we showcase our core values, 
-                  latest updates, and a glimpse into what makes our work unique. 
-                  Navigate through our features and discover how we bring style, 
-                  comfort, and functionality together for every space.</p>
-              </div>
-
-
-              <div className='flex flex-col items-center rounded shadow-sm transform transition-transform duration-300 hover:scale-105 hover:shadow-md'>
-                <img src={image02} alt="firstimage" 
-                className='mb-4 rounded-md w-full h-48 object-cover'
-                />
-                <h1 className='text-xl font-semibold mb-2 mt-6'>
-                  <Link to="/product">Our Products</Link>
-                </h1>
-                <p className='text-sm text-gray-600 px-4 text-justify mb-6'>
-                  Explore our diverse range of products, crafted to combine style, quality, and 
-                  functionality. Each piece is thoughtfully designed to enhance your living space 
-                  while providing lasting comfort. From timeless classics to modern innovations, 
-                  our collection showcases the best of craftsmanship, ensuring every product brings 
-                  elegance and practicality to your home.</p>
-              </div>
-
-              <div className='flex flex-col items-center rounded shadow-sm transform transition-transform duration-300 hover:scale-105 hover:shadow-md'>
-                <img src={image03} alt="firstimage"
-                className='mb-4 rounded-md w-full h-48 object-cover'
-                 />
-                <h1 className='text-xl font-semibold mb-2 mt-6'>
-                  <Link to="/wishlist">Some WhishLists</Link>
-                </h1>
-                <p className='text-sm text-gray-600 px-4 text-justify mb-6'>
-                  Your Wishlist keeps all your favorite products in one place for easy access.
-                  Browse and save items that inspire you, and plan your perfect living space at your own pace.
-                   Every product you add reflects your taste, helping you curate a collection of pieces that truly 
-                   resonate with your style and needs.</p>
-              </div>
-
-
-              <div className='flex flex-col items-center rounded shadow-sm transform transition-transform duration-300 hover:scale-105 hover:shadow-md'>
-                <img src={image04} alt="firstimage" 
-                className='mb-4 rounded-md w-full h-48 object-cover'
-                />
-                <h1 className='text-xl font-semibold mb-2 mt-6'>
-                  <Link to="/cart">Cart Section</Link>
-                </h1>
-                <p className='text-sm text-gray-600 px-4 text-justify mb-6'>
-                   The Cart is where your selected products come together before checkout. Review your 
-                   choices, adjust quantities, and ensure everything fits your home and lifestyle. 
-                   Designed for convenience, it helps you manage your purchases efficiently while keeping 
-                   track of your selections in a simple, organized way.</p>
-              </div>
           </div>
 
-
-
-      <section className="mt-18">
-              <WhatshopOffers />
-        </section>
-
-
-       <section>
-            <div className="container flex items-center justify-center mt-10 mb-10">
-              <img src={BrandPromotion} alt="brandpromotion" className="sm:h-10 md:h-20 sm:px-4 md:px-10"/>
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+            <div>
+              <div className="relative">
+                <img
+                  src={materialsImage}
+                  alt="Premium Materials"
+                  className="w-full h-64 md:h-72 lg:h-80 rounded-lg shadow-elevated object-cover"
+                />
+                <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-primary/10 rounded-lg -z-10" />
+              </div>
             </div>
-          </section>
+            <div>
+              <span className="inline-block text-secondary font-body text-sm uppercase tracking-[0.3em] mb-4">
+                Our Commitment
+              </span>
+              <h2 className="font-heading text-4xl md:text-5xl text-foreground mb-6">
+                Premium Materials, Conscious Choices
+              </h2>
+              <div className="space-y-4 text-muted-foreground font-body text-lg leading-relaxed">
+                <p>
+                  Every piece of furniture tells a story through its materials.
+                  We source premium hardwoods from certified sustainable forests,
+                  upholstery from ethical suppliers, and finishes that are both
+                  durable and eco-friendly.
+                </p>
+                <p>
+                  Our quality control process ensures that each item meets our
+                  rigorous standards before it reaches your home. Because we
+                  believe that true luxury lies in longevity.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
+    
 
+      {/* CTA Section */}
+      <section
+        className="relative py-20 md:py-28 overflow-hidden"
+        style={{
+         backgroundImage: `url(${premiumsection})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        {/* Dark overlay for contrast */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0A174E]/90 via-[#0A174E]/80 to-[#0A174E]/80"></div>
+
+        <div className="container relative z-10 text-center px-4">
+          <h2 className="font-heading text-4xl md:text-5xl text-white mb-6">
+            Ready to Transform Your Space?
+          </h2>
+          <p className="text-white/80 font-body text-lg md:text-xl mb-10 max-w-2xl mx-auto">
+            Discover our curated collection of furniture that combines timeless
+            design with modern comfort. Your dream home is just a click away.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link to="/product">
+              <Button
+                variant="outline"
+                size="lg"
+                className="border-white text-[#0A174E] hover:bg-white/10 hover:text-white transition-all duration-300"
+              >
+                Explore Collection
+                <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </Link>
+
+            <Link to="/contact">
+              <Button
+                variant="outline"
+                size="lg"
+                className="border-white text-[#0A174E] hover:bg-white/10 hover:text-white transition-all duration-300"
+              >
+                Contact Us
+              </Button>
+            </Link>
+          </div>
+
+        </div>
+      </section>
     </div>
-  )
-}
+  );
+};
 
 export default AboutUs;

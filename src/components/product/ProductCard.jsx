@@ -3,8 +3,8 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaRegHeart } from "react-icons/fa";
 import { useDispatch } from "react-redux";
-import { addToCart } from "../Apps/Reducers/cartSlice";
-import { addToWishlist } from "../Apps/Reducers/wishlistSlice";
+import { addToCart } from "../../Apps/Reducers/cartSlice";
+import { addToWishlist } from "../../Apps/Reducers/wishlistSlice";
 import { ShoppingCart } from "lucide-react";
 
 const slugify = (str) =>

@@ -1,7 +1,7 @@
 import React from 'react'
-import facebook from '../assets/images/Home/fb.png';
-import instagram from '../assets/images/Home/insta.png' ;
-import twitter from '../assets/images/Home/twitter.png';
+import facebook from '../../assets/images/Home/fb.png';
+import instagram from '../../assets/images/Home/insta.png' ;
+import twitter from '../../assets/images/Home/twitter.png';
 import { Link } from "react-router-dom";
 
 function Footer() {

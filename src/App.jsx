@@ -14,7 +14,9 @@ import Cart from './pages/products/Cart';
 import ProtectedRoute from './hoc/ProtectedRoutes'; 
 import WhishList from './pages/products/WhishList';
 import AdminDashboard from './pages/admin/AdminDashboard';
-import PaymentProcessing from "./components/paymentprocessing";
+import PaymentProcessing from "./components/Paymemt/paymentprocessing";
+import Profile from "./components/profile";
+import Myorders from "./components/myorders";
 
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminLayout from "./layout/AdminLayout";
@@ -29,7 +31,7 @@ import AdminProduct from "./pages/admin/AdminProduct";
 import AdminCategories from "./pages/admin/AdminCategories";
 import AdminProductDetails from "./pages/admin/AdminProductDetails";
 import AdminTrendingProduct from "./pages/admin/AdminTrendingProduct";
-import PaymentSuccess from "./components/PaymentSuccess";
+import PaymentSuccess from "./components/Paymemt/PaymentSuccess";
 
 // ScrollToTop Component
 const ScrollToTop = () => {
@@ -53,7 +55,8 @@ function App() {
           <Route path="contact" element={<Contact/>}/>
           <Route path="blogs" element={<Blogs/>}/>
           <Route path="about" element={<AboutUs/>}/>
-          
+          <Route path="profile" element={<Profile/>}/>
+          <Route path="myorders" element={<Myorders/>}/>
           {/* Protected routes */}
           <Route path="cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
           <Route path="wishlist" element={<ProtectedRoute><WhishList /></ProtectedRoute>} />

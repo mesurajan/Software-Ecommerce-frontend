@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import Slider from "react-slick";
 import axios from "axios";
-import ProductCard from "../../../components/ProductCard";
+import ProductCard from "../../../components/product/ProductCard";
 import showcase01 from "../../../assets/images/Home/showcase01.png";
 import showcase02 from "../../../assets/images/Home/showcase02.png";
 import { Link } from "react-router-dom";

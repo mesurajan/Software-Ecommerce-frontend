@@ -8,31 +8,42 @@ import { FaRegHeart } from "react-icons/fa";
 import { HiMenuAlt3, HiX } from "react-icons/hi";
 import { Link, NavLink } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { clearUser } from "../Apps/Reducers/UserSlice";
-import hetkologo from "../assets/images/Home/logo.png";
+import { clearUser } from "../../Apps/Reducers/UserSlice";
+import hetkologo from "../../assets/images/Home/logo.png";
 
 
 function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+
   const user = useSelector((state) => state.user.user);
   const cartCount = useSelector((state) => state.cart.count);
   const wishlistCount = useSelector((state) => state.wishlist.items.length);
 
   const dispatch = useDispatch();
+  // const navigate = useNavigate();
+
+
 
   // ✅ Logout handler: clear session but stay on same page
   const handleLogout = () => {
     dispatch(clearUser());
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-    
+    setProfileOpen(false);
+    navigate("/");
   };
+
+  const scrollToTop = () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
 
   return (
     <div className="container">
       {/* Top Contact Bar */}
-      <header className="text-sm ">
-        <div className="bg-[#0A174E]">
+      <header className="text-sm fixed top-0 left-0 right-0 z-50 mb-40">
+        <div className="bg-[#0A174E] ">
           <div className="container flex flex-col gap-2 px-3 py-2 text-white md:flex-row md:justify-between md:items-center">
             {/* Left contact info */}
             <div className="flex items-center gap-8">
@@ -90,19 +101,51 @@ function Header() {
                 </Link>
               </div>
 
-              {/* Login / Logout */}
-              <button
-                onClick={user ? handleLogout : undefined}
-                className="flex items-center cursor-pointer hover:text-pink-500"
-              >
-                <p>{user ? "Logout" : <Link to="/login">Login</Link>}</p>
-                <FaRegUser />
-              </button>
+                {/* Profile Section */}
+                {user ? (
+                  <div className="relative">
+                    <button
+                      onClick={() => setProfileOpen(!profileOpen)}
+                      className="flex items-center gap-1"
+                    >
+                      <FaRegUser />
+                      <FaChevronDown />
+                    </button>
 
-         
+                    {profileOpen && (
+                      <div className="absolute right-0 mt-2 w-40 bg-white text-black shadow-lg rounded z-50">
+                        <Link
+                          to="/profile"
+                          className="block px-4 py-2 hover:bg-gray-100"
+                          onClick={() => setProfileOpen(false)}
+                        >
+                          Profile Settings
+                        </Link>
+                        <Link
+                          to="/myorders"
+                          className="block px-4 py-2 hover:bg-gray-100"
+                          onClick={() => setProfileOpen(false)}
+                        >
+                          Orders
+                        </Link>
+                        <button
+                          onClick={handleLogout}
+                          className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                        >
+                          Logout
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <Link to="/login" className="flex items-center gap-1">
+                    Login <FaRegUser />
+                  </Link>
+                )}
+              </div>
             </div>
           </div>
-        </div>
+
 
         {/* Main Navigation */}
         <nav className="container relative flex items-center justify-between px-3 py-2 mx-auto text-black bg-white">
@@ -122,13 +165,20 @@ function Header() {
                     ? "text-[#0A174E] font-semibold border-b-2 border-[#0A174E] pb-1"
                     : "text-black hover:text-[#0A174E]"
                 }
+                onClick={(e) => {
+                  // If already on home, scroll to top
+                  if (window.location.pathname === "/") {
+                    e.preventDefault(); // Prevent React Router re-navigation
+                    scrollToTop();
+                  }
+                }}
               >
                 Home
               </NavLink>
             </li>
             <li>
               <NavLink
-                to="product"
+                to="/product"
                 className={({ isActive }) =>
                   isActive
                     ? "text-[#0A174E] font-semibold border-b-2 border-[#0A174E] pb-1"
@@ -140,7 +190,7 @@ function Header() {
             </li>
             <li>
               <NavLink
-                to="Blogs"
+                to="/Blogs"
                 className={({ isActive }) =>
                   isActive
                     ? "text-[#0A174E] font-semibold border-b-2 border-[#0A174E] pb-1"
@@ -153,7 +203,7 @@ function Header() {
 
                <li>
               <NavLink
-                to="about"
+                to="/about"
                 className={({ isActive }) =>
                   isActive
                     ? "text-[#0A174E] font-semibold border-b-2 border-[#0A174E] pb-1"
@@ -167,7 +217,7 @@ function Header() {
 
             <li>
               <NavLink
-                to="Contact"
+                to="/Contact"
                 className={({ isActive }) =>
                   isActive
                     ? "text-[#0A174E] font-semibold border-b-2 border-[#0A174E] pb-1"
@@ -218,7 +268,7 @@ function Header() {
                 </li>
                 <li>
                   <NavLink
-                    to="product"
+                    to="/product"
                     className={({ isActive }) =>
                       isActive
                         ? "text-[#0A174E] font-semibold border-b-2 border-[#0A174E] pb-1"
@@ -230,7 +280,7 @@ function Header() {
                 </li>
                 <li>
                   <NavLink
-                    to="Blogs"
+                    to="/Blogs"
                     className={({ isActive }) =>
                       isActive
                         ? "text-[#0A174E] font-semibold border-b-2 border-[#0A174E] pb-1"
@@ -243,7 +293,7 @@ function Header() {
                 
                 <li>
                   <NavLink
-                    to="about"
+                    to="/about"
                     className={({ isActive }) =>
                       isActive
                         ? "text-[#0A174E] font-semibold border-b-2 border-[#0A174E] pb-1"
@@ -256,7 +306,7 @@ function Header() {
 
                 <li>
                   <NavLink
-                    to="Contact"
+                    to="/Contact"
                     className={({ isActive }) =>
                       isActive
                         ? "text-[#0A174E] font-semibold border-b-2 border-[#0A174E] pb-1"

@@ -46,7 +46,7 @@ function Cart() {
 
   return (
     <div className="bg-white container mx-auto text-[#0A174E] mb-10 px-4 md:px-0">
-      <div className="bg-backgroundlite py-4">
+      <div className="bg-backgroundlite py-4 pt-20">
         <h1 className="text-3xl font-bold px-4">Your Cart</h1>
         <AppBreadcrumbs />
       </div>

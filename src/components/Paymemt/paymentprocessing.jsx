@@ -154,10 +154,10 @@ const PaymentProcessing = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-100 px-4 py-6 flex justify-center">
+    <div className="min-h-screen bg-gray-100 px-4 py-6 flex justify-center pt-40">
       <ToastContainer />
 
-      <div className="bg-white rounded-3xl shadow-xl w-full max-w-6xl p-6 grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="bg-white rounded-3xl shadow-xl w-full max-w-6xl p-6 grid grid-cols-1 lg:grid-cols-2 gap-8 ">
         {/* LEFT — ORDER DETAILS */}
         <div className="space-y-6">
           <h2 className="text-3xl font-bold">Order Details</h2>

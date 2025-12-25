@@ -17,7 +17,7 @@ function Blogs() {
     <div className='container bg-white text-[#0A174E]'>
 
       {/* Header */}
-      <div className="bg-backgroundlite py-4">
+      <div className="bg-backgroundlite py-4  pt-20">
         <h1 className="text-3xl font-bold px-4 text-mainbackground">Blogs</h1>
         <AppBreadcrumbs />
       </div>

@@ -14,7 +14,7 @@ function Contact() {
 
 
     <div className='container text-mainbackground'>
-      <div className="bg-backgroundlite py-4">
+      <div className="bg-backgroundlite py-4  pt-20">
         <h1 className="text-3xl font-bold px-4 text-mainbackground">Contact Us</h1>
         <AppBreadcrumbs />
       </div>
