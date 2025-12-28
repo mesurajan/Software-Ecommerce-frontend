@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 
 function Footer() {
   return ( 
-    <div className='container  bg-backgroundlite text-[#0A174E]'>
+    <div className='container  bg-[#041768] text-white mt-2'>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-4 md:gap-10 md:py-[85px] px-8 md:px-4 py-20 ">
         
@@ -17,7 +17,7 @@ function Footer() {
         
         <div className='mt-4 space-y-4'>
           <div className='flex items-center'>
-              <input placeholder='Enter Your Email' className='h-10 px-2 border border-[#0A174E]  focus:outline-none focus:ring-1 focus:ring-[#0A174E]'></input>
+              <input placeholder='Enter Your Email' className='h-10 px-2 border border-[#cfd3e1]  focus:outline-none focus:ring-1 focus:ring-[#0A174E]'></input>
               <Link to ="signup">
                 <button button className='h-10 px-6 primary-btn hover:bg-primary-btn whitespace-nowrap '>Sign up</button>
               </Link>

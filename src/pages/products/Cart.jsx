@@ -1,58 +1,105 @@
-// src/pages/Cart.jsx
-import React, { useState } from "react";
+import React from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { IoMdRemove, IoMdAdd } from "react-icons/io";
+import { BsTrash } from "react-icons/bs";
 import {
-  removeFromCart,
   clearCart,
+  removeFromCart,
   increaseQuantity,
   decreaseQuantity,
 } from "../../Apps/Reducers/cartSlice";
+import { FaRegHeart } from "react-icons/fa";
 import EmptyCartImg from "../../assets/images/empty-cart.png";
-import { Link, useNavigate } from "react-router-dom";
 import AppBreadcrumbs from "../../components/Breadcrumbs";
+import {Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { addToWishlist } from "../../Apps/Reducers/wishlistSlice";
+const Cart = () => {
 
-function Cart() {
   const { items } = useSelector((state) => state.cart);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [shippingInfo, setShippingInfo] = useState({
-    country: "",
-    city: "",
-    postal: "",
-  });
-
-  const handleShippingChange = (e) => {
-    setShippingInfo({ ...shippingInfo, [e.target.name]: e.target.value });
+  // ➖ decrease qty
+  const handleDecrease = (item) => {
+    if (item.quantity > 1) {
+      dispatch(decreaseQuantity({ id: item.id }));
+    } else {
+      dispatch(removeFromCart({ id: item.id }));
+   
+    }
   };
 
-  const handleCalculateShipping = () => {
-    alert(
-      `Shipping calculated for ${shippingInfo.country}, ${shippingInfo.city}, ${shippingInfo.postal}`
-    );
+  // ➕ increase qty
+  const handleIncrease = (item) => {
+    dispatch(increaseQuantity({ id: item.id }));
   };
 
-  // ✅ Calculate total price
+  // ❌ remove item
+  const handleRemoveFromCart = (id) => {
+    dispatch(removeFromCart({ id }));
+  
+  };
+
+  // 🛒 Buy Now → Checkout
+  const handleBuyNow = (item) => {
+    navigate("/paymentprocessing", {
+      state: {
+        buyNowItem: {
+          id: item.id,
+          title: item.title,
+          price: item.price,
+          chairimage: item.chairimage,
+          quantity: item.quantity,
+        },
+      },
+    });
+  };
+
+  const handleWishlist = (item) => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    navigate("/login");
+    return;
+  }
+
+  dispatch(
+    addToWishlist({
+      id: item.id,
+      title: item.title,
+      price: item.price,
+      chairimage: item.chairimage,
+    })
+  );
+};
+
+
+  // 💰 total price (same as old cart)
   const totalPrice = items.reduce(
     (acc, item) => acc + Number(item.price) * item.quantity,
     0
   );
 
+  // 💳 normal checkout
   const handleCheckout = () => {
     navigate("/paymentprocessing", {
-      state: { cartItems: items, shippingInfo },
+      state: {
+        items,
+      },
     });
   };
 
   return (
-    <div className="bg-white container mx-auto text-[#0A174E] mb-10 px-4 md:px-0">
-      <div className="bg-backgroundlite py-4 pt-20">
+  <div  className="bg-white container mx-auto text-[#0A174E] mb-10 px-4 md:px-0">
+    <div className="bg-backgroundlite py-4 pt-20">
         <h1 className="text-3xl font-bold px-4">Your Cart</h1>
         <AppBreadcrumbs />
       </div>
+    <section className="p-6  mx-auto">
+      <h2 className="text-2xl font-semibold mb-6">Your Cart</h2>
 
       {items.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20">
+           <div className="flex flex-col items-center justify-center py-20">
           <img
             src={EmptyCartImg}
             alt="Empty Cart"
@@ -72,144 +119,128 @@ function Cart() {
           </Link>
         </div>
       ) : (
-        <div className="flex flex-col md:flex-row gap-6 mt-6">
-          {/* Left: Cart Items */}
-          <div className="flex-1 flex flex-col gap-4">
+        <>
+          {/* CART ITEMS */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {items.map((item) => (
               <div
                 key={item.id}
-                className="flex flex-col md:flex-row justify-between items-center p-4 border rounded"
+                className="relative bg-white shadow hover:shadow-lg transition p-4"
               >
-                <div className="flex items-center gap-4 w-full md:w-auto">
+                {/* Remove */}
+                <div className="absolute top-3 right-3 flex gap-2">
+                   <button
+                          onClick={() => handleWishlist(item)}
+                           className="p-2 bg-white rounded-full shadow hover:bg-pink-100"
+                         >
+                           <FaRegHeart className="text-pink-500 size-3 md:size-4" />
+                         </button> 
+                <button
+                  onClick={() => {
+                    const confirmDelete = window.confirm(
+                      "Are you sure you want to remove this item from your cart?"
+                    );
+                    if (confirmDelete) {
+                      handleRemoveFromCart(item.id);
+                    }
+                  }}
+                  className="p-1 bg-white rounded-full shadow hover:bg-red-100 text-red-500"
+                >
+                  <BsTrash size={14} />
+                </button>
+              </div>
+
+
+                {/* Image */}
+                <div className="w-full h-36 flex items-center justify-center mb-3 overflow-hidden">
                   <img
                     src={item.chairimage}
                     alt={item.title}
-                    className="w-24 h-24 object-cover bg-backgroundlite rounded"
+                    className="max-w-full max-h-full object-contain hover:scale-110 transition-transform duration-300"
                   />
-
-                   {/* Content */}
-                  <div className="flex flex-col items-center text-center px-2 flex-grow">
-                    <h3 className="text-sm md:text-base font-semibold mb-1 line-clamp-2">
-                      {item.title}
-                    </h3>
-                    <p className="text-xs md:text-sm text-gray-600">Rs.{item.price}</p>
-                    {item.description && (
-                      <p className="text-sm text-gray-500 mt-1">{item.description}</p>
-                    )}
-                  </div>
-                  
                 </div>
 
-                {/* Price & Quantity */}
-                <div className="flex items-center gap-4 mt-4 md:mt-0 flex-wrap justify-center">
-                  <p className="font-semibold">
-                    Rs. {Number(item.price).toLocaleString()}
-                  </p>
+                <h3 className="text-sm font-semibold line-clamp-2">
+                  {item.title}
+                </h3>
 
-                  {/* ✅ Quantity controls */}
-                  <div className="flex items-center gap-2 border rounded px-2 py-1">
+                <p className="text-xs text-gray-500 mt-1">
+                  Rs. {item.price}
+                </p>
+
+                {/* Quantity + Price */}
+                <div className="flex items-center justify-between border-t mt-3 pt-3">
+                  <div className="flex items-center gap-2">
                     <button
-                      className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-                      onClick={() => dispatch(decreaseQuantity({ id: item.id }))}
+                      onClick={() => handleDecrease(item)}
+                      className="p-1 bg-gray-100 hover:bg-gray-200"
                     >
-                      −
+                      <IoMdRemove size={14} />
                     </button>
-                    <span className="min-w-[30px] text-center">
+
+                    <span className="text-sm font-medium">
                       {item.quantity}
                     </span>
+
                     <button
-                      className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-                      onClick={() => dispatch(increaseQuantity({ id: item.id }))}
+                      onClick={() => handleIncrease(item)}
+                      className="p-1 bg-gray-100 hover:bg-gray-200"
                     >
-                      +
+                      <IoMdAdd size={14} />
                     </button>
                   </div>
 
-                  <p className="font-semibold">
+                  <span className="text-sm font-semibold">
                     Rs. {(Number(item.price) * item.quantity).toLocaleString()}
-                  </p>
-                  <button
-                    className="px-2 py-1 text-white bg-red-500 rounded hover:bg-red-600"
-                    onClick={() => dispatch(removeFromCart({ id: item.id }))}
-                  >
-                    ✕
-                  </button>
+                  </span>
                 </div>
+
+                <button
+                  onClick={() => handleBuyNow(item)}
+                  className="mt-3 w-full bg-[#02573d] hover:bg-[#044633] rounded-[6px] text-white py-1.5 text-sm"
+                >
+                  Buy Now
+                </button>
               </div>
             ))}
+          </div>
 
-            {/* Cart Actions */}
-            <div className="flex gap-4 mt-4">
+          {/* FOOTER */}
+          <div className="mt-8 p-4 bg-white shadow flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p className="text-lg font-semibold">
+              Total:{" "}
+              <span className="text-[#0A174E]">
+                Rs. {totalPrice.toLocaleString()}
+              </span>
+            </p>
+
+            <div className="flex gap-3">
               <button
-                className="px-6 py-2 bg-primary text-white rounded hover:bg-primary"
-                onClick={() => dispatch(clearCart())}
+                onClick={() => {
+                  const confirmDelete = window.confirm(
+                    "Are you sure you want to clear your cart?"
+                  );
+                  if (confirmDelete) {
+                    dispatch(clearCart());
+                  }
+                }}
+                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-[6px]"
               >
                 Clear Cart
               </button>
-            </div>
-          </div>
-
-          {/* Right: Cart Totals & Shipping */}
-          <div className="md:w-1/3 flex flex-col gap-6 mt-6 md:mt-0">
-            <div className="p-4 border rounded">
-              <h3 className="font-semibold mb-4 text-lg">Cart Totals</h3>
-              <div className="flex justify-between mb-2">
-                <span>Subtotals:</span>
-                <span>Rs. {totalPrice.toLocaleString()}</span>
-              </div>
-              <div className="flex justify-between mb-2">
-                <span>Totals:</span>
-                <span>Rs. {(totalPrice + 140).toLocaleString()}</span>
-              </div>
-              <p className="text-green-500 text-sm mb-4">
-                Shipping & taxes calculated at checkout
-              </p>
               <button
                 onClick={handleCheckout}
-                className="w-full py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                className="px-4 py-2 bg-[#031d8f] hover:bg-[#0A174E] text-white rounded-[6px]"
               >
-                Proceed To Checkout
-              </button>
-            </div>
-
-            <div className="p-4 border rounded">
-              <h3 className="font-semibold mb-4 text-lg">Calculate Shipping</h3>
-              <input
-                type="text"
-                placeholder="Country"
-                name="country"
-                value={shippingInfo.country}
-                onChange={handleShippingChange}
-                className="w-full border px-2 py-1 mb-2 rounded"
-              />
-              <input
-                type="text"
-                placeholder="City"
-                name="city"
-                value={shippingInfo.city}
-                onChange={handleShippingChange}
-                className="w-full border px-2 py-1 mb-2 rounded"
-              />
-              <input
-                type="text"
-                placeholder="Postal Code"
-                name="postal"
-                value={shippingInfo.postal}
-                onChange={handleShippingChange}
-                className="w-full border px-2 py-1 mb-2 rounded"
-              />
-              <button
-                className="w-full py-2 bg-primary text-white rounded transform transition-transform duration-300 hover:scale-105"
-                onClick={handleCalculateShipping}
-              >
-                Calculate Shipping
+                Checkout
               </button>
             </div>
           </div>
-        </div>
+        </>
       )}
-    </div>
+    </section>
+ </div>
   );
-}
+};
 
 export default Cart;

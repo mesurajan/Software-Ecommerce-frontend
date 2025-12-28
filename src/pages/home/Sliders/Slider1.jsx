@@ -64,7 +64,7 @@ function SimpleSlider() {
   };
 
   return (
-    <div className="container mx-auto slider-container bg-backgroundlite pt-20  ">
+    <div className="container mx-auto slider-container bg-gradient-to-r from-[#0A174E]/35 via-[#0A174E]/60 to-[#0A174E]/80 pt-20  ">
       
       <Slider ref={sliderRef} {...settings}>
         {banners.map((el, i) => (
@@ -82,7 +82,7 @@ function SimpleSlider() {
 
               {/* Text Content */}
               <div className="subheader w-full md:w-[550px] flex flex-col items-center md:items-start text-center md:text-left md:gap-0 py-8 md:py-[120px] px-[20px]">
-                <p className="mb-2 text-xs font-medium text-pink-500 sm:text-sm text-justify ">
+                <p className="mb-2 text-sm sm:text-base md:text-[16px] font-semibold text-pink-600 text-justify ">
                   {el.subtitle}
                 </p>
                 <div className="text-[24px] md:text-[40px] font-bold">

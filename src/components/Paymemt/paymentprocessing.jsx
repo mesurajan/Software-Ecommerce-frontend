@@ -9,7 +9,7 @@ import {
   FaMobileAlt,
 } from "react-icons/fa";
 import "react-toastify/dist/ReactToastify.css";
-
+import AppBreadcrumbs from "../Breadcrumbs";
 const PaymentProcessing = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -154,7 +154,14 @@ const PaymentProcessing = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-100 px-4 py-6 flex justify-center pt-40">
+    <div className="bg-white container mx-auto text-[#0A174E] mb-10 px-4 md:px-0">
+     <div className="bg-backgroundlite py-4 pt-20">
+        <h1 className="text-3xl font-bold px-4">Payment processing</h1>
+        <AppBreadcrumbs />
+      </div>
+
+    <div className="min-h-screen bg-gray-100 px-4 py-6 flex justify-center pt-8">
+       
       <ToastContainer />
 
       <div className="bg-white rounded-3xl shadow-xl w-full max-w-6xl p-6 grid grid-cols-1 lg:grid-cols-2 gap-8 ">
@@ -282,19 +289,20 @@ const PaymentProcessing = () => {
           <div className="flex gap-3">
             <button
               onClick={handleCancel}
-              className="flex-1 border py-3 rounded-xl hover:bg-gray-100"
+              className="flex-1 border py-3 rounded-xl bg-[#e70a0a] hover:bg-[#ab1f1f] text-white"
             >
               Cancel
             </button>
             <button
               onClick={handlePayment}
-              className="flex-1 bg-purple-600 text-white py-3 rounded-xl hover:bg-purple-700"
+              className="flex-1 bg-[#051974] text-white py-3 rounded-xl hover:bg-[#0A174E]"
             >
               Proceed to Payment
             </button>
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 };
