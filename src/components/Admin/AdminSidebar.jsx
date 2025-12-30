@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import {
-  Menu, X, LayoutDashboard, Users, MessageSquare, BarChart3,
-  PhoneCall, ClipboardList, FileText, CreditCard, Database,
-  Shield, Bell, LogOut,Images, PackageSearch ,UserCog ,UserCheck
+  Menu, X, LayoutDashboard, Users, BarChart3, PhoneCall,
+  ClipboardList, FileText, Database, Shield, Bell, LogOut,
+  Images, PackageSearch, UserCog, UserCheck
 } from "lucide-react";
 import {
   SidebarContent, SidebarGroup, SidebarGroupContent,
@@ -18,7 +18,6 @@ export function AdminSidebar() {
   const currentPath = location.pathname;
   const [isOpen, setIsOpen] = useState(false);
 
-  // 👇 get logged-in role
   const user = JSON.parse(localStorage.getItem("user"));
   const role = user?.role || "guest";
 
@@ -29,7 +28,6 @@ export function AdminSidebar() {
       ? "bg-blue-800/40 text-white font-medium border-r-2 border-blue-400"
       : "hover:bg-blue-700/30 hover:text-[#001f3f] text-gray-300";
 
-  // 👇 define menu items
   const menuItems = [
     {
       title: "Overview",
@@ -45,44 +43,20 @@ export function AdminSidebar() {
             items: [
               { title: "All User List", url: "/admin/users", icon: Users },
               { title: "Customers List", url: "/admin/customers", icon: UserCheck },
-              { title: "Sellers List", url: "/admin/sellers", icon: UserCog  },
-            
-            ]
-          },
-          {
-            title: "Page Management" ,
-            items:[
-              {title: "Banner One" , url: "/admin/banners", icon: LayoutDashboard},
-              { title: "Sliders", url: "/admin/slider", icon: Images },
-              { title: "Latest Products", url: "/admin/latestproduct", icon:  PackageSearch  },
-              { title: "Discount Item", url: "/admin/discountitem", icon:  PackageSearch  },
-             { title: " Top Categories", url: "/admin/topcategories", icon:  PackageSearch  },
-             { title: "Categories", url: "/admin/categories", icon: ClipboardList },
-              { title: "Trending Products", url: "/admin/trendingproducts", icon: ClipboardList },
-
-
-             
+              { title: "Sellers List", url: "/admin/sellers", icon: UserCog }
             ]
           }
         ]
       : []),
-      
-            {
-        title: "Product Management ",
-        items: [
-          { title: "Add Products", url: "/admin/products", icon: ClipboardList },
-         
-
-
-          { title: "Collections", url: "/admin/collections", icon: ClipboardList },
-          ...(role === "admin"
-            ? [{ title: "Product Approval", url: "/admin/approval", icon: ClipboardList }]
-            : [])
-        ]
-      },
-
-
- 
+    {
+      title: "Product Management",
+      items: [
+        { title: "Add Products", url: "/admin/products", icon: ClipboardList },
+        ...(role === "admin"
+          ? [{ title: "Product Approval", url: "/admin/approval", icon: ClipboardList }]
+          : [])
+      ]
+    },
     {
       title: "Orders & Sales",
       items: [
@@ -92,22 +66,35 @@ export function AdminSidebar() {
       ]
     },
     {
-      title: "Complaints & Support",
+      title: "Contact",
       items: [
-        { title: "All Complaints", url: "/admin/complaints", icon: MessageSquare },
         { title: "All Contacts", url: "/admin/contacts", icon: PhoneCall },
-        { title: "All Feedback", url: "/admin/feedback", icon: ClipboardList },
-        { title: "Complaint Analytics", url: "/admin/complaints/analytics", icon: BarChart3 }
+        { title: "Contact Analytics", url: "/admin/complaintsanalytics", icon: BarChart3 }
       ]
     },
     {
       title: "Billing & Payments",
       items: [
         { title: "Bills Management", url: "/admin/bills", icon: FileText },
-        { title: "Payment Processing", url: "/admin/payments", icon: CreditCard },
-        { title: "Billing Analytics", url: "/admin/billing/analytics", icon: BarChart3 }
+        { title: "Billing Analytics", url: "/admin/billinganalytics", icon: BarChart3 }
       ]
     },
+    ...(role === "admin"
+      ? [
+          {
+            title: "Home Management",
+            items: [
+              { title: "Banner One", url: "/admin/banners", icon: LayoutDashboard },
+              { title: "Sliders", url: "/admin/slider", icon: Images },
+              { title: "Latest Products", url: "/admin/latestproduct", icon: PackageSearch },
+              { title: "Discount Item", url: "/admin/discountitem", icon: PackageSearch },
+              { title: "Top Categories", url: "/admin/topcategories", icon: PackageSearch },
+              { title: "Categories", url: "/admin/categories", icon: ClipboardList },
+              { title: "Trending Products", url: "/admin/trendingproducts", icon: ClipboardList }
+            ]
+          }
+        ]
+      : []),
     {
       title: "System & Security",
       items: [
@@ -118,7 +105,6 @@ export function AdminSidebar() {
     }
   ];
 
-  // 👇 logout handler
   const handleLogout = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("token");
@@ -135,7 +121,7 @@ export function AdminSidebar() {
         {isOpen ? <X size={24} /> : <Menu size={24} />}
       </button>
 
-      {/* Dark Backdrop */}
+      {/* Mobile Backdrop */}
       {isOpen && (
         <div
           className="fixed inset-0 bg-black/50 z-30 md:hidden"
@@ -145,19 +131,19 @@ export function AdminSidebar() {
 
       {/* Sidebar */}
       <div
-        className={`fixed top-0 left-0 h-full w-64 bg-[#1e293b] shadow-lg transform transition-transform duration-300 z-40
+        className={`fixed top-0 left-0 h-full w-56 md:w-72 bg-[#1e293b] shadow-lg transform transition-transform duration-300 z-40
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
-          md:translate-x-0 md:static md:w-72 flex flex-col`}
+          md:translate-x-0 flex flex-col`}
       >
-        {/* Header */}
-        <SidebarHeader className="border-b border-white/20 p-4">
+        {/* Header (fixed) */}
+        <SidebarHeader className="border-b border-white/20 p-4 sticky top-0 z-10 bg-[#1e293b]">
           <h2 className="text-2xl font-bold text-white">Hekto Furniture</h2>
           <p className="text-xs text-gray-400">
             {role === "admin" ? "Admin Portal" : "Seller Portal"}
           </p>
         </SidebarHeader>
 
-        {/* Content */}
+        {/* Content (scrollable) */}
         <div className="flex-1 overflow-y-auto">
           <SidebarContent className="px-2 py-4">
             {menuItems.map((group, groupIndex) => (
@@ -195,8 +181,8 @@ export function AdminSidebar() {
           </SidebarContent>
         </div>
 
-        {/* ✅ Logout button */}
-        <div className="p-4 border-t border-white/20">
+        {/* Logout (fixed) */}
+        <div className="p-4 border-t border-white/20 sticky bottom-0 bg-[#1e293b] z-10">
           <button
             onClick={handleLogout}
             className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-red-400 hover:bg-red-500/20 rounded-md"

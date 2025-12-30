@@ -51,8 +51,8 @@ function AdminSellers() {
   };
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-4">
+    <div className="px-10 py-0">
+      <div className="flex justify-between items-center   shadow py-10 bg-[#1e293b] text-white px-15">
         <h2 className="text-xl font-bold">Sellers Management</h2>
         <button
           onClick={() => setShowForm(!showForm)}
@@ -60,6 +60,25 @@ function AdminSellers() {
         >
           {showForm ? "Close" : "Add Seller"}
         </button>
+      </div>
+      
+        {/* Stats Section */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8 mt-4">
+        <div className="bg-white p-6 rounded-lg shadow">
+          <h2 className="text-lg font-semibold">Total Sellers</h2>
+          <p className="text-2xl">{sellers.length}</p>
+        </div>
+
+        <div className="bg-white p-6 rounded-lg shadow">
+          <h2 className="text-lg font-semibold">New Sellers (Last 7 Days)</h2>
+          <p className="text-2xl">
+            {sellers.filter(s => {
+              const sevenDaysAgo = new Date();
+              sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+              return new Date(s.createdAt) >= sevenDaysAgo;
+            }).length}
+          </p>
+        </div>
       </div>
 
       {showForm && (
@@ -120,6 +139,8 @@ function AdminSellers() {
           </button>
         </form>
       )}
+     
+   
 
       {/* ✅ Reusing UserTable here */}
       <UserTable title="All Sellers" data={sellers} refreshData={fetchSellers} />

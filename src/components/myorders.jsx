@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-
+import { useNavigate, Link } from "react-router-dom";
+import AppBreadcrumbs from "../components/Breadcrumbs";
+import EmptyCartImg from "../assets/images/empty-cart.png";
 const MyOrders = () => {
   const [orders, setOrders] = useState([]);
   const navigate = useNavigate();
@@ -27,7 +28,42 @@ const MyOrders = () => {
       .catch(() => setOrders([]));
   }, [navigate]);
 
+  if (orders.length === 0) {
+    return (
+    <div className="bg-white container mx-auto text-[#0A174E] mb-10 px-4 md:px-0">
+     <div className="bg-backgroundlite py-4 pt-20">
+        <h1 className="text-3xl font-bold px-4">Order List </h1>
+        <AppBreadcrumbs />
+      </div>
+      <div className="flex flex-col items-center justify-center py-20">
+        <img
+          src={EmptyCartImg}
+          alt="No Orders"
+          className="w-60 h-60 object-contain mb-6"
+        />
+        <h2 className="text-2xl font-semibold text-[#0A174E] mb-2">
+          You have no orders yet
+        </h2>
+        <p className="text-gray-500 mb-4 text-center">
+          Looks like you haven’t placed any orders yet. Go explore our products and place your first order!
+        </p>
+        <Link
+          to="/product"
+          className="px-6 py-3 bg-blue-900 text-white rounded hover:bg-blue-800 transition"
+        >
+          Shop Products
+        </Link>
+      </div>
+      </div>
+    );
+  }
+
   return (
+    <div className="bg-white container mx-auto text-[#0A174E] mb-10 px-4 md:px-0">
+     <div className="bg-backgroundlite py-4 pt-20">
+        <h1 className="text-3xl font-bold px-4">Order List </h1>
+        <AppBreadcrumbs />
+      </div>
     <section className="max-w-6xl mx-auto px-4 py-6">
       <h2 className="text-2xl font-bold mb-6">My Orders</h2>
 
@@ -119,6 +155,7 @@ const MyOrders = () => {
         </div>
       )}
     </section>
+    </div>
   );
 };
 

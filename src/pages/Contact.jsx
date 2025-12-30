@@ -1,4 +1,7 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+
 import G14 from '../assets/images/about/g14.png';
 import AppBreadcrumbs from '@/components/Breadcrumbs';
 import Tel from '../assets/images/about/tel.png'
@@ -8,8 +11,62 @@ import Location from "../assets/images/about/location.png";
 import Warehouse from "../assets/images/about/warehouse.png";
 import Whyus from "../assets/images/about/whyus.png";
 import BrandPromotion from "../assets/images/Home/BrandPromotion.png";
+import { toast } from "react-hot-toast";
 
 function Contact() {
+  const navigate = useNavigate();
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
+
+  // Load logged-in user info
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (user) {
+      setForm((prev) => ({ ...prev, name: user.name, email: user.email }));
+    }
+  }, []);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      toast.error("Please login first to submit a message!");
+      navigate("/login");
+      return;
+    }
+
+    const confirm = window.confirm("Do you want to submit this message?");
+  if (!confirm) return;
+
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/contact/submit`,
+        form,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (res.data.success) {
+        toast.success(res.data.message);
+        setForm({ ...form, subject: "", message: "" });
+      } else {
+        toast.error(res.data.message);
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to submit message.");
+    }
+  };
+
   return (
 
 
@@ -131,22 +188,55 @@ function Contact() {
           </div>
 
           {/* form section */}
-            <form>
-              <div className='flex flex-col md:flex-row gap-4 justify-center items-center'>
-                <input type="text" placeholder='Your Name*' required className='w-80 md:w-65 h-10 rounded-sm text-black p-4 border-[1px] border-gray-300' />
-                <input type="text" placeholder='Your Email*' required className='w-80 md:w-95 h-10 rounded-sm text-black p-4 border-[1px] border-gray-300' />
-              </div>
-              <div>
-                <input type="text" placeholder='Subject*' required className='w-80 md:w-165 h-10 rounded-sm text-black p-4 border-[1px] border-gray-300 mt-4' />
-                <textarea placeholder='Type Your Message*' required className='w-80 md:w-165 h-32 rounded-sm text-black p-4 border-[1px] border-gray-300 mt-4' />
-              </div>
-              <div className='flex justify-start items-start px-8 md:px-14'> 
-               <button type='submit' 
-              className='bg-mainbackground item-start text-gray-300 w-80 
-              md:w-65 h-10 rounded-sm mt-4 transition-transform hover:scale-105'>
-                Submit</button>
-              </div>
-            </form>
+            <form onSubmit={handleSubmit}>
+            <div className="flex flex-col md:flex-row gap-4 justify-center items-center">
+              <input
+                type="text"
+                name="name"
+                placeholder="Your Name*"
+                value={form.name}
+                onChange={handleChange}
+                required
+                className="w-80 md:w-65 h-10 rounded-sm text-black p-4 border-[1px] border-gray-300"
+              />
+              <input
+                type="email"
+                name="email"
+                placeholder="Your Email*"
+                value={form.email}
+                onChange={handleChange}
+                required
+                className="w-80 md:w-95 h-10 rounded-sm text-black p-4 border-[1px] border-gray-300"
+              />
+            </div>
+            <div>
+              <input
+                type="text"
+                name="subject"
+                placeholder="Subject*"
+                value={form.subject}
+                onChange={handleChange}
+                required
+                className="w-80 md:w-165 h-10 rounded-sm text-black p-4 border-[1px] border-gray-300 mt-4"
+              />
+              <textarea
+                name="message"
+                placeholder="Type Your Message*"
+                value={form.message}
+                onChange={handleChange}
+                required
+                className="w-80 md:w-165 h-32 rounded-sm text-black p-4 border-[1px] border-gray-300 mt-4"
+              />
+            </div>
+            <div className="flex justify-start items-start px-8 md:px-14">
+              <button
+                type="submit"
+                className="bg-mainbackground text-gray-300 w-80 md:w-65 h-10 rounded-sm mt-4 transition-transform hover:scale-105"
+              >
+                Submit
+              </button>
+            </div>
+          </form>
         </div>
 
         <div className='p-4 md:p-0 md:py-14'>

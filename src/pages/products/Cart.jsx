@@ -25,7 +25,9 @@ const Cart = () => {
     if (item.quantity > 1) {
       dispatch(decreaseQuantity({ id: item.id }));
     } else {
-      dispatch(removeFromCart({ id: item.id }));
+       // Optionally show a toast instead of removing
+      // toast.info("Minimum quantity is 1");
+      return;
    
     }
   };
@@ -96,7 +98,7 @@ const Cart = () => {
         <AppBreadcrumbs />
       </div>
     <section className="p-6  mx-auto">
-      <h2 className="text-2xl font-semibold mb-6">Your Cart</h2>
+     
 
       {items.length === 0 ? (
            <div className="flex flex-col items-center justify-center py-20">

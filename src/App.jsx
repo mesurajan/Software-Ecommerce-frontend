@@ -17,6 +17,7 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import PaymentProcessing from "./components/Paymemt/paymentprocessing";
 import Profile from "./components/profile";
 import Myorders from "./components/myorders";
+import { Toaster } from 'react-hot-toast';
 
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminLayout from "./layout/AdminLayout";
@@ -33,6 +34,16 @@ import AdminProductDetails from "./pages/admin/AdminProductDetails";
 import AdminTrendingProduct from "./pages/admin/AdminTrendingProduct";
 import PaymentSuccess from "./components/Paymemt/PaymentSuccess";
 import AdminOrders from "./pages/admin/AdminOrders";
+import AdminContact from "./pages/admin/AdminContact";
+import ContactAnalysis from "./pages/admin/AdminContactAnalysis";
+import AdminRefunds from "./pages/admin/AdminRefunds";
+import AdminAnalytics from "./pages/admin/AdminAnalytics";
+import AdminProductApproval from "./pages/admin/AdminProductApproval";
+import AdminDelivery from "./pages/admin/AdminDelivery";
+import AdminBillManagement from "./pages/admin/AdminBillManagement";
+import AdminBillingAnalytics from "./pages/admin/AdminBillingAnalytics";
+
+
 // ScrollToTop Component
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -45,7 +56,8 @@ const ScrollToTop = () => {
 function App() {
   return (
     <>
-      <ScrollToTop /> {/* Ensures every route scrolls to top */}
+      <ScrollToTop /> 
+      <Toaster position="top-right" reverseOrder={false} />{/* Ensures every route scrolls to top */}
       <Routes>
         {/* routes for general layout */}
         <Route path="/" element={<Layout />}>
@@ -89,8 +101,14 @@ function App() {
             <Route path="product-details/:id" element={<AdminProductDetails />} />
             <Route path="trendingproducts" element={<AdminTrendingProduct />} />
             <Route path="orders" element={<AdminOrders />} />
-
-
+            <Route path="contacts" element={<AdminContact/>}/>
+            <Route path="complaintsanalytics" element={<ContactAnalysis/>}/>
+            <Route path="refunds" element={<AdminRefunds />} /> 
+            <Route path="analytics" element={<AdminAnalytics />} />  
+            <Route path="approval" element={<AdminProductApproval />} />
+            <Route path="delivery" element={<AdminDelivery />} />
+            <Route path="bills" element={<AdminBillManagement />} />
+            <Route path="billinganalytics" element={<AdminBillingAnalytics />} />
           </Route>
       </Routes>
     </>

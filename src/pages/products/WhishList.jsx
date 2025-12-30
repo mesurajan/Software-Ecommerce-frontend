@@ -38,6 +38,11 @@ export default function WhishList() {
 
   if (items.length === 0) {
     return (
+    <div className="bg-white container mx-auto text-[#0A174E] mb-10 px-4 md:px-0">
+     <div className="bg-backgroundlite py-4 pt-20">
+        <h1 className="text-3xl font-bold px-4">Order List </h1>
+        <AppBreadcrumbs />
+      </div>
       <div className="flex flex-col items-center justify-center py-20">
         <img src={EmptyCartImg} alt="Empty Wishlist" className="w-60 h-60 object-contain mb-6" />
         <h2 className="text-2xl font-semibold text-[#0A174E] mb-2">Your Wishlist is empty</h2>
@@ -50,6 +55,7 @@ export default function WhishList() {
         >
           Go Shopping
         </Link>
+      </div>
       </div>
     );
   }
