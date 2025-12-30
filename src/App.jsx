@@ -42,7 +42,9 @@ import AdminProductApproval from "./pages/admin/AdminProductApproval";
 import AdminDelivery from "./pages/admin/AdminDelivery";
 import AdminBillManagement from "./pages/admin/AdminBillManagement";
 import AdminBillingAnalytics from "./pages/admin/AdminBillingAnalytics";
-
+import AdminSystemHealth from "./pages/admin/AdminSystemHealth";
+import AdminSecurity from "./pages/admin/AdminSecurity";
+import AdminNotifications from "./pages/admin/AdminNotifications";
 
 // ScrollToTop Component
 const ScrollToTop = () => {
@@ -109,6 +111,9 @@ function App() {
             <Route path="delivery" element={<AdminDelivery />} />
             <Route path="bills" element={<AdminBillManagement />} />
             <Route path="billinganalytics" element={<AdminBillingAnalytics />} />
+           <Route path="system" element={<AdminSystemHealth />} />
+           <Route path="security" element={<AdminSecurity />} />
+           <Route path="notifications" element={<AdminNotifications />} />
           </Route>
       </Routes>
     </>

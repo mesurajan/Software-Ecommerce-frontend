@@ -141,44 +141,44 @@ function UserTable({ title, data, refreshData }) {
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
-                <TableRow className="bg-muted/30 hover:bg-muted/30">
-                  <TableHead className="font-semibold">
+                <TableRow className="bg-muted/30 hover:bg-muted/30 border-2">
+                  <TableHead className="font-semibold border-2">
                     <div className="flex items-center gap-2">
                       <Users className="h-4 w-4 text-primary" />
                       Name
                     </div>
                   </TableHead>
-                  <TableHead className="font-semibold">
+                  <TableHead className="font-semibold border-2">
                     <div className="flex items-center gap-2">
                       <Mail className="h-4 w-4 text-primary" />
                       Email
                     </div>
                   </TableHead>
-                  <TableHead className="font-semibold">
+                  <TableHead className="font-semibold border-2">
                     <div className="flex items-center gap-2">
                       <Phone className="h-4 w-4 text-primary" />
                       Phone
                     </div>
                   </TableHead>
-                  <TableHead className="font-semibold">
+                  <TableHead className="font-semibold border-2">
                     <div className="flex items-center gap-2">
                       <MapPin className="h-4 w-4 text-primary" />
                       Address
                     </div>
                   </TableHead>
-                  <TableHead className="font-semibold">
+                  <TableHead className="font-semibold border-2">
                     <div className="flex items-center gap-2">
                       <Calendar className="h-4 w-4 text-primary" />
                       Age
                     </div>
                   </TableHead>
-                  <TableHead className="font-semibold">
+                  <TableHead className="font-semibold border-2">
                     <div className="flex items-center gap-2">
                       <Shield className="h-4 w-4 text-primary" />
                       Role
                     </div>
                   </TableHead>
-                  <TableHead className="font-semibold text-right">Actions</TableHead>
+                  <TableHead className="font-semibold text-right border-2 ">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -227,15 +227,15 @@ function UserTable({ title, data, refreshData }) {
                         </>
                       ) : (
                         <>
-                          <TableCell className="font-medium">{u.name}</TableCell>
-                          <TableCell className="text-muted-foreground">{u.email}</TableCell>
-                          <TableCell className="text-muted-foreground">{u.phone}</TableCell>
-                          <TableCell className="text-muted-foreground max-w-[200px] truncate">{u.address}</TableCell>
-                          <TableCell className="text-muted-foreground">{u.age}</TableCell>
+                          <TableCell className="font-medium border-2">{u.name}</TableCell>
+                          <TableCell className="text-muted-foreground border-2">{u.email}</TableCell>
+                          <TableCell className="text-muted-foreground border-2">{u.phone}</TableCell>
+                          <TableCell className="text-muted-foreground max-w-[200px] truncate border-2">{u.address}</TableCell>
+                          <TableCell className="text-muted-foreground border-2">{u.age}</TableCell>
                           <TableCell>
                             <Badge variant={getRoleBadgeVariant(u.role)}>{u.role}</Badge>
                           </TableCell>
-                          <TableCell>
+                          <TableCell className="border-2  w-[85px] sm:w-[85px] md:w-[85px] lg:w-[85px]">
                             <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                               <Button size="sm" variant="outline" onClick={() => startEdit(u)} className="h-8 gap-1.5 hover:bg-primary hover:text-primary-foreground">
                                 <Pencil className="h-3.5 w-3.5" /> Edit

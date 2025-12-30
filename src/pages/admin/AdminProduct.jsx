@@ -408,33 +408,33 @@ function AdminProduct() {
               <Table>
                 <TableHeader>
                   <TableRow className="bg-muted/30 hover:bg-muted/30">
-                    <TableHead className="font-semibold">
+                    <TableHead className="font-semibold border-2">
                       <div className="flex items-center gap-2"><Hash className="h-4 w-4" /> Product ID</div>
                     </TableHead>
-                    <TableHead className="font-semibold">
+                    <TableHead className="font-semibold border-2">
                       <div className="flex items-center gap-2"><ImageIcon className="h-4 w-4" /> Image</div>
                     </TableHead>
-                    <TableHead className="font-semibold">
+                    <TableHead className="font-semibold border-2">
                       <div className="flex items-center gap-2"><Tag className="h-4 w-4" /> Title</div>
                     </TableHead>
-                    <TableHead className="font-semibold">Slug</TableHead>
-                    <TableHead className="font-semibold">
+                    <TableHead className="font-semibold border-2">Slug</TableHead>
+                    <TableHead className="font-semibold border-2">
                       <div className="flex items-center gap-2">
                         <span className="h-4 w-4 flex items-center justify-center">₹</span> Price
                       </div>
                     </TableHead>
-                    <TableHead className="font-semibold">
+                    <TableHead className="font-semibold border-2">
                       <div className="flex items-center gap-2"><Package className="h-4 w-4" /> Category</div>
                     </TableHead>
-                    <TableHead className="font-semibold">Subtitle</TableHead>
-                    <TableHead className="font-semibold text-right">Actions</TableHead>
+                    <TableHead className="font-semibold border-2">Subtitle</TableHead>
+                    <TableHead className="font-semibold text-right border-2">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
 
                 <TableBody>
                   {displayedProducts.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={8} className="h-32 text-center">
+                      <TableCell colSpan={8} className="h-32 text-center border-2">
                         <div className="flex flex-col items-center gap-2 text-muted-foreground">
                           <Package className="h-8 w-8" />
                           <p>No products found</p>
@@ -443,19 +443,19 @@ function AdminProduct() {
                     </TableRow>
                   ) : displayedProducts.map((p, index) => (
                     <TableRow key={p.id} className="group hover:bg-muted/50 transition-colors">
-                      <TableCell><Badge variant="outline" className="font-mono">{p.productId}</Badge></TableCell>
-                      <TableCell>
+                      <TableCell className="border-2"><Badge variant="outline" className="font-mono">{p.productId}</Badge></TableCell>
+                      <TableCell className="border-2">
                         <div className="relative h-12 w-12 rounded-lg overflow-hidden border border-border/50 bg-muted/30">
                           {p.image ? <img src={p.image} alt={p.title} className="h-full w-full object-cover" /> :
                             <div className="h-full w-full flex items-center justify-center"><ImageIcon className="h-5 w-5 text-muted-foreground" /></div>}
                         </div>
                       </TableCell>
-                      <TableCell className="font-medium max-w-[150px] truncate">{p.title}</TableCell>
-                      <TableCell className="text-muted-foreground text-sm max-w-[100px] truncate">{p.slug}</TableCell>
-                      <TableCell><Badge className="bg-green-500/10 text-green-600 border-green-500/20">Rs. {p.price}</Badge></TableCell>
-                      <TableCell><Badge variant="secondary">{p.category}</Badge></TableCell>
-                      <TableCell className="text-muted-foreground text-sm max-w-[150px] truncate">{p.subtitle || "-"}</TableCell>
-                      <TableCell>
+                      <TableCell className="font-medium max-w-[150px] truncate border-2">{p.title}</TableCell>
+                      <TableCell className="text-muted-foreground text-sm max-w-[100px] truncate border-2">{p.slug}</TableCell>
+                      <TableCell className="border-2"><Badge className="bg-green-500/10 text-green-600 border-green-500/20 ">Rs. {p.price}</Badge></TableCell>
+                      <TableCell className="border-2"><Badge variant="secondary">{p.category}</Badge></TableCell>
+                      <TableCell className="text-muted-foreground text-sm max-w-[150px] truncate border-2">{p.subtitle || "-"}</TableCell>
+                      <TableCell className="border-2">
                         <div className="flex items-center justify-end gap-2">
                           <Button size="sm" variant="outline" onClick={() => handleEdit(p)} className="h-8 w-8 p-0 hover:bg-amber-500/10 hover:text-amber-600 hover:border-amber-500/50"><Pencil className="h-4 w-4" /></Button>
                           <AlertDialog>
