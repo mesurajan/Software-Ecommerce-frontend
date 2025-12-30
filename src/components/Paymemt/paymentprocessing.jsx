@@ -10,6 +10,9 @@ import {
 } from "react-icons/fa";
 import "react-toastify/dist/ReactToastify.css";
 import AppBreadcrumbs from "../Breadcrumbs";
+const token = localStorage.getItem("token"); 
+
+
 const PaymentProcessing = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -73,11 +76,37 @@ const PaymentProcessing = () => {
       return;
     }
 
-    if (selectedPayment === "cod") {
-      toast.success("Order placed successfully (COD)");
-      navigate("/");
-      return;
-    }
+     // ================= COD =================
+      if (selectedPayment === "cod") {
+        try {
+          const res = await axios.post(
+            `${import.meta.env.VITE_BACKEND_URL}/api/orders`,
+            {
+              items: orderItems,
+              shipping,
+              subtotal,
+              deliveryFee: shippingCharge,
+              total: totalPrice,
+              paymentMethod: "COD",
+              paymentStatus: "PENDING", // always pending for COD
+            },
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+
+          if (res.data.success) {
+            toast.success("Order placed successfully (COD)");
+            navigate("/myorders"); // redirect to user orders
+          } else {
+            toast.error("Failed to place COD order");
+          }
+        } catch (err) {
+          console.error(err);
+          toast.error("Something went wrong while placing the order");
+        }
+        return;
+      }
 
     if (selectedPayment === "esewa") {
       try {
@@ -89,6 +118,11 @@ const PaymentProcessing = () => {
             subtotal,
             deliveryFee: shippingCharge,
             total: totalPrice,
+          },
+           {
+            headers: {
+              Authorization: `Bearer ${token}`,  // <-- Pass token
+            },
           }
         );
 

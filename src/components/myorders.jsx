@@ -11,14 +11,19 @@ const MyOrders = () => {
       navigate("/login");
       return;
     }
-
-    fetch("http://localhost:5000/api/orders/my-orders", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => setOrders(data.orders || []))
+    
+  fetch(`${import.meta.env.VITE_BACKEND_URL}/api/orders/my`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+     .then((res) => res.json())
+      .then((data) => {
+        // backend returns array OR { orders }
+        if (Array.isArray(data)) {
+          setOrders(data);
+        } else {
+          setOrders(data.orders || []);
+        }
+      })
       .catch(() => setOrders([]));
   }, [navigate]);
 
@@ -35,7 +40,7 @@ const MyOrders = () => {
               key={order._id}
               className="bg-white rounded-lg shadow-md p-5"
             >
-              {/* Order Header */}
+              {/* ===== ORDER HEADER ===== */}
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 border-b pb-3">
                 <div>
                   <p className="text-sm font-semibold">
@@ -43,45 +48,35 @@ const MyOrders = () => {
                     <span className="text-gray-700">{order._id}</span>
                   </p>
                   <p className="text-xs text-gray-500">
-                    Placed on {new Date(order.createdAt).toDateString()}
+                    Placed on{" "}
+                    {new Date(order.createdAt).toLocaleDateString()}
                   </p>
                 </div>
 
-                <div className="flex gap-2">
-                  <span
-                    className={`text-xs px-3 py-1 rounded-full font-medium
-                      ${order.status === "Delivered" && "bg-green-100 text-green-700"}
-                      ${order.status === "Pending" && "bg-yellow-100 text-yellow-700"}
-                      ${order.status === "Cancelled" && "bg-red-100 text-red-700"}
-                      ${order.status === "Shipped" && "bg-blue-100 text-blue-700"}
-                    `}
-                  >
-                    {order.status}
-                  </span>
-
-                  <span className="text-xs px-3 py-1 rounded-full bg-gray-100 text-gray-700">
-                    {order.paymentStatus}
-                  </span>
-                </div>
+                <span
+                  className={`text-xs px-3 py-1 rounded-full font-medium
+                    ${
+                      order.paymentStatus === "PAID"
+                        ? "bg-green-100 text-green-700"
+                        : "bg-yellow-100 text-yellow-700"
+                    }
+                  `}
+                >
+                  {order.paymentStatus}
+                </span>
               </div>
 
-              {/* Order Items */}
+              {/* ===== ORDER ITEMS ===== */}
               <div className="divide-y mt-3">
-                {order.items?.map((item) => (
+                {order.items?.map((item, idx) => (
                   <div
-                    key={item.productId}
+                    key={idx}
                     className="flex gap-4 py-3 items-center"
                   >
-                    <img
-                      src={item.image}
-                      alt={item.title}
-                      className="w-16 h-16 object-contain border rounded"
-                    />
-
                     <div className="flex-1">
                       <p className="text-sm font-medium">{item.title}</p>
                       <p className="text-xs text-gray-500">
-                        Quantity: {item.quantity}
+                        Qty: {item.quantity}
                       </p>
                     </div>
 
@@ -92,42 +87,32 @@ const MyOrders = () => {
                 ))}
               </div>
 
-              {/* Delivery Info */}
+              {/* ===== DELIVERY INFO ===== */}
               <div className="bg-gray-50 rounded-md p-4 mt-4 text-sm">
                 <p className="font-semibold mb-1">Delivery Details</p>
                 <p className="text-gray-600">
-                  Address: {order.shippingAddress?.address},{" "}
-                  {order.shippingAddress?.city}
+                  Name: {order.shipping?.name}
                 </p>
                 <p className="text-gray-600">
-                  Delivery Method: {order.deliveryMethod || "Standard"}
+                  Phone: {order.shipping?.phone}
                 </p>
                 <p className="text-gray-600">
-                  Estimated Delivery:{" "}
-                  {order.estimatedDelivery || "3–5 business days"}
+                  Address: {order.shipping?.address}
                 </p>
               </div>
 
-              {/* Footer */}
+              {/* ===== FOOTER ===== */}
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mt-4">
                 <p className="text-lg font-semibold">
-                  Total: Rs. {order.totalAmount}
+                  Total: Rs. {order.total}
                 </p>
 
-                <div className="flex gap-3">
-                  <button
-                    onClick={() => navigate(`/order/${order._id}`)}
-                    className="px-4 py-2 text-sm border rounded hover:bg-gray-100"
-                  >
-                    View Details
-                  </button>
-
-                  <button
-                    className="px-4 py-2 text-sm bg-purple-600 text-white rounded hover:bg-purple-700"
-                  >
-                    Buy Again
-                  </button>
-                </div>
+                <button
+                  onClick={() => navigate(`/order/${order._id}`)}
+                  className="px-4 py-2 text-sm border rounded hover:bg-gray-100"
+                >
+                  View Details
+                </button>
               </div>
             </div>
           ))}

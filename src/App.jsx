@@ -32,7 +32,7 @@ import AdminCategories from "./pages/admin/AdminCategories";
 import AdminProductDetails from "./pages/admin/AdminProductDetails";
 import AdminTrendingProduct from "./pages/admin/AdminTrendingProduct";
 import PaymentSuccess from "./components/Paymemt/PaymentSuccess";
-
+import AdminOrders from "./pages/admin/AdminOrders";
 // ScrollToTop Component
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -88,7 +88,8 @@ function App() {
             <Route path="categories" element={<AdminCategories />} />
             <Route path="product-details/:id" element={<AdminProductDetails />} />
             <Route path="trendingproducts" element={<AdminTrendingProduct />} />
-           
+            <Route path="orders" element={<AdminOrders />} />
+
 
           </Route>
       </Routes>
