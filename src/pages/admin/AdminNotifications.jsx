@@ -1,104 +1,191 @@
-import React, { useState } from "react";
-import { Bell, CheckCircle, XCircle, Info, CreditCard } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+// src/pages/admin/AdminNotifications.jsx
+import React, { useEffect, useState, useMemo } from "react";
+import axios from "axios";
+import { Bell, CheckCircle, Trash2 } from "lucide-react";
+
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
-const sampleNotifications = [
-  {
-    id: "1",
-    title: "New Order Received",
-    message: "Order #1234 has been placed by John Doe.",
-    type: "order",
-    status: "unread",
-    createdAt: "2025-12-30T13:30:00Z",
-  },
-  {
-    id: "2",
-    title: "Payment Failed",
-    message: "Payment for Order #1233 failed due to insufficient balance.",
-    type: "payment",
-    status: "unread",
-    createdAt: "2025-12-30T12:00:00Z",
-  },
-  {
-    id: "3",
-    title: "New Admin User Added",
-    message: "User Jane Smith was added as an admin.",
-    type: "user",
-    status: "read",
-    createdAt: "2025-12-29T18:45:00Z",
-  },
-];
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5174";
 
-const typeIcon = (type) => {
-  switch (type) {
-    case "order":
-      return <CheckCircle className="h-5 w-5 text-blue-500" />;
-    case "payment":
-      return <CreditCard className="h-5 w-5 text-red-500" />;
-    case "system":
-      return <Info className="h-5 w-5 text-yellow-500" />;
-    case "user":
-      return <Bell className="h-5 w-5 text-green-500" />;
-    default:
-      return <Bell className="h-5 w-5 text-gray-500" />;
+const AdminNotifications = () => {
+  const [notifications, setNotifications] = useState([]);
+  const [search, setSearch] = useState("");
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+
+  const token = localStorage.getItem("token");
+
+  // Fetch notifications from backend
+  const fetchNotifications = async () => {
+    if (!token) return;
+    try {
+      const res = await axios.get(`${BACKEND_URL}/api/notifications`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setNotifications(res.data || []);
+    } catch (err) {
+      console.error("Error fetching notifications:", err);
+    }
+  };
+
+// Delete a notification with confirmation
+const deleteNotification = async (id) => {
+  const confirmDelete = window.confirm("Are you sure you want to delete this notification?");
+  if (!confirmDelete) return;
+
+  try {
+    await axios.delete(`${BACKEND_URL}/api/notifications/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    fetchNotifications();
+  } catch (err) {
+    console.error("Delete error:", err);
+    alert("Failed to delete notification");
   }
 };
 
-function AdminNotifications() {
-  const [notifications, setNotifications] = useState(sampleNotifications);
 
-  const markAsRead = (id) => {
-    setNotifications((prev) =>
-      prev.map((n) =>
-        n.id === id ? { ...n, status: "read" } : n
-      )
-    );
+  // Mark as read
+  const markAsRead = async (id) => {
+    try {
+      await axios.put(`${BACKEND_URL}/api/notifications/${id}/read`, {}, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      fetchNotifications();
+    } catch (err) {
+      console.error("Mark as read error:", err);
+      alert("Failed to mark notification as read");
+    }
   };
+
+  // Determine badge color
+  const typeVariant = (type) => {
+    switch (type) {
+      case "user": return "secondary";
+      case "order": return "success";
+      case "payment": return "warning";
+      case "system": return "default";
+      default: return "default";
+    }
+  };
+
+  // Filtered notifications based on search
+  const filteredNotifications = useMemo(() => {
+    if (!search.trim()) return notifications;
+    const q = search.toLowerCase();
+    return notifications.filter(
+      (n) =>
+        n.title.toLowerCase().includes(q) ||
+        n.message.toLowerCase().includes(q) ||
+        n.type?.toLowerCase().includes(q)
+    );
+  }, [notifications, search]);
+
+  const displayedNotifications = filteredNotifications.slice(0, itemsPerPage || filteredNotifications.length);
+
+  useEffect(() => {
+    fetchNotifications();
+    // Optional: poll every 30s for live updates
+    const interval = setInterval(fetchNotifications, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <Card className="w-full border-0 shadow-xl">
-      <CardHeader>
-        <CardTitle className="text-xl font-bold">Notifications</CardTitle>
+      <CardHeader className="pb-4 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <div>
+          <CardTitle className="text-xl font-bold flex items-center gap-2">
+            <Bell className="h-5 w-5" /> Notifications
+          </CardTitle>
+          <p className="text-sm text-muted-foreground">
+            {filteredNotifications.length} notifications
+          </p>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-3">
+          <Input
+            placeholder="Search notifications..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-3 w-full sm:w-64"
+          />
+          <Input
+            type="number"
+            min={1}
+            value={itemsPerPage}
+            onChange={(e) => setItemsPerPage(Number(e.target.value) || 10)}
+            className="w-24 text-center"
+          />
+        </div>
       </CardHeader>
-      <CardContent className="space-y-2 max-h-[600px] overflow-y-auto">
-        {notifications.length === 0 ? (
-          <p className="text-center text-muted-foreground">No notifications</p>
-        ) : (
-          notifications.map((n) => (
-            <div
-              key={n.id}
-              className={`flex items-start justify-between p-3 border rounded-lg transition ${
-                n.status === "unread" ? "bg-blue-50 border-blue-200" : "bg-white border-gray-200"
-              }`}
-            >
-              <div className="flex items-start gap-3">
-                {typeIcon(n.type)}
-                <div>
-                  <h4 className="font-semibold">{n.title}</h4>
-                  <p className="text-sm text-muted-foreground">{n.message}</p>
-                  <p className="text-xs text-gray-400">
-                    {new Date(n.createdAt).toLocaleString()}
-                  </p>
-                </div>
-              </div>
-              <div className="flex flex-col items-end gap-2">
-                {n.status === "unread" && (
-                  <Button size="sm" onClick={() => markAsRead(n.id)}>
-                    Mark Read
-                  </Button>
+
+      <CardContent>
+        <div className="rounded-xl border overflow-hidden">
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-muted/30">
+                  <TableHead className="py-2 px-4 border-2">Title</TableHead>
+                  <TableHead className="py-2 px-4 border-2">Message</TableHead>
+                  <TableHead className="py-2 px-4 border-2">Type</TableHead>
+                  <TableHead className="py-2 px-4 border-2">Status</TableHead>
+                  <TableHead className="py-2 px-4 border-2">Date</TableHead>
+                  <TableHead className="text-right border-2">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+
+              <TableBody>
+                {displayedNotifications.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={6} className="h-32 text-center border-2">
+                      No notifications found
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  displayedNotifications.map((n) => (
+                    <TableRow key={n._id} className="group">
+                      <TableCell className="font-semibold border-2">{n.title}</TableCell>
+                      <TableCell className="text-sm border-2">{n.message}</TableCell>
+                      <TableCell className="border-2">
+                        <Badge variant={typeVariant(n.type)}>{n.type}</Badge>
+                      </TableCell>
+                      <TableCell className="border-2">
+                        <Badge variant={n.status === "unread" ? "destructive" : "default"}>
+                          {n.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-xs border-2">
+                        {new Date(n.createdAt).toLocaleString()}
+                      </TableCell>
+                      <TableCell className="w-[150px]">
+                        <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition">
+                          {n.status === "unread" && (
+                            <Button size="sm" onClick={() => markAsRead(n._id)}>
+                              <CheckCircle className="h-4 w-4 mr-1" /> Mark Read
+                            </Button>
+                          )}
+                          <Button size="sm" variant="destructive" onClick={() => deleteNotification(n._id)}>
+                            <Trash2 className="h-4 w-4 mr-1" /> Delete
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
                 )}
-                <Badge variant={n.status === "unread" ? "secondary" : "default"}>
-                  {n.status.toUpperCase()}
-                </Badge>
-              </div>
-            </div>
-          ))
-        )}
+              </TableBody>
+            </Table>
+          </div>
+        </div>
+
+        <div className="mt-4 text-sm text-muted-foreground">
+          Showing {displayedNotifications.length} of {filteredNotifications.length} notifications
+        </div>
       </CardContent>
     </Card>
   );
-}
+};
 
 export default AdminNotifications;
